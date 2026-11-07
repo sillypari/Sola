@@ -1,0 +1,812 @@
+{
+  "BMS": [
+    {
+      "DTC Code": "D10108",
+      "Description": "VCU bus signal/message failure"
+    },
+    {
+      "DTC Code": "110109",
+      "Description": "Voltage sensor failure - Cell1"
+    },
+    {
+      "DTC Code": "110209",
+      "Description": "Voltage sensor failure - Cell2"
+    },
+    {
+      "DTC Code": "110309",
+      "Description": "Voltage sensor failure - Cell3"
+    },
+    {
+      "DTC Code": "110409",
+      "Description": "Voltage sensor failure - Cell4"
+    },
+    {
+      "DTC Code": "110509",
+      "Description": "Voltage sensor failure - Cell5"
+    },
+    {
+      "DTC Code": "110609",
+      "Description": "Voltage sensor failure - Cell6"
+    },
+    {
+      "DTC Code": "110709",
+      "Description": "Voltage sensor failure - Cell7"
+    },
+    {
+      "DTC Code": "110809",
+      "Description": "Voltage sensor failure - Cell8"
+    },
+    {
+      "DTC Code": "110909",
+      "Description": "Voltage sensor failure - Cell9"
+    },
+    {
+      "DTC Code": "110A09",
+      "Description": "Voltage sensor failure - Cell10"
+    },
+    {
+      "DTC Code": "110B09",
+      "Description": "Voltage sensor failure - Cell11"
+    },
+    {
+      "DTC Code": "110C09",
+      "Description": "Voltage sensor failure - Cell12"
+    },
+    {
+      "DTC Code": "110D09",
+      "Description": "Voltage sensor failure - Cell13"
+    },
+    {
+      "DTC Code": "110E09",
+      "Description": "Voltage sensor failure - Cell14"
+    },
+    {
+      "DTC Code": "11011C",
+      "Description": "Voltage out of range - Cell1"
+    },
+    {
+      "DTC Code": "11021C",
+      "Description": "Voltage out of range - Cell2"
+    },
+    {
+      "DTC Code": "11031C",
+      "Description": "Voltage out of range - Cell3"
+    },
+    {
+      "DTC Code": "11041C",
+      "Description": "Voltage out of range - Cell4"
+    },
+    {
+      "DTC Code": "11051C",
+      "Description": "Voltage out of range - Cell5"
+    },
+    {
+      "DTC Code": "11061C",
+      "Description": "Voltage out of range - Cell6"
+    },
+    {
+      "DTC Code": "11071C",
+      "Description": "Voltage out of range - Cell7"
+    },
+    {
+      "DTC Code": "11081C",
+      "Description": "Voltage out of range - Cell8"
+    },
+    {
+      "DTC Code": "11091C",
+      "Description": "Voltage out of range - Cell9"
+    },
+    {
+      "DTC Code": "110A1C",
+      "Description": "Voltage out of range - Cell10"
+    },
+    {
+      "DTC Code": "110B1C",
+      "Description": "Voltage out of range - Cell11"
+    },
+    {
+      "DTC Code": "110C1C",
+      "Description": "Voltage out of range - Cell12"
+    },
+    {
+      "DTC Code": "110D1C",
+      "Description": "Voltage out of range - Cell13"
+    },
+    {
+      "DTC Code": "110EF0",
+      "Description": "Voltage out of range - Cell14"
+    },
+    {
+      "DTC Code": "112109",
+      "Description": "Battery pack temperature1 sensor failure"
+    },
+    {
+      "DTC Code": "112209",
+      "Description": "Battery pack temperature2 sensor failure"
+    },
+    {
+      "DTC Code": "112309",
+      "Description": "Battery pack temperature3 sensor failure"
+    },
+    {
+      "DTC Code": "112409",
+      "Description": "Battery pack temperature4 sensor failure"
+    },
+    {
+      "DTC Code": "112509",
+      "Description": "Battery pack temperature5 sensor failure"
+    },
+    {
+      "DTC Code": "112609",
+      "Description": "Battery pack temperature6 sensor failure"
+    },
+    {
+      "DTC Code": "112164",
+      "Description": "Battery pack temperature1 out of range"
+    },
+    {
+      "DTC Code": "112264",
+      "Description": "Battery pack temperature2 out of range"
+    },
+    {
+      "DTC Code": "112364",
+      "Description": "Battery pack temperature3 out of range"
+    },
+    {
+      "DTC Code": "112464",
+      "Description": "Battery pack temperature4 out of range"
+    },
+    {
+      "DTC Code": "112564",
+      "Description": "Battery pack temperature5 out of range"
+    },
+    {
+      "DTC Code": "112664",
+      "Description": "Battery pack temperature6 out of range"
+    },
+    {
+      "DTC Code": "113113",
+      "Description": "Current sensor failure - Open circuit"
+    },
+    {
+      "DTC Code": "113111",
+      "Description": "Current sensor failure - Short circuit"
+    },
+    {
+      "DTC Code": "1141F0",
+      "Description": "Over current charge - Warning"
+    },
+    {
+      "DTC Code": "1141F1",
+      "Description": "Over current charge - Error"
+    },
+    {
+      "DTC Code": "1142F2",
+      "Description": "Precharge too fast"
+    },
+    {
+      "DTC Code": "1142F3",
+      "Description": "Precharge too slow"
+    },
+    {
+      "DTC Code": "1142F4",
+      "Description": "Precharge failure"
+    },
+    {
+      "DTC Code": "114409",
+      "Description": "MOSFETs connection failed"
+    },
+    {
+      "DTC Code": "114509",
+      "Description": "MOSFETs disconnection failed"
+    },
+    {
+      "DTC Code": "1146F0",
+      "Description": "PDU temperature - warning"
+    },
+    {
+      "DTC Code": "1146F1",
+      "Description": "PDU temperature - error"
+    },
+    {
+      "DTC Code": "1147F0",
+      "Description": "Over voltage charge Warning"
+    },
+    {
+      "DTC Code": "1147F1",
+      "Description": "Over voltage charge Error"
+    },
+    {
+      "DTC Code": "1147F2",
+      "Description": "Over voltage charge Permanent Fault"
+    },
+    {
+      "DTC Code": "1148F0",
+      "Description": "Over voltage regen Warning"
+    },
+    {
+      "DTC Code": "1148F1",
+      "Description": "Over voltage regen Error"
+    },
+    {
+      "DTC Code": "1149F0",
+      "Description": "Under voltage Warning"
+    },
+    {
+      "DTC Code": "1149F1",
+      "Description": "Under voltage Error "
+    },
+    {
+      "DTC Code": "1149F2",
+      "Description": "Under voltage Permanent Fault"
+    },
+    {
+      "DTC Code": "114AF0",
+      "Description": "Over temperature charge Warning"
+    },
+    {
+      "DTC Code": "114AF1",
+      "Description": "Over temperature charge Error "
+    },
+    {
+      "DTC Code": "114BF0",
+      "Description": "Over temperature drive Warning"
+    },
+    {
+      "DTC Code": "114BF1",
+      "Description": "Over temperature drive Error "
+    },
+    {
+      "DTC Code": "114CF2",
+      "Description": "Over temperature due to Cell vent error"
+    },
+    {
+      "DTC Code": "114CF3",
+      "Description": "Over temperature due to Cell vent Failure"
+    },
+    {
+      "DTC Code": "114DF0",
+      "Description": "Short circuit detection error"
+    },
+    {
+      "DTC Code": "114DF1",
+      "Description": "Short circuit detection permanent fault"
+    },
+    {
+      "DTC Code": "114EF0",
+      "Description": "Cell failure permanent fault"
+    },
+    {
+      "DTC Code": "114FF0",
+      "Description": "Parallel Cell disconnection fault "
+    },
+    {
+      "DTC Code": "1150F0",
+      "Description": "Low temperature during charging - Warning"
+    },
+    {
+      "DTC Code": "1150F1",
+      "Description": "Low temperature during charging - Error"
+    },
+    {
+      "DTC Code": "1151F0",
+      "Description": "Low temperature during driving - Warning"
+    },
+    {
+      "DTC Code": "1151F1",
+      "Description": "Low temperature during driving - Error"
+    },
+    {
+      "DTC Code": "1152F0",
+      "Description": "Over time to fast charge -Error"
+    },
+    {
+      "DTC Code": "1153F0",
+      "Description": "Any fault present in AFE - Error"
+    }
+  ],
+  "MCU": [
+    {
+      "DTC Code": "1301F0",
+      "Description": "Software overcurrent protection (Grade 3)"
+    },
+    {
+      "DTC Code": "1301F1",
+      "Description": "Software overvoltage fault (Grade 3)"
+    },
+    {
+      "DTC Code": "1302F0",
+      "Description": "Drive Protection"
+    },
+    {
+      "DTC Code": "1303F0",
+      "Description": "Failure for motor parameter tuning"
+    },
+    {
+      "DTC Code": "1305F0",
+      "Description": "Drive Overload (Grade 3)"
+    },
+    {
+      "DTC Code": "1307F0",
+      "Description": "U phase hall fault"
+    },
+    {
+      "DTC Code": "130BF0",
+      "Description": "Drive overtemperature (Grade 3)"
+    },
+    {
+      "DTC Code": "130CF0",
+      "Description": "Motor overtemperature (Gratde 3)"
+    },
+    {
+      "DTC Code": "130EF0",
+      "Description": "Encoder disconnection (Grade 3)"
+    },
+    {
+      "DTC Code": "1314F0",
+      "Description": "Overvoltagebaseline of hardware is wrong (Grade 3)"
+    },
+    {
+      "DTC Code": "1316F0",
+      "Description": "Stalling Fault (Grade 3)"
+    },
+    {
+      "DTC Code": "1318F0",
+      "Description": "DC Bus undervoltage fault (Grade 3)"
+    },
+    {
+      "DTC Code": "131AF2",
+      "Description": "CAN communication abnormal failure"
+    },
+    {
+      "DTC Code": "131BF0",
+      "Description": "Motor over speed fault (Grade 3)"
+    },
+    {
+      "DTC Code": "131BF1",
+      "Description": "Motor temperature sensor disconnection fault (Grade 2)"
+    },
+    {
+      "DTC Code": "131DF0",
+      "Description": "Hardware overcurrent  fault"
+    },
+    {
+      "DTC Code": "131EF1",
+      "Description": "Hardware overvoltage fault"
+    },
+    {
+      "DTC Code": "131FF0",
+      "Description": "Drive power under-voltage fault"
+    },
+    {
+      "DTC Code": "1320F0",
+      "Description": "The resolver connector is loose and abnormal"
+    },
+    {
+      "DTC Code": "1321F0",
+      "Description": "Controller drive abnormal fault"
+    },
+    {
+      "DTC Code": "1322F0",
+      "Description": "Power supplyof drive board exceeds the upper limit"
+    },
+    {
+      "DTC Code": "1323F0",
+      "Description": "Low-voltage power supply under-voltage fault"
+    },
+    {
+      "DTC Code": "1324F0",
+      "Description": "U-phase Hall disconnection fault"
+    },
+    {
+      "DTC Code": "1324F1",
+      "Description": "V-phase Hall disconnection fault"
+    },
+    {
+      "DTC Code": "1324F2",
+      "Description": "W-phase Hall disconnection fault"
+    },
+    {
+      "DTC Code": "1324F3",
+      "Description": "V-phase Hall abnormal fault"
+    },
+    {
+      "DTC Code": "1324F4",
+      "Description": "W-phase Hall abnormal fault"
+    },
+    {
+      "DTC Code": "1325F0",
+      "Description": "Throttle Wiper1 Fail"
+    },
+    {
+      "DTC Code": "1325F1",
+      "Description": "Throttle Wiper2 Fail"
+    }
+  ],
+  "VCU": [
+    {
+      "DTC Code": "920711",
+      "Description": "Head lamp low Short"
+    },
+    {
+      "DTC Code": "920713",
+      "Description": "Head lamp low Open"
+    },
+    {
+      "DTC Code": "920700",
+      "Description": "Head lamp  low Overcurrent fault"
+    },
+    {
+      "DTC Code": "92074B",
+      "Description": "Head lamp low overtemperature error"
+    },
+    {
+      "DTC Code": "920811",
+      "Description": "Head lamp high Short"
+    },
+    {
+      "DTC Code": "920813",
+      "Description": "Head lamp high Open"
+    },
+    {
+      "DTC Code": "920800",
+      "Description": "Head lamp high Overcurrent fault"
+    },
+    {
+      "DTC Code": "92084B",
+      "Description": "Head lamp high overtemperature error"
+    },
+    {
+      "DTC Code": "920911",
+      "Description": "Rear position lamp Short"
+    },
+    {
+      "DTC Code": "920913",
+      "Description": "Rear position lamp Open"
+    },
+    {
+      "DTC Code": "920900",
+      "Description": "Rear position lamp Overcurrent fault"
+    },
+    {
+      "DTC Code": "92094B",
+      "Description": "Rear position lamp overtemperature error"
+    },
+    {
+      "DTC Code": "920A11",
+      "Description": "Plate Lamp Short"
+    },
+    {
+      "DTC Code": "920A13",
+      "Description": "Plate Lamp Open"
+    },
+    {
+      "DTC Code": "920A00",
+      "Description": "Plate Lamp Overcurrent Fault"
+    },
+    {
+      "DTC Code": "920A4B",
+      "Description": "Plate Lamp Overtemperature Fault"
+    },
+    {
+      "DTC Code": "920B11",
+      "Description": "Brake lamp Short"
+    },
+    {
+      "DTC Code": "920B13",
+      "Description": "Brake lamp Open"
+    },
+    {
+      "DTC Code": "920B00",
+      "Description": "Brake lamp Overcurrent fault"
+    },
+    {
+      "DTC Code": "920B4B",
+      "Description": "Brake lamp overtemperature error"
+    },
+    {
+      "DTC Code": "920C11",
+      "Description": "Front Position lamp Short"
+    },
+    {
+      "DTC Code": "920C13",
+      "Description": "Front Position lamp Open"
+    },
+    {
+      "DTC Code": "920C00",
+      "Description": "Front Position lamp Overcurrent fault"
+    },
+    {
+      "DTC Code": "920C4B",
+      "Description": "Front Position lamp overtemperature error"
+    },
+    {
+      "DTC Code": "920D11",
+      "Description": "Indicator FL Short"
+    },
+    {
+      "DTC Code": "920D13",
+      "Description": "Indicator FL Open"
+    },
+    {
+      "DTC Code": "920D00",
+      "Description": "Indicator FL Overcurrent fault"
+    },
+    {
+      "DTC Code": "920D4B",
+      "Description": "Indicator FL  overtemperature error"
+    },
+    {
+      "DTC Code": "920E11",
+      "Description": "Indicator FR Short"
+    },
+    {
+      "DTC Code": "920E13",
+      "Description": "Indicator FR Open"
+    },
+    {
+      "DTC Code": "920E00",
+      "Description": "Indicator FR Overcurrent fault"
+    },
+    {
+      "DTC Code": "920E4B",
+      "Description": "Indicator FR overtemperature error"
+    },
+    {
+      "DTC Code": "920F11",
+      "Description": "Indicator RL Short"
+    },
+    {
+      "DTC Code": "920F13",
+      "Description": "Indicator RL Open"
+    },
+    {
+      "DTC Code": "920F00",
+      "Description": "Indicator RL Overcurrent fault"
+    },
+    {
+      "DTC Code": "920F4B",
+      "Description": "Indicator RLovertemperature error"
+    },
+    {
+      "DTC Code": "921011",
+      "Description": "Indicator RR Short"
+    },
+    {
+      "DTC Code": "921013",
+      "Description": "Indicator RR Open"
+    },
+    {
+      "DTC Code": "921000",
+      "Description": "Indicator RR Overcurrent fault"
+    },
+    {
+      "DTC Code": "92104B",
+      "Description": "Indicator RR overtemperature error"
+    },
+    {
+      "DTC Code": "921111",
+      "Description": "Horn Short"
+    },
+    {
+      "DTC Code": "921113",
+      "Description": "Horn Open"
+    },
+    {
+      "DTC Code": "921100",
+      "Description": "Horn Overcurrent fault"
+    },
+    {
+      "DTC Code": "92114B",
+      "Description": "Horn overtemperature error"
+    },
+    {
+      "DTC Code": "921311",
+      "Description": "Seat Lock Short"
+    },
+    {
+      "DTC Code": "921313",
+      "Description": "Seat Lock Open"
+    },
+    {
+      "DTC Code": "921300",
+      "Description": "Seat Lock Overcurrent fault"
+    },
+    {
+      "DTC Code": "92134B",
+      "Description": "Seat Lock overtemperature error"
+    },
+    {
+      "DTC Code": "921411",
+      "Description": "Head unit Short"
+    },
+    {
+      "DTC Code": "921413",
+      "Description": "Head unit Open"
+    },
+    {
+      "DTC Code": "921400",
+      "Description": "Head unit Overcurrent fault"
+    },
+    {
+      "DTC Code": "92144B",
+      "Description": "Head unit Overtemperature error"
+    },
+    {
+      "DTC Code": "921511",
+      "Description": "Sidestand sensor Short"
+    },
+    {
+      "DTC Code": "921513",
+      "Description": "Sidestand sensor Open"
+    },
+    {
+      "DTC Code": "921500",
+      "Description": "Sidestand sensor Overcurrent fault"
+    },
+    {
+      "DTC Code": "921611",
+      "Description": "HBC Short"
+    },
+    {
+      "DTC Code": "921613",
+      "Description": "HBC Open"
+    },
+    {
+      "DTC Code": "921600",
+      "Description": "HBC Overcurrent fault"
+    },
+    {
+      "DTC Code": "92164B",
+      "Description": "HBC overtemperature error"
+    },
+    {
+      "DTC Code": "921711",
+      "Description": "USB charger Short"
+    },
+    {
+      "DTC Code": "921713",
+      "Description": "USB charger Open"
+    },
+    {
+      "DTC Code": "921700",
+      "Description": "USB charger Overcurrent fault"
+    },
+    {
+      "DTC Code": "92174B",
+      "Description": "USB charger overtemperature error"
+    },
+    {
+      "DTC Code": "921800",
+      "Description": "Fault reported by Motorcontroller"
+    },
+    {
+      "DTC Code": "921900",
+      "Description": "Fault reported by BMS"
+    },
+    {
+      "DTC Code": "921C00",
+      "Description": "Failure reported by ESCL(ESCL_failure)"
+    },
+    {
+      "DTC Code": "921D00",
+      "Description": "Error in communication with HBC Android"
+    },
+    {
+      "DTC Code": "921E00",
+      "Description": "Error in communication with HBC Vehicle"
+    },
+    {
+      "DTC Code": "922400",
+      "Description": "Brake_Pad_Wear_Fr_status"
+    },
+    {
+      "DTC Code": "922500",
+      "Description": "Brake_Pad_Wear_Rr_status"
+    },
+    {
+      "DTC Code": "922600",
+      "Description": "Slow charger Fault Information"
+    },
+    {
+      "DTC Code": "923500",
+      "Description": "FC Charger Fault Information"
+    },
+    {
+      "DTC Code": "923611",
+      "Description": "Speaker1_error short"
+    },
+    {
+      "DTC Code": "923613",
+      "Description": "Speaker1_error open"
+    },
+    {
+      "DTC Code": "923711",
+      "Description": "Speaker2_error short"
+    },
+    {
+      "DTC Code": "923713",
+      "Description": "Speaker2_error open"
+    },
+    {
+      "DTC Code": "923811",
+      "Description": "CPW fault(short) "
+    },
+    {
+      "DTC Code": "923813",
+      "Description": "CPW open"
+    },
+    {
+      "DTC Code": "92384B",
+      "Description": "CPW fault Overtemperature"
+    },
+    {
+      "DTC Code": "923800",
+      "Description": "CPW fault Overcurrent fault"
+    },
+    {
+      "DTC Code": "923911",
+      "Description": "HV FC  POS contactor error(short)"
+    },
+    {
+      "DTC Code": "923913",
+      "Description": "HV FC  POS contactor Open circuit fault"
+    },
+    {
+      "DTC Code": "92394B",
+      "Description": "HV FC  POS contactor Overtemperature error"
+    },
+    {
+      "DTC Code": "923900",
+      "Description": "HV FC  POS contactor Overcurrent fault"
+    },
+    {
+      "DTC Code": "923B11",
+      "Description": "Vehicle DCDC faults(short)"
+    },
+    {
+      "DTC Code": "923B13",
+      "Description": "Vehicle DCDC Open circuit fault"
+    },
+    {
+      "DTC Code": "923B4B",
+      "Description": "Vehicle DCDC Overtemperature error"
+    },
+    {
+      "DTC Code": "923C00",
+      "Description": "Vehicle DCDC Overcurrent fault"
+    },
+    {
+      "DTC Code": "923D00",
+      "Description": "Vehicle DCDC Overvoltage fault"
+    },
+    {
+      "DTC Code": "923E00",
+      "Description": "Vehicle DCDC Undervoltage fault"
+    },
+    {
+      "DTC Code": "923F11",
+      "Description": "Fault reported by ESCL(short)"
+    },
+    {
+      "DTC Code": "923F13",
+      "Description": "ESCL open circuit error"
+    },
+    {
+      "DTC Code": "923F4B",
+      "Description": "ESCL overtemperature error"
+    },
+    {
+      "DTC Code": "923F00",
+      "Description": "ESCL  Overcurrent fault"
+    },
+    {
+      "DTC Code": "924011",
+      "Description": "Microphone_error short"
+    },
+    {
+      "DTC Code": "924013",
+      "Description": "Microphone_error open"
+    }
+  ]
+}

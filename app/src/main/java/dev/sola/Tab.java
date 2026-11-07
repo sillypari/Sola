@@ -1,0 +1,14 @@
+package dev.sola;
+
+import android.view.View;
+
+/** One of the screens. */
+public interface Tab {
+    View view();
+
+    /** Called when the tab becomes visible. Start timers here. */
+    void onShow();
+
+    /** Called when the tab is replaced. Stop timers here. */
+    void onHide();
+}

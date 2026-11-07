@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Front Wheel (Alloy Rim & Tire) -->
+    <path
+        android:fillColor="#A8C7FA"
+        android:pathData="M6,14.5C4.34,14.5 3,15.84 3,17.5C3,19.16 4.34,20.5 6,20.5C7.66,20.5 9,19.16 9,17.5C9,15.84 7.66,14.5 6,14.5ZM6,19C5.17,19 4.5,18.33 4.5,17.5C4.5,16.67 5.17,16 6,16C6.83,16 7.5,16.67 7.5,17.5C7.5,18.33 6.83,19 6,19Z" />
+    <!-- Rear Wheel (Alloy Rim & Tire) -->
+    <path
+        android:fillColor="#A8C7FA"
+        android:pathData="M18,14.5C16.34,14.5 15,15.84 15,17.5C15,19.16 16.34,20.5 18,20.5C19.66,20.5 21,19.16 21,17.5C21,15.84 19.66,14.5 18,14.5ZM18,19C17.17,19 16.5,18.33 16.5,17.5C16.5,16.67 17.17,16 18,16C18.83,16 19.5,16.67 19.5,17.5C19.5,18.33 18.83,19 18,19Z" />
+    <!-- Ola S1 Sleek Aerodynamic Body, Stem, Floorboard & Tail Cowl -->
+    <path
+        android:fillColor="#A8C7FA"
+        android:pathData="M8,4.5L5.8,4.5C5.35,4.5 5,4.85 5,5.3C5,5.75 5.35,6.1 5.8,6.1L6.7,6.1L8.2,11.2C8.35,11.7 8.2,12.25 7.8,12.6L6.8,13.5C6.4,13.9 6.2,14.4 6.2,15L6.2,16C6.2,16.6 6.7,17 7.3,17L12.5,17C13.1,17 13.5,16.55 13.5,16L13.5,15.2C13.5,14.6 13.8,14.1 14.3,13.8L16,12.8C16.8,12.3 17.8,12.5 18.4,13.2L19.2,14.2C19.6,14.7 20.2,15 20.8,15L21,15C21.6,15 22,14.55 22,14C22,12.6 21,11.4 19.6,11.1L16.5,10.5L10.5,4.8C10.2,4.5 9.7,4.5 9.3,4.5L8,4.5Z" />
+    <!-- Ergonomic Ola Dual-Cushion Seat -->
+    <path
+        android:fillColor="#A8C7FA"
+        android:pathData="M11,9L18.5,9.5C19.3,9.5 20,10.2 20,11C20,11.3 19.8,11.5 19.5,11.5L12,11.5C11.2,11.5 10.5,10.6 11,9.8L11,9Z" />
+    <!-- Signature Ola Horizon LED Headlight -->
+    <path
+        android:fillColor="#A8C7FA"
+        android:pathData="M5.4,8.5L7.2,8.5C7.5,8.5 7.8,8.8 7.8,9.1C7.8,9.4 7.5,9.7 7.2,9.7L5.4,9.7C5.1,9.7 4.8,9.4 4.8,9.1C4.8,8.8 5.1,8.5 5.4,8.5Z" />
+</vector>
