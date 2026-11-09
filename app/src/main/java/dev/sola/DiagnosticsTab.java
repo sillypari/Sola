@@ -1766,34 +1766,35 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
                 for (int i = 0; i < 14; i++) {
                     double v = s.cells[i];
                     if (!Double.isNaN(v) && v > 0) {
-                        if (avgV > 0) {
-                            double devMv = (v - avgV) * 1000.0;
-                            tvCellVoltages[i].setText(String.format(Locale.US, "%.3f V  (%+d mV)", v, Math.round(devMv)));
-                        } else {
-                            tvCellVoltages[i].setText(String.format(Locale.US, "%.3f V", v));
-                        }
+                        tvCellVoltages[i].setText(String.format(Locale.US, "%.3f V", v));
 
                         boolean isBalancing = s.balancing != null && s.balancing[i];
+                        int devMv = avgV > 0 ? (int) Math.round((v - avgV) * 1000.0) : 0;
+                        String devStr = (devMv >= 0 ? "+" : "") + devMv + " mV";
+
                         if (isBalancing) {
                             tvCellTags[i].setVisibility(View.VISIBLE);
-                            tvCellTags[i].setText("BAL");
+                            tvCellTags[i].setText("BAL " + devStr);
                             tvCellTags[i].setTextColor(Ui.POSITIVE);
                             tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.POSITIVE, 0x28), 6, 0));
                             cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, Ui.alpha(Ui.POSITIVE, 0x60)));
                         } else if (i == maxIdx) {
                             tvCellTags[i].setVisibility(View.VISIBLE);
-                            tvCellTags[i].setText("MAX");
+                            tvCellTags[i].setText("MAX " + devStr);
                             tvCellTags[i].setTextColor(Ui.WARNING);
                             tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.WARNING, 0x28), 6, 0));
                             cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, Ui.alpha(Ui.WARNING, 0x60)));
                         } else if (i == minIdx) {
                             tvCellTags[i].setVisibility(View.VISIBLE);
-                            tvCellTags[i].setText("MIN");
+                            tvCellTags[i].setText("MIN " + devStr);
                             tvCellTags[i].setTextColor(Ui.PRIMARY);
                             tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.PRIMARY, 0x28), 6, 0));
                             cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, Ui.alpha(Ui.PRIMARY, 0x60)));
                         } else {
-                            tvCellTags[i].setVisibility(View.GONE);
+                            tvCellTags[i].setVisibility(View.VISIBLE);
+                            tvCellTags[i].setText(devStr);
+                            tvCellTags[i].setTextColor(Ui.MUTED);
+                            tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.MUTED, 0x18), 6, 0));
                             cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, 0));
                         }
                     } else {
