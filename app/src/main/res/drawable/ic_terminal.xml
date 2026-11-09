@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Google Material Symbols (Filled): Android ADB Robot -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M5,11V10Q5,8.2 5.81,6.71T8,4.27L6.13,2.4L7,1.5L9.13,3.63q0.65-0.3 1.39-0.46T12,3t1.49,0.16t1.39,0.46L17,1.5l0.88,0.9L16,4.27q1.38,0.95 2.19,2.44T19,10v1H5ZM15.71,8.71Q16,8.42 16,8q0-0.43-0.29-0.71T15,7T14.29,7.29T14,8q0,0.42 0.29,0.71T15,9t0.71-0.29Zm-6,0Q10,8.42 10,8q0-0.43-0.29-0.71T9,7Q8.58,7 8.29,7.29T8,8Q8,8.42 8.29,8.71Q8.58,9 9,9Q9.43,9 9.71,8.71ZM7.04,20.96Q5,18.93 5,16V12H19v4q0,2.93-2.04,4.96T12,23q-2.92,0-4.96-2.04Z" />
+</vector>

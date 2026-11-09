@@ -110,6 +110,17 @@ public final class VehicleInfo {
             // leave empty
         }
 
+        if (info.batteryVariant.isEmpty() && info.vin != null && info.vin.length() >= 5) {
+            String pfx = info.vin.substring(0, 5).toUpperCase(Locale.ROOT);
+            if (pfx.equals("P53AA") || pfx.equals("P53AC") || pfx.equals("P53BU") || pfx.equals("P53BT") || pfx.equals("P53BS")) {
+                info.batteryVariant = "4 kWh";
+            } else if (pfx.equals("P53BW") || pfx.equals("P53CC")) {
+                info.batteryVariant = "2 kWh";
+            } else if (pfx.equals("P53AB") || pfx.equals("P53BA") || pfx.equals("P53BE") || pfx.equals("P53BF") || pfx.equals("P53BV")) {
+                info.batteryVariant = "3 kWh";
+            }
+        }
+
         try {
             String out = rpc.shell(PROFILE_QUERY, READ_TIMEOUT_MS);
             if (out != null && out.trim().startsWith("[")) {
@@ -265,15 +276,57 @@ public final class VehicleInfo {
                 info.batteryVariant = batteryOf(cleaned);
                 info.generation = generationOf(cleaned);
                 info.model = modelOf(cleaned);
+                if (info.batteryVariant.isEmpty()) {
+                    if ("S1 Pro".equals(info.model)) {
+                        info.batteryVariant = "4 kWh";
+                    } else if ("S1 Air".equals(info.model) || "S1".equals(info.model)) {
+                        info.batteryVariant = "3 kWh";
+                    }
+                }
             } else {
                 info.model = lookup(text, "model");
                 info.generation = lookup(text, "generation");
                 info.batteryVariant = lookup(text, "batteryVariant");
+                if (info.batteryVariant.isEmpty() && "S1 Pro".equals(info.model)) {
+                    info.batteryVariant = "4 kWh";
+                }
             }
         } catch (RuntimeException ignored) {
             // return whatever was filled before the failure
         }
         return info;
+    }
+
+    /** Returns nominal capacity in kWh based on detected battery variant, model, or VIN. */
+    public double nominalCapacityKwh() {
+        if (batteryVariant != null && !batteryVariant.isEmpty()) {
+            if (batteryVariant.contains("4")) return 3.97;
+            if (batteryVariant.contains("3")) return 2.98;
+            if (batteryVariant.contains("2")) return 2.00;
+        }
+        if (model != null && !model.isEmpty()) {
+            String m = model.toLowerCase(Locale.ROOT);
+            if (m.contains("pro")) return 3.97;
+            if (m.contains("air")) return 2.98;
+            if (m.contains("x")) {
+                if (m.contains("2")) return 2.00;
+                if (m.contains("4")) return 3.97;
+                return 2.98;
+            }
+        }
+        if (vin != null && vin.length() >= 5) {
+            String pfx = vin.substring(0, 5).toUpperCase(Locale.ROOT);
+            if (pfx.equals("P53AA") || pfx.equals("P53AC") || pfx.equals("P53BU") || pfx.equals("P53BT") || pfx.equals("P53BS")) {
+                return 3.97;
+            }
+            if (pfx.equals("P53BW") || pfx.equals("P53CC")) {
+                return 2.00;
+            }
+            if (pfx.equals("P53AB") || pfx.equals("P53BA") || pfx.equals("P53BE") || pfx.equals("P53BF") || pfx.equals("P53BV")) {
+                return 2.98;
+            }
+        }
+        return 2.98;
     }
 
     // ---------------------------------------------------------------- helpers

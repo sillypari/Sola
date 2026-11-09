@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Google Material Symbols (Filled): Advanced Hardware / Microchips -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3,23V18.8q-0.88-0.3-1.44-1.06T1,16V14H7v2q0,0.98-0.56,1.74T5,18.8V23H3Zm8,0V18.8q-0.88-0.3-1.44-1.06T9,16V14h6v2q0,0.98-0.56,1.74T13,18.8V23H11Zm8,0V18.8q-0.88-0.3-1.44-1.06T17,16V14h6v2q0,0.98-0.56,1.74T21,18.8V23H19ZM1,12V6H3V2Q3,1.57 3.29,1.29T4,1T4.71,1.29T5,2V6H7v6H1Zm8,0V6h2V2q0-0.43 0.29-0.71T12,1t0.71,0.29T13,2V6h2v6H9Zm8,0V6h2V2q0-0.43 0.29-0.71T20,1q0.43,0 0.71,0.29T21,2V6h2v6H17Z" />
+</vector>

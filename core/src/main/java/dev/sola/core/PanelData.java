@@ -82,6 +82,10 @@ public final class PanelData {
 
     public double soc = Double.NaN;
     public double soh = Double.NaN;
+    public double sohCalculated = Double.NaN;
+    public double cycleSoh = Double.NaN;
+    public double nominalPackKwh = 2.98;
+    public double totalAvailableEnergyWh = Double.NaN;
     public double speedKph = Double.NaN;
     public double rangeKm = Double.NaN;
     public double odoKm = Double.NaN;
@@ -130,6 +134,10 @@ public final class PanelData {
             d.activeFaults = s.activeFaults == null ? 0 : s.activeFaults.size();
             d.soc = s.soc;
             d.soh = s.soh;
+            d.sohCalculated = s.sohCalculated;
+            d.cycleSoh = s.cycleSoh;
+            d.nominalPackKwh = s.nominalPackKwh;
+            d.totalAvailableEnergyWh = s.totalAvailableEnergyWh;
             d.speedKph = s.speedKph;
             d.rangeKm = s.rangeKm;
             d.odoKm = s.odoKm;

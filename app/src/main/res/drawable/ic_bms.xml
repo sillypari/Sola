@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Google Material Symbols (Filled): BMS / Battery Management System Shield -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M4,18q-1.25,0-2.13-0.88T1,15V9Q1,7.75 1.88,6.88T4,6H15.9L12,8q-0.1,2.8 0.81,5.56T16.1,18H4Zm14.5-1q-2-0.73-3.25-2.95T14,9q1.03-0.13 2.13-0.63T18.5,7q1.28,0.88 2.38,1.38T23,9q0,2.82-1.25,5.05T18.5,17Zm0-2.22q0.88-0.58 1.5-1.7t0.88-2.55q-0.57-0.2-1.16-0.49T18.5,9.38v5.4Z" />
+</vector>

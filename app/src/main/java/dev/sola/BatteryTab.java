@@ -6,6 +6,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import dev.sola.core.Live;
 
 /**
@@ -192,7 +194,8 @@ public final class BatteryTab implements Tab {
         }
         long now = System.currentTimeMillis();
         boolean stale = s.sohStale(now, STALE_MS);
-        boolean noSoh = Double.isNaN(s.soh);
+        double effectiveSoh = !Double.isNaN(s.sohCalculated) ? s.sohCalculated : s.soh;
+        boolean noSoh = Double.isNaN(effectiveSoh);
         if (s.empty()) {
             verdict.setText("No frames yet");
             verdict.setTextColor(Ui.DIM);
@@ -208,7 +211,7 @@ public final class BatteryTab implements Tab {
                             + " s. The scooter is asleep or the battery data stopped."
                     : "Frames are arriving but no pack SOH yet. Waiting for the battery.");
         } else {
-            String health = sohVerdict(s.soh);
+            String health = sohVerdict(effectiveSoh);
             verdict.setText("Pack: " + health);
             verdict.setTextColor(healthColor(health));
             hint.setText("Frames " + s.frames + "   " + s.pps + "/s   "
@@ -216,7 +219,9 @@ public final class BatteryTab implements Tab {
         }
 
         soc.set(Ui.pct(s.soc));
-        soh.set(stale || noSoh ? Ui.DASH : Ui.pct(s.soh) + "  " + sohVerdict(s.soh));
+        String rawBms = (!Double.isNaN(s.soh) && Math.abs(s.soh - effectiveSoh) > 0.5)
+                ? String.format(Locale.US, " (BMS: %.0f%%)", s.soh) : "";
+        soh.set(stale || noSoh ? Ui.DASH : Ui.pct(effectiveSoh) + "  " + sohVerdict(effectiveSoh) + rawBms);
         volts.set(Ui.fmt(s.packV, 2) + " V");
         amps.set(Ui.fmt(s.packA, 2) + " A");
         power.set(Ui.fmt(s.powerW() / 1000.0, 2) + " kW");

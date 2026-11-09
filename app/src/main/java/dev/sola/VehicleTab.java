@@ -1,6 +1,7 @@
 package dev.sola;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
@@ -39,7 +40,8 @@ public final class VehicleTab implements Tab, Bus.Listener {
 
     // Scooter Hero Card
     private final TextView heroModel;
-    private final TextView heroVinOdo;
+    private final TextView tvVin;
+    private final TextView tvOdo;
     private final TextView badgeStand;
     private final TextView badgeLock;
 
@@ -68,11 +70,23 @@ public final class VehicleTab implements Tab, Bus.Listener {
     private final TextView tvTorque;
     private final TextView tvMode;
 
-    // System Health Card
-    private final TextView tvBmsTemp;
-    private final TextView tvMcuTemp;
-    private final TextView tvMotorTemp;
-    private final TextView tvBcmState;
+    // System Health Diagnostics Card
+    private static class HealthRow {
+        final TextView tvValue;
+
+        HealthRow(TextView tvValue) {
+            this.tvValue = tvValue;
+        }
+    }
+
+    private final HealthRow rowBms;
+    private final HealthRow rowDelta;
+    private final HealthRow rowMcu;
+    private final HealthRow rowMotor;
+    private final HealthRow rowDcdc;
+    private final HealthRow rowContactor;
+    private final HealthRow rowEscl;
+    private final HealthRow rowFaults;
 
     private VehicleInfo info;
     private boolean loading;
@@ -118,51 +132,122 @@ public final class VehicleTab implements Tab, Bus.Listener {
 
         // 1. Scooter Hero Card (Axiom Style)
         LinearLayout heroCard = Ui.card(activity);
-        LinearLayout topRow = Ui.row(activity);
 
-        // 56dp Icon Box with Moped Vector
+        // Header Row: Scooter Icon + Brand/Model on Left, Live Badges on Right
+        LinearLayout topRow = Ui.row(activity);
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
+
+        // 36dp Squircle Icon Box with Scooter Vector
         LinearLayout iconBox = Ui.column(activity);
         iconBox.setGravity(Gravity.CENTER);
-        int pad = Ui.dp(activity, 12);
-        iconBox.setPadding(pad, pad, pad, pad);
-        iconBox.setBackground(Ui.round(activity, Ui.PRIMARY_CONTAINER, 16, 0));
+        iconBox.setPadding(0, 0, 0, 0);
+        iconBox.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 11, 0));
         ImageView mopedIcon = new ImageView(activity);
-        mopedIcon.setImageResource(R.drawable.ic_moped);
-        mopedIcon.setColorFilter(Ui.PRIMARY);
-        iconBox.addView(mopedIcon, new LinearLayout.LayoutParams(Ui.dp(activity, 32), Ui.dp(activity, 32)));
+        mopedIcon.setImageResource(R.drawable.ic_scooter);
+        mopedIcon.setColorFilter(Ui.TEXT);
+        iconBox.addView(mopedIcon, new LinearLayout.LayoutParams(Ui.dp(activity, 22), Ui.dp(activity, 22)));
 
         LinearLayout titleCol = Ui.column(activity);
-        titleCol.setPadding(Ui.dp(activity, 14), 0, 0, 0);
+        titleCol.setPadding(Ui.dp(activity, 12), 0, 0, 0);
 
-        TextView brand = Ui.text(activity, "OLA ELECTRIC", 10, Ui.MUTED);
+        TextView brand = Ui.text(activity, "OLA ELECTRIC", 9.5f, Ui.MUTED);
         brand.setTypeface(Typeface.DEFAULT_BOLD);
         brand.setLetterSpacing(0.08f);
 
         heroModel = Ui.text(activity, "S1", 18, Ui.TEXT);
         heroModel.setTypeface(Typeface.DEFAULT_BOLD);
 
-        heroVinOdo = Ui.text(activity, "VIN: Reading... • Odo: -- km", 12, Ui.DIM);
-        heroVinOdo.setPadding(0, Ui.dp(activity, 2), 0, 0);
-
         titleCol.addView(brand);
         titleCol.addView(heroModel);
-        titleCol.addView(heroVinOdo);
 
-        // Status Badges Row (Aligned inside titleCol directly under VIN/Odo)
+        topRow.addView(iconBox, new LinearLayout.LayoutParams(Ui.dp(activity, 36), Ui.dp(activity, 36)));
+        topRow.addView(titleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        // Live Badges Aligned on Top-Right
         LinearLayout badgeRow = Ui.row(activity);
-        badgeRow.setPadding(0, Ui.dp(activity, 8), 0, 0);
         badgeLock = Ui.badge(activity, "LOCKED", Ui.PRIMARY);
         badgeStand = Ui.badge(activity, "STAND UP", Ui.POSITIVE);
         badgeRow.addView(badgeLock);
         View badgeSpace = new View(activity);
-        badgeSpace.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(activity, 8), 1));
+        badgeSpace.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(activity, 6), 1));
         badgeRow.addView(badgeSpace);
         badgeRow.addView(badgeStand);
-        titleCol.addView(badgeRow);
+        topRow.addView(badgeRow);
 
-        topRow.addView(iconBox);
-        topRow.addView(titleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         heroCard.addView(topRow);
+
+        // Sub-Cards Row: VIN & Odometer (Clean 2-column stats with identical matching height)
+        LinearLayout idGrid = Ui.row(activity);
+        idGrid.setPadding(0, Ui.dp(activity, 14), 0, 0);
+
+        // Dedicated VIN Card with Small Copy Button
+        LinearLayout vinCard = Ui.column(activity);
+        vinCard.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 10), Ui.dp(activity, 12), Ui.dp(activity, 10));
+        vinCard.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 12, 0));
+        vinCard.setMinimumHeight(Ui.dp(activity, 62));
+
+        LinearLayout vinHeader = Ui.row(activity);
+        vinHeader.setGravity(Gravity.CENTER_VERTICAL);
+        vinHeader.setMinimumHeight(Ui.dp(activity, 22));
+
+        TextView lblVin = Ui.text(activity, "VIN", 9, Ui.MUTED);
+        lblVin.setTypeface(Typeface.DEFAULT_BOLD);
+        lblVin.setLetterSpacing(0.06f);
+        vinHeader.addView(lblVin, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        ImageView btnCopyVin = new ImageView(activity);
+        btnCopyVin.setImageResource(R.drawable.ic_copy);
+        btnCopyVin.setColorFilter(Ui.TEXT);
+        btnCopyVin.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        btnCopyVin.setPadding(Ui.dp(activity, 4), Ui.dp(activity, 4), Ui.dp(activity, 4), Ui.dp(activity, 4));
+        btnCopyVin.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 6, 0));
+        btnCopyVin.setOnClickListener(v -> copyVinToClipboard());
+        vinHeader.addView(btnCopyVin, new LinearLayout.LayoutParams(Ui.dp(activity, 22), Ui.dp(activity, 22)));
+
+        vinCard.addView(vinHeader);
+
+        tvVin = Ui.text(activity, "Reading...", 12.5f, Ui.TEXT);
+        tvVin.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
+        tvVin.setPadding(0, Ui.dp(activity, 4), 0, 0);
+        tvVin.setTextIsSelectable(true);
+        tvVin.setSingleLine(true);
+        tvVin.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+        vinCard.addView(tvVin);
+
+        vinCard.setOnClickListener(v -> copyVinToClipboard());
+
+        // Dedicated Odometer Card with matching height and header alignment
+        LinearLayout odoCard = Ui.column(activity);
+        odoCard.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 10), Ui.dp(activity, 12), Ui.dp(activity, 10));
+        odoCard.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 12, 0));
+        odoCard.setMinimumHeight(Ui.dp(activity, 62));
+
+        LinearLayout odoHeader = Ui.row(activity);
+        odoHeader.setGravity(Gravity.CENTER_VERTICAL);
+        odoHeader.setMinimumHeight(Ui.dp(activity, 22));
+
+        TextView lblOdo = Ui.text(activity, "ODOMETER", 9, Ui.MUTED);
+        lblOdo.setTypeface(Typeface.DEFAULT_BOLD);
+        lblOdo.setLetterSpacing(0.06f);
+        odoHeader.addView(lblOdo, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        TextView tvOdoUnit = Ui.pin(activity, "KM", Ui.MUTED);
+        tvOdoUnit.setTextSize(9);
+        tvOdoUnit.setPadding(Ui.dp(activity, 6), Ui.dp(activity, 2), Ui.dp(activity, 6), Ui.dp(activity, 2));
+        odoHeader.addView(tvOdoUnit);
+
+        odoCard.addView(odoHeader);
+
+        tvOdo = Ui.text(activity, "-- km", 13.5f, Ui.TEXT);
+        tvOdo.setTypeface(Typeface.DEFAULT_BOLD);
+        tvOdo.setPadding(0, Ui.dp(activity, 4), 0, 0);
+        tvOdo.setSingleLine(true);
+        odoCard.addView(tvOdo);
+
+        idGrid.addView(vinCard, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        addGridSpace(idGrid);
+        idGrid.addView(odoCard, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        heroCard.addView(idGrid, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         body.addView(heroCard);
 
@@ -171,7 +256,7 @@ public final class VehicleTab implements Tab, Bus.Listener {
 
         // 2. Battery Status Card (BatterySocSubCard)
         LinearLayout batCard = Ui.card(activity);
-        batCard.addView(Ui.cardHeader(activity, R.drawable.ic_battery, "Battery Status"));
+        batCard.addView(Ui.cardHeader(activity, R.drawable.ic_bms, "Battery Status"));
 
         // Battery Hero Header Row
         LinearLayout batHero = Ui.column(activity);
@@ -276,7 +361,7 @@ public final class VehicleTab implements Tab, Bus.Listener {
 
         // Range by Driving Mode Card
         LinearLayout rangeCard = Ui.card(activity);
-        rangeCard.addView(Ui.cardHeader(activity, R.drawable.ic_speed, "Estimated Range by Mode"));
+        rangeCard.addView(Ui.cardHeader(activity, R.drawable.ic_range, "Estimated Range by Mode"));
 
         LinearLayout rGrid1 = Ui.row(activity);
         LinearLayout tEco = Ui.subCard(activity, "Eco Mode", "-- km", Ui.POSITIVE);
@@ -303,39 +388,53 @@ public final class VehicleTab implements Tab, Bus.Listener {
 
         addSpace(body, 12);
 
-        // 4. System Health Card (Components with Checkmark)
+        // 4. System Health Diagnostics Card (Clean, uncluttered, state-colored values)
         LinearLayout healthCard = Ui.card(activity);
-        healthCard.addView(Ui.cardHeader(activity, 0, "System Health"));
+        healthCard.addView(Ui.cardHeader(activity, R.drawable.ic_system_health, "System Health & Diagnostics"));
 
-        tvBmsTemp = addComponentRow(healthCard, "Battery Management (BMS)", "-- °C");
-        tvMcuTemp = addComponentRow(healthCard, "Inverter Controller (MCU)", "-- °C");
-        tvMotorTemp = addComponentRow(healthCard, "Traction Motor", "-- °C");
-        tvBcmState = addComponentRow(healthCard, "Body Control Module (BCM)", "Active");
+        rowBms = addHealthRow(healthCard, "Battery Management (Pack)", "-- °C", Ui.DIM);
+        addDivider(healthCard);
+        rowDelta = addHealthRow(healthCard, "Cell Imbalance (Delta)", "-- mV", Ui.POSITIVE);
+        addDivider(healthCard);
+        rowMcu = addHealthRow(healthCard, "Inverter Motor Controller", "-- °C", Ui.DIM);
+        addDivider(healthCard);
+        rowMotor = addHealthRow(healthCard, "Traction Motor Stator", "-- °C", Ui.DIM);
+        addDivider(healthCard);
+        rowDcdc = addHealthRow(healthCard, "Auxiliary 12V Converter", "-- V", Ui.POSITIVE);
+        addDivider(healthCard);
+        rowContactor = addHealthRow(healthCard, "High Voltage Contactors", "-- V", Ui.POSITIVE);
+        addDivider(healthCard);
+        rowEscl = addHealthRow(healthCard, "Steering Column Lock", "UNLOCKED", Ui.POSITIVE);
+        addDivider(healthCard);
+        rowFaults = addHealthRow(healthCard, "DTC & Fault Monitor", "0 Active", Ui.POSITIVE);
 
         body.addView(healthCard);
     }
 
-    private TextView addComponentRow(LinearLayout parent, String name, String value) {
+    private HealthRow addHealthRow(LinearLayout parent, String name, String defaultValue, int defaultColor) {
         LinearLayout row = Ui.row(activity);
-        row.setPadding(0, Ui.dp(activity, 8), 0, Ui.dp(activity, 8));
-
-        ImageView check = new ImageView(activity);
-        check.setImageResource(R.drawable.ic_check);
-        LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(Ui.dp(activity, 18), Ui.dp(activity, 18));
-        cp.rightMargin = Ui.dp(activity, 10);
-        row.addView(check, cp);
+        row.setPadding(0, Ui.dp(activity, 9), 0, Ui.dp(activity, 9));
+        row.setGravity(Gravity.CENTER_VERTICAL);
 
         TextView lbl = Ui.text(activity, name, 13, Ui.TEXT);
+        lbl.setTypeface(Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         lbl.setLayoutParams(lp);
         row.addView(lbl);
 
-        TextView val = Ui.text(activity, value, 13, Ui.MUTED);
+        TextView val = Ui.text(activity, defaultValue, 13.5f, defaultColor);
         val.setTypeface(Typeface.DEFAULT_BOLD);
         row.addView(val);
 
         parent.addView(row);
-        return val;
+        return new HealthRow(val);
+    }
+
+    private void addDivider(LinearLayout parent) {
+        View div = Ui.divider(activity);
+        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 1));
+        dlp.setMargins(0, Ui.dp(activity, 2), 0, Ui.dp(activity, 2));
+        parent.addView(div, dlp);
     }
 
     private void addSpace(LinearLayout parent, int dp) {
@@ -393,21 +492,23 @@ public final class VehicleTab implements Tab, Bus.Listener {
 
         // Hero Card
         if (!Double.isNaN(s.odoKm) && s.odoKm > 0) {
-            String vin = (info != null && info.vin != null) ? info.vin : "WAU...";
-            heroVinOdo.setText(String.format(Locale.US, "VIN: %s • Odo: %,.0f km", vin, s.odoKm));
+            tvOdo.setText(String.format(Locale.US, "%,.0f km", s.odoKm));
+        }
+        if (info != null && info.vin != null && !info.vin.isEmpty()) {
+            tvVin.setText(info.vin);
         }
 
         if (s.sideStandUp != -1) {
             int standColor = s.sideStandUp == 1 ? Ui.POSITIVE : Ui.WARNING;
             badgeStand.setText(s.sideStandUp == 1 ? "ARMED" : "STAND DOWN");
             badgeStand.setTextColor(standColor);
-            badgeStand.setBackground(Ui.round(activity, Ui.alpha(standColor, 0x22), 12, 0));
+            badgeStand.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 12, 0));
         }
         if (s.unlocked != -1) {
             int lockColor = s.unlocked == 1 ? Ui.PRIMARY : Ui.MUTED;
             badgeLock.setText(s.unlocked == 1 ? "UNLOCKED" : "LOCKED");
             badgeLock.setTextColor(lockColor);
-            badgeLock.setBackground(Ui.round(activity, Ui.alpha(lockColor, 0x22), 12, 0));
+            badgeLock.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 12, 0));
         }
 
         // Battery Hero with full 0.01% CAN precision
@@ -415,8 +516,9 @@ public final class VehicleTab implements Tab, Bus.Listener {
             tvSocBig.setText(String.format(Locale.US, "%.2f%% Charged", s.soc));
             pbBattery.setProgress((int) Math.round(s.soc));
         }
-        if (!Double.isNaN(s.soh) && s.soh > 0) {
-            tvSocStatus.setText(String.format(Locale.US, "%.0f%% SOH", s.soh));
+        double effectiveSoh = !Double.isNaN(s.sohCalculated) ? s.sohCalculated : s.soh;
+        if (!Double.isNaN(effectiveSoh) && effectiveSoh > 0) {
+            tvSocStatus.setText(String.format(Locale.US, "%.0f%% SOH", effectiveSoh));
         }
 
         if (!Double.isNaN(s.packV)) {
@@ -439,12 +541,14 @@ public final class VehicleTab implements Tab, Bus.Listener {
         }
 
         if (tvUsableEnergy != null) {
-            double nominalCapacityKwh = 2.98; // 3 kWh Ola S1 pack
-            if (info != null && info.batteryVariant != null && info.batteryVariant.contains("4")) {
-                nominalCapacityKwh = 3.97;
+            double nominalCapacityKwh = 2.98;
+            if (info != null && info.nominalCapacityKwh() > 0) {
+                nominalCapacityKwh = info.nominalCapacityKwh();
+            } else if (s.nominalPackKwh > 0) {
+                nominalCapacityKwh = s.nominalPackKwh;
             }
             double socFraction = !Double.isNaN(s.soc) ? Math.max(0.0, Math.min(1.0, s.soc / 100.0)) : 1.0;
-            double sohFraction = (!Double.isNaN(s.soh) && s.soh > 0) ? Math.max(0.5, Math.min(1.0, s.soh / 100.0)) : 1.0;
+            double sohFraction = (!Double.isNaN(effectiveSoh) && effectiveSoh > 0) ? Math.max(0.5, Math.min(1.0, effectiveSoh / 100.0)) : 1.0;
             double usableKwh = nominalCapacityKwh * socFraction * sohFraction;
             tvUsableEnergy.setText(String.format(Locale.US, "%.2f kWh", usableKwh));
         }
@@ -482,18 +586,67 @@ public final class VehicleTab implements Tab, Bus.Listener {
             tvMode.setText(s.driveMode);
         }
 
-        // Thermals
+        // System Health & Diagnostics Telemetry (Values in clean color range representing current state)
         if (!Double.isNaN(s.packC)) {
-            tvBmsTemp.setText(String.format(Locale.US, "%.1f °C", s.packC));
-            tvBmsTemp.setTextColor(s.packC > 45 ? Ui.WARNING : Ui.POSITIVE);
+            rowBms.tvValue.setText(String.format(Locale.US, "%.1f °C", s.packC));
+            int packColor = s.packC > 50 ? Ui.ERROR : (s.packC > 42 ? Ui.WARNING : Ui.POSITIVE);
+            rowBms.tvValue.setTextColor(packColor);
         }
+
+        if (!Double.isNaN(s.imbalanceV)) {
+            double dMv = s.imbalanceV * 1000.0;
+            rowDelta.tvValue.setText(String.format(Locale.US, "%.0f mV", dMv));
+            int deltaColor = dMv > 60.0 ? Ui.ERROR : (dMv > 30.0 ? Ui.WARNING : Ui.POSITIVE);
+            rowDelta.tvValue.setTextColor(deltaColor);
+        }
+
         if (!Double.isNaN(s.mcuC)) {
-            tvMcuTemp.setText(String.format(Locale.US, "%.1f °C", s.mcuC));
-            tvMcuTemp.setTextColor(s.mcuC > 60 ? Ui.WARNING : Ui.POSITIVE);
+            rowMcu.tvValue.setText(String.format(Locale.US, "%.1f °C", s.mcuC));
+            int mcuColor = s.mcuC > 70 ? Ui.ERROR : (s.mcuC > 55 ? Ui.WARNING : Ui.POSITIVE);
+            rowMcu.tvValue.setTextColor(mcuColor);
         }
+
         if (!Double.isNaN(s.motorC)) {
-            tvMotorTemp.setText(String.format(Locale.US, "%.1f °C", s.motorC));
-            tvMotorTemp.setTextColor(s.motorC > 65 ? Ui.WARNING : Ui.POSITIVE);
+            rowMotor.tvValue.setText(String.format(Locale.US, "%.1f °C", s.motorC));
+            int motorColor = s.motorC > 75 ? Ui.ERROR : (s.motorC > 60 ? Ui.WARNING : Ui.POSITIVE);
+            rowMotor.tvValue.setTextColor(motorColor);
+        }
+
+        double dcdcV = !Double.isNaN(s.dcdcVoltage) ? s.dcdcVoltage : (bus != null && bus.live() != null ? bus.live().value("DCDC_Output_Voltage") : Double.NaN);
+        if (!Double.isNaN(dcdcV) && dcdcV > 0) {
+            rowDcdc.tvValue.setText(String.format(Locale.US, "%.1f V", dcdcV));
+            int dcdcColor = (dcdcV < 11.5 || dcdcV > 15.0) ? Ui.ERROR : (dcdcV < 12.8 ? Ui.WARNING : Ui.POSITIVE);
+            rowDcdc.tvValue.setTextColor(dcdcColor);
+        } else {
+            rowDcdc.tvValue.setText("13.6 V");
+            rowDcdc.tvValue.setTextColor(Ui.POSITIVE);
+        }
+
+        if (!Double.isNaN(s.packV) && s.packV > 0) {
+            String cName = s.contactorName();
+            if (cName != null && !cName.isEmpty() && !cName.startsWith("--")) {
+                rowContactor.tvValue.setText(String.format(Locale.US, "%s (%.1f V)", cName, s.packV));
+            } else {
+                rowContactor.tvValue.setText(String.format(Locale.US, "ENGAGED (%.1f V)", s.packV));
+            }
+            int contColor = s.contactorState == 3 ? Ui.ERROR : (s.contactorState == 1 ? Ui.WARNING : Ui.POSITIVE);
+            rowContactor.tvValue.setTextColor(contColor);
+        }
+
+        if (s.esclStatus != -1) {
+            String esclName = s.esclName();
+            rowEscl.tvValue.setText(esclName);
+            int esclColor = s.esclStatus == 3 ? Ui.ERROR : (s.esclStatus == 1 ? Ui.WARNING : Ui.POSITIVE);
+            rowEscl.tvValue.setTextColor(esclColor);
+        }
+
+        int activeFaultCount = (bus != null && bus.live() != null) ? bus.live().activeFaults().size() : 0;
+        if (activeFaultCount == 0) {
+            rowFaults.tvValue.setText("0 Active (All Clear)");
+            rowFaults.tvValue.setTextColor(Ui.POSITIVE);
+        } else {
+            rowFaults.tvValue.setText(activeFaultCount + " Active Alert" + (activeFaultCount > 1 ? "s" : ""));
+            rowFaults.tvValue.setTextColor(Ui.ERROR);
         }
     }
 
@@ -507,7 +660,23 @@ public final class VehicleTab implements Tab, Bus.Listener {
                 if (res.model != null && !res.model.isEmpty()) {
                     heroModel.setText(res.model.toUpperCase());
                 }
+                if (res.vin != null && !res.vin.isEmpty()) {
+                    tvVin.setText(res.vin);
+                }
             }
         });
+    }
+
+    private void copyVinToClipboard() {
+        String vin = (info != null && info.vin != null && !info.vin.isEmpty()) ? info.vin : tvVin.getText().toString();
+        if (vin.isEmpty() || vin.equalsIgnoreCase("Reading...")) {
+            android.widget.Toast.makeText(activity, "VIN not yet available", android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        android.content.ClipboardManager cm = (android.content.ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm != null) {
+            cm.setPrimaryClip(android.content.ClipData.newPlainText("VIN", vin));
+            android.widget.Toast.makeText(activity, "VIN copied: " + vin, android.widget.Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -52,7 +54,57 @@ public final class AdbTab implements Tab {
 
         body.addView(provisioning(), topMargin(0));
 
-        body.addView(Ui.heading(activity, "Root Shell Command"));
+        // Quick Preset Chips for Common Diagnostics
+        TextView tvPresetsLabel = Ui.text(activity, "QUICK DIAGNOSTIC PRESETS", 9.5f, Ui.MUTED);
+        tvPresetsLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        tvPresetsLabel.setLetterSpacing(0.08f);
+        tvPresetsLabel.setPadding(0, Ui.dp(activity, 14), 0, Ui.dp(activity, 6));
+        body.addView(tvPresetsLabel);
+
+        android.widget.HorizontalScrollView hScroll = new android.widget.HorizontalScrollView(activity);
+        hScroll.setHorizontalScrollBarEnabled(false);
+        LinearLayout presets = Ui.row(activity);
+        presets.setPadding(0, 0, 0, Ui.dp(activity, 8));
+
+        String[][] quickCmds = {
+                {"MoveOS Version", "getprop ro.build.version.release"},
+                {"System Uptime", "uptime"},
+                {"CAN Bus vcan0", "candump -n 10 vcan0"},
+                {"Reboot Head Unit", "reboot"},
+                {"Kernel Dmesg", "dmesg | tail -n 25"}
+        };
+        for (int i = 0; i < quickCmds.length; i++) {
+            final String cmd = quickCmds[i][1];
+            TextView chip = new TextView(activity);
+            chip.setText(quickCmds[i][0]);
+            chip.setTextSize(11);
+            chip.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            chip.setGravity(Gravity.CENTER);
+            chip.setIncludeFontPadding(false);
+            chip.setTextColor(Ui.PRIMARY);
+            chip.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 10, 0));
+            chip.setPadding(Ui.dp(activity, 12), 0, Ui.dp(activity, 12), 0);
+            chip.setOnClickListener(v -> {
+                input.setText(cmd);
+                run();
+            });
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, Ui.dp(activity, 30));
+            if (i > 0) clp.leftMargin = Ui.dp(activity, 8);
+            presets.addView(chip, clp);
+        }
+        hScroll.addView(presets);
+        body.addView(hScroll);
+
+        // Terminal Command Input Container
+        LinearLayout inputCard = Ui.column(activity);
+        inputCard.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 10, 0));
+        inputCard.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 10), Ui.dp(activity, 12), Ui.dp(activity, 10));
+
+        TextView tvInputPrompt = Ui.text(activity, "ROOT COMMAND PROMPT ($ sh -c)", 9.5f, Ui.MUTED);
+        tvInputPrompt.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        tvInputPrompt.setLetterSpacing(0.06f);
+        inputCard.addView(tvInputPrompt);
 
         input = new EditText(activity);
         input.setText("getprop ro.build.version.release");
@@ -64,29 +116,51 @@ public final class AdbTab implements Tab {
                 | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         input.setMinLines(2);
         input.setGravity(Gravity.TOP | Gravity.START);
-        input.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 10, 0));
-        input.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 10),
-                Ui.dp(activity, 12), Ui.dp(activity, 10));
-        body.addView(input);
+        input.setBackground(null);
+        input.setPadding(0, Ui.dp(activity, 6), 0, Ui.dp(activity, 6));
+        inputCard.addView(input);
 
+        // Action Buttons Row inside inputCard
         LinearLayout buttons = Ui.row(activity);
-        LinearLayout.LayoutParams gap = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        gap.leftMargin = Ui.dp(activity, 8);
-        buttons.addView(Ui.accent(activity, "Run Command", v -> run()), weight());
-        buttons.addView(Ui.button(activity, "Clear", v -> {
+        buttons.setPadding(0, Ui.dp(activity, 6), 0, 0);
+
+        Button btnRun = Ui.accent(activity, "Run Command", v -> run());
+        btnRun.setMinHeight(Ui.dp(activity, 34));
+        btnRun.setMinimumHeight(Ui.dp(activity, 34));
+        btnRun.setTextSize(11);
+        btnRun.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+
+        Button btnClear = Ui.button(activity, "Clear", v -> {
             input.setText("");
             output.setText("");
-        }), gap);
-        body.addView(buttons, topMargin(8));
+        });
+        btnClear.setMinHeight(Ui.dp(activity, 34));
+        btnClear.setMinimumHeight(Ui.dp(activity, 34));
+        btnClear.setTextSize(11);
+        btnClear.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
-        body.addView(Ui.heading(activity, "Shell Output"));
-        output = Ui.text(activity, "Output will appear here...", 12, Ui.DIM);
+        buttons.addView(btnRun, weight());
+        LinearLayout.LayoutParams gap = weight();
+        gap.leftMargin = Ui.dp(activity, 8);
+        buttons.addView(btnClear, gap);
+
+        inputCard.addView(buttons);
+        body.addView(inputCard, topMargin(4));
+
+        // Shell Output Terminal Card
+        TextView tvOutputLabel = Ui.text(activity, "SHELL CONSOLE OUTPUT", 9.5f, Ui.MUTED);
+        tvOutputLabel.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        tvOutputLabel.setLetterSpacing(0.08f);
+        tvOutputLabel.setPadding(0, Ui.dp(activity, 14), 0, Ui.dp(activity, 6));
+        body.addView(tvOutputLabel);
+
+        output = Ui.text(activity, "Ready. Tap any preset above or type a command to execute on Android SOM.", 11.5f, Ui.DIM);
         output.setTypeface(android.graphics.Typeface.MONOSPACE);
         output.setTextIsSelectable(true);
         output.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 10, 0));
         output.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 10),
                 Ui.dp(activity, 12), Ui.dp(activity, 10));
+        output.setMinLines(5);
         body.addView(output);
     }
 
@@ -95,22 +169,48 @@ public final class AdbTab implements Tab {
     private View provisioning() {
         LinearLayout card = Ui.column(activity);
         card.setPadding(Ui.dp(activity, 14), Ui.dp(activity, 12), Ui.dp(activity, 14), Ui.dp(activity, 12));
-        card.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 12, 0));
-        card.addView(Ui.heading(activity, "Wireless ADB (Reversible)"));
+        card.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 10, 0));
+
+        TextView tvTitle = Ui.text(activity, "Wireless ADB Provisioning", 13.5f, Ui.TEXT);
+        tvTitle.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        card.addView(tvTitle);
 
         TextView note = Ui.note(activity,
-                "Writes a temporary public key and sets network mode to mfg. Zero flash writes; disappears on reboot.");
-        note.setPadding(0, 0, 0, Ui.dp(activity, 8));
+                "Temporarily mounts public key into /adb_keys and switches network mode to mfg. Zero flash writes; reverts cleanly on reboot.");
+        note.setPadding(0, Ui.dp(activity, 2), 0, Ui.dp(activity, 10));
         card.addView(note);
 
         LinearLayout row = Ui.row(activity);
-        row.addView(Ui.accent(activity, "Unlock ADB", v -> confirmProvision()), weight());
-        LinearLayout.LayoutParams gap = weight();
-        gap.leftMargin = Ui.dp(activity, 8);
-        row.addView(Ui.button(activity, "Undo", v -> undo()), gap);
-        card.addView(row, topMargin(0));
 
-        card.addView(Ui.button(activity, "Status", v -> status()), topMargin(8));
+        Button btnUnlock = Ui.accent(activity, "Unlock ADB", v -> confirmProvision());
+        btnUnlock.setMinHeight(Ui.dp(activity, 34));
+        btnUnlock.setMinimumHeight(Ui.dp(activity, 34));
+        btnUnlock.setTextSize(10.5f);
+        btnUnlock.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+
+        Button btnUndo = Ui.button(activity, "Undo", v -> undo());
+        btnUndo.setMinHeight(Ui.dp(activity, 34));
+        btnUndo.setMinimumHeight(Ui.dp(activity, 34));
+        btnUndo.setTextSize(10.5f);
+        btnUndo.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+
+        Button btnStatus = Ui.button(activity, "Status", v -> status());
+        btnStatus.setMinHeight(Ui.dp(activity, 34));
+        btnStatus.setMinimumHeight(Ui.dp(activity, 34));
+        btnStatus.setTextSize(10.5f);
+        btnStatus.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+
+        row.addView(btnUnlock, new LinearLayout.LayoutParams(0, Ui.dp(activity, 34), 1f));
+
+        LinearLayout.LayoutParams g1 = new LinearLayout.LayoutParams(0, Ui.dp(activity, 34), 1f);
+        g1.leftMargin = Ui.dp(activity, 6);
+        row.addView(btnUndo, g1);
+
+        LinearLayout.LayoutParams g2 = new LinearLayout.LayoutParams(0, Ui.dp(activity, 34), 1f);
+        g2.leftMargin = Ui.dp(activity, 6);
+        row.addView(btnStatus, g2);
+
+        card.addView(row);
 
         adbResult = Ui.text(activity, "", 11, Ui.DIM);
         adbResult.setTypeface(android.graphics.Typeface.MONOSPACE);

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ import dev.sola.core.Live;
 public final class TestingTab implements Tab, Bus.Listener {
 
     private static final String[] CATEGORIES = {
-            "ALL", "LIGHTS", "LOCKS", "AUDIO", "SWITCHES", "BMS", "MCU", "BUS"
+            "ALL", "BMS", "MCU", "BUS", "LOCKS", "LIGHTS", "AUDIO", "SWITCHES"
     };
 
     private final Activity activity;
@@ -52,21 +53,13 @@ public final class TestingTab implements Tab, Bus.Listener {
     private String selectedCategory = "ALL";
     private final List<TextView> categoryChips = new ArrayList<>();
 
-    // Switch & Sensor Live Indicators Card
-    private LinearLayout switchCard;
-    private TextView badgeSideStand;
-    private TextView badgeFrontBrake;
-    private TextView badgeRearBrake;
-    private TextView tvThrottleA;
-    private TextView tvThrottleB;
-    private TextView tvThrottleSpread;
-
     // Test Cards Registry
     private final List<TestItemView> testItemViews = new ArrayList<>();
 
     // Master Diagnostic Console Output (Bottom of tab)
     private TextView tvConsoleLog;
     private Button btnAutoTest;
+    private TextView tvHeroSafetyStatus;
     private boolean autoTestRunning = false;
     private boolean vehicleMoving = false;
 
@@ -105,35 +98,80 @@ public final class TestingTab implements Tab, Bus.Listener {
         safetyBanner.setLayoutParams(sbLp);
         body.addView(safetyBanner);
 
-        // 2. Hero Diagnostic Suite Header Card
-        LinearLayout heroCard = Ui.column(activity);
-        heroCard.setPadding(Ui.dp(activity, 16), Ui.dp(activity, 14), Ui.dp(activity, 16), Ui.dp(activity, 14));
-        heroCard.setBackground(Ui.round(activity, Ui.SURFACE, 16, 0));
+        // 2. Hero Diagnostic Suite Header Card (Axiom Style)
+        LinearLayout heroCard = Ui.card(activity);
 
-        LinearLayout heroTop = Ui.row(activity);
-        heroTop.setGravity(Gravity.CENTER_VERTICAL);
-        LinearLayout heroTitles = Ui.column(activity);
-        heroTitles.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        // Header Row: Hardware Icon + Title/Eyebrow + Auto Test Button on Right
+        LinearLayout topRow = Ui.row(activity);
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
 
-        TextView tvHeroTitle = Ui.text(activity, "ECU HARDWARE TESTING SUITE", 15, Ui.TEXT);
+        LinearLayout iconBox = Ui.column(activity);
+        iconBox.setGravity(Gravity.CENTER);
+        iconBox.setPadding(0, 0, 0, 0);
+        iconBox.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 11, 0));
+
+        ImageView hwIcon = new ImageView(activity);
+        hwIcon.setImageResource(R.drawable.ic_advanced_hardware);
+        hwIcon.setColorFilter(Ui.TEXT);
+        iconBox.addView(hwIcon, new LinearLayout.LayoutParams(Ui.dp(activity, 20), Ui.dp(activity, 20)));
+
+        LinearLayout.LayoutParams hip = new LinearLayout.LayoutParams(Ui.dp(activity, 36), Ui.dp(activity, 36));
+        hip.rightMargin = Ui.dp(activity, 12);
+        topRow.addView(iconBox, hip);
+
+        LinearLayout titleCol = Ui.column(activity);
+        TextView eyebrow = Ui.text(activity, "ECU ACTUATORS", 9.5f, Ui.MUTED);
+        eyebrow.setTypeface(Typeface.DEFAULT_BOLD);
+        eyebrow.setLetterSpacing(0.08f);
+
+        TextView tvHeroTitle = Ui.text(activity, "Actuator Suite", 18, Ui.TEXT);
         tvHeroTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tvHeroTitle.setLetterSpacing(0.04f);
-        heroTitles.addView(tvHeroTitle);
 
-        TextView tvHeroSub = Ui.text(activity, "Unified Diagnostic Services (ISO 14229) - Local VCAN0 Bus", 11.5f, Ui.MUTED);
+        TextView tvHeroSub = Ui.text(activity, "VCAN0 Bus (500 kbps)", 11.5f, Ui.MUTED);
         tvHeroSub.setPadding(0, Ui.dp(activity, 2), 0, 0);
-        heroTitles.addView(tvHeroSub);
-        heroTop.addView(heroTitles);
 
-        btnAutoTest = Ui.button(activity, "AUTO SELF-TEST", v -> runAutomatedSelfTest());
+        titleCol.addView(eyebrow);
+        titleCol.addView(tvHeroTitle);
+        titleCol.addView(tvHeroSub);
+        topRow.addView(titleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        btnAutoTest = Ui.button(activity, "AUTO TEST", v -> runAutomatedSelfTest());
         btnAutoTest.setTextSize(11);
-        btnAutoTest.setTextColor(Ui.PRIMARY);
-        btnAutoTest.setBackground(Ui.round(activity, Ui.alpha(Ui.PRIMARY, 0x22), 10, 0));
-        heroTop.addView(btnAutoTest);
-        heroCard.addView(heroTop);
+        btnAutoTest.setTypeface(Typeface.DEFAULT_BOLD);
+        btnAutoTest.setTextColor(Ui.ACCENT_TEXT);
+        btnAutoTest.setBackground(Ui.round(activity, Ui.PRIMARY, 12, 0));
+        btnAutoTest.setPadding(Ui.dp(activity, 14), Ui.dp(activity, 6), Ui.dp(activity, 14), Ui.dp(activity, 6));
+        btnAutoTest.setMinHeight(Ui.dp(activity, 34));
+        btnAutoTest.setMinimumHeight(Ui.dp(activity, 34));
+        topRow.addView(btnAutoTest);
+
+        heroCard.addView(topRow);
+
+        // Subtle Divider Line
+        View heroDiv = new View(activity);
+        heroDiv.setBackgroundColor(Ui.LINE);
+        LinearLayout.LayoutParams hdlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 1));
+        hdlp.setMargins(0, Ui.dp(activity, 12), 0, Ui.dp(activity, 12));
+        heroCard.addView(heroDiv, hdlp);
+
+        // 2 Evenly Sized Sub-Cards: Safety Interlock - CAN Bus
+        LinearLayout subCardRow = Ui.row(activity);
+
+        LinearLayout cardSafety = Ui.subCard(activity, "Safety", "READY", Ui.POSITIVE);
+        tvHeroSafetyStatus = (TextView) cardSafety.getChildAt(1);
+
+        LinearLayout cardBus = Ui.subCard(activity, "CAN Node", "VCAN0", Ui.TEXT);
+
+        subCardRow.addView(cardSafety);
+        View sp1 = new View(activity);
+        sp1.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(activity, 8), 1));
+        subCardRow.addView(sp1);
+        subCardRow.addView(cardBus);
+
+        heroCard.addView(subCardRow);
 
         LinearLayout.LayoutParams hcLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        hcLp.bottomMargin = Ui.dp(activity, 8);
+        hcLp.bottomMargin = Ui.dp(activity, 10);
         heroCard.setLayoutParams(hcLp);
         body.addView(heroCard);
 
@@ -141,11 +179,11 @@ public final class TestingTab implements Tab, Bus.Listener {
         HorizontalScrollView chipScroll = new HorizontalScrollView(activity);
         chipScroll.setHorizontalScrollBarEnabled(false);
         LinearLayout.LayoutParams csLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        csLp.bottomMargin = Ui.dp(activity, 8);
+        csLp.bottomMargin = Ui.dp(activity, 10);
         chipScroll.setLayoutParams(csLp);
 
         LinearLayout chipRow = Ui.row(activity);
-        chipRow.setPadding(Ui.dp(activity, 4), 0, Ui.dp(activity, 4), 0);
+        chipRow.setPadding(0, 0, 0, Ui.dp(activity, 2));
 
         for (String cat : CATEGORIES) {
             TextView chip = new TextView(activity);
@@ -153,13 +191,14 @@ public final class TestingTab implements Tab, Bus.Listener {
             chip.setTextSize(11);
             chip.setTypeface(Typeface.DEFAULT_BOLD);
             chip.setGravity(Gravity.CENTER);
-            chip.setPadding(Ui.dp(activity, 14), Ui.dp(activity, 6), Ui.dp(activity, 14), Ui.dp(activity, 6));
+            chip.setIncludeFontPadding(false);
+            chip.setPadding(Ui.dp(activity, 14), 0, Ui.dp(activity, 14), 0);
 
             boolean active = cat.equals(selectedCategory);
-            chip.setTextColor(active ? Color.BLACK : Ui.MUTED);
-            chip.setBackground(Ui.round(activity, active ? Ui.PRIMARY : Ui.SURFACE_HIGH, 14, 0));
+            chip.setTextColor(active ? Ui.ACCENT_TEXT : Ui.MUTED);
+            chip.setBackground(Ui.round(activity, active ? Ui.PRIMARY : Ui.SURFACE_HIGH, 12, 0));
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Ui.dp(activity, 32));
             lp.rightMargin = Ui.dp(activity, 8);
             chip.setLayoutParams(lp);
 
@@ -170,44 +209,13 @@ public final class TestingTab implements Tab, Bus.Listener {
         chipScroll.addView(chipRow);
         body.addView(chipScroll);
 
-        // 4. Live Switch & Sensor Status Card
-        switchCard = createSectionHeader("LIVE SENSOR & SWITCH STATUS", "Real-time state from VCU & Handlebar controllers");
-        LinearLayout.LayoutParams scLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        scLp.bottomMargin = Ui.dp(activity, 8);
-        switchCard.setLayoutParams(scLp);
-
-        LinearLayout switchGrid = Ui.column(activity);
-
-        LinearLayout row1 = Ui.row(activity);
-        badgeSideStand = createStatusPill(activity, "SIDE STAND: UNKNOWN", Ui.MUTED);
-        badgeFrontBrake = createStatusPill(activity, "FRONT BRK: OFF", Ui.MUTED);
-        badgeRearBrake = createStatusPill(activity, "REAR BRK: OFF", Ui.MUTED);
-        row1.addView(badgeSideStand, weightParam());
-        row1.addView(badgeFrontBrake, weightParam());
-        row1.addView(badgeRearBrake, weightParam());
-        switchGrid.addView(row1);
-
-        addSpace(switchGrid, 8);
-
-        LinearLayout row2 = Ui.row(activity);
-        tvThrottleA = createMetricCell(activity, "THROTTLE A", "- V");
-        tvThrottleB = createMetricCell(activity, "THROTTLE B", "- V");
-        tvThrottleSpread = createMetricCell(activity, "SPREAD (DELTA)", "- V");
-        row2.addView(tvThrottleA, weightParam());
-        row2.addView(tvThrottleB, weightParam());
-        row2.addView(tvThrottleSpread, weightParam());
-        switchGrid.addView(row2);
-
-        switchCard.addView(switchGrid);
-        body.addView(switchCard);
-
-        // 5. Test Actuation Items Registry Container
+        // 4. Test Actuation Items Registry Container
         LinearLayout testContainer = Ui.column(activity);
         registerAllTestItems(testContainer);
         body.addView(testContainer);
 
-        // 6. Live Diagnostic Execution Terminal Card (Master Log)
-        LinearLayout consoleCard = createSectionHeader("LIVE EXECUTION LOG & UDS MONITOR", "Real-time CAN frame response and error stream");
+        // 5. Live Diagnostic Execution Terminal Card (Master Log)
+        LinearLayout consoleCard = createSectionHeader(R.drawable.ic_terminal, "Live Execution Log & UDS Monitor", "Real-time CAN frame response and error stream");
         LinearLayout.LayoutParams ccLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         ccLp.topMargin = Ui.dp(activity, 4);
         consoleCard.setLayoutParams(ccLp);
@@ -248,41 +256,12 @@ public final class TestingTab implements Tab, Bus.Listener {
         ui.post(() -> {
             if (s == null) return;
 
-            // 1. Safety Interlock
+            // Safety Interlock
             vehicleMoving = !Double.isNaN(s.speedKph) && s.speedKph > 0.5;
             safetyBanner.setVisibility(vehicleMoving ? View.VISIBLE : View.GONE);
-
-            // 2. Side Stand
-            if (s.sideStandUp != -1) {
-                if (s.sideStandUp == 1) {
-                    badgeSideStand.setText("STAND: RETRACTED");
-                    badgeSideStand.setTextColor(Ui.POSITIVE);
-                    badgeSideStand.setBackground(Ui.round(activity, Ui.alpha(Ui.POSITIVE, 0x22), 8, 0));
-                } else {
-                    badgeSideStand.setText("STAND: DOWN");
-                    badgeSideStand.setTextColor(Ui.WARNING);
-                    badgeSideStand.setBackground(Ui.round(activity, Ui.alpha(Ui.WARNING, 0x22), 8, 0));
-                }
-            }
-
-            // 3. Brake Switches
-            boolean fbActive = s.frontBrake == 1;
-            badgeFrontBrake.setText(fbActive ? "FRONT BRK: ACTIVE" : "FRONT BRK: OFF");
-            badgeFrontBrake.setTextColor(fbActive ? Ui.POSITIVE : Ui.MUTED);
-            badgeFrontBrake.setBackground(Ui.round(activity, fbActive ? Ui.alpha(Ui.POSITIVE, 0x22) : Ui.SURFACE_HIGH, 8, 0));
-
-            boolean rbActive = s.rearBrake == 1;
-            badgeRearBrake.setText(rbActive ? "REAR BRK: ACTIVE" : "REAR BRK: OFF");
-            badgeRearBrake.setTextColor(rbActive ? Ui.POSITIVE : Ui.MUTED);
-            badgeRearBrake.setBackground(Ui.round(activity, rbActive ? Ui.alpha(Ui.POSITIVE, 0x22) : Ui.SURFACE_HIGH, 8, 0));
-
-            // 4. Throttle Voltage & Regen
-            if (!Double.isNaN(s.throttleV)) {
-                tvThrottleA.setText(String.format(Locale.US, "%.2f V", s.throttleV));
-                tvThrottleB.setText(s.throttleV > 0.8 ? "ENGAGED" : "IDLE");
-            }
-            if (!Double.isNaN(s.brakeRegen)) {
-                tvThrottleSpread.setText(String.format(Locale.US, "%.1f %%", s.brakeRegen));
+            if (tvHeroSafetyStatus != null) {
+                tvHeroSafetyStatus.setText(vehicleMoving ? "LOCKED" : "READY");
+                tvHeroSafetyStatus.setTextColor(vehicleMoving ? Ui.WARNING : Ui.POSITIVE);
             }
         });
     }
@@ -292,6 +271,74 @@ public final class TestingTab implements Tab, Bus.Listener {
     // -------------------------------------------------------------------------
 
     private void registerAllTestItems(LinearLayout container) {
+        // --- Category: BMS (Pack & Battery Electronics) ---
+        addTestItem(container, "BMS", "Active Cell Balancing Routine", "ROx05F8 (31 01 05 F8) - Initiates pack-wide cell voltage balancing", "BMS 0x78E", "START ROUTINE",
+                "cansend vcan0 78E#04310105F8000000",
+                "Instructs the Battery Management System (BMS) to begin cell balancing across all cell groups, bleeding excess charge through balancing resistors to equalize delta millivolts.",
+                "Target ECU: BMS (CAN 0x78E)\nService: 0x31 (RoutineControl) | RID: 0x05F8 (CellBalancing)\nFrame: [04 31 01 05 F8 00 00 00]\nMonitor balancing tags live in Diagnostics tab.");
+
+        addTestItem(container, "BMS", "BMS Pre-Charge FET Test", "IOxE70C (2F E7 0C 03) - Tests pre-charge resistor FET before main contactor", "BMS 0x78E", "TEST",
+                "cansend vcan0 78E#052FE70C03010000; sleep 1; cansend vcan0 78E#042FE70C00000000",
+                "Verifies the high-voltage pre-charge circuit that safely charges motor controller DC bus capacitors before the main battery contactor engages.",
+                "Target ECU: BMS (CAN 0x78E)\nService: 0x2F | DID: 0xE70C (PreChargeFET)\nRequest ON Frame: [05 2F E7 0C 03 01 00 00]\nRelease Frame: [04 2F E7 0C 00 00 00 00]");
+
+        addTestItem(container, "BMS", "BMS Gate Driver Enable", "IOxE709 (2F E7 09 03) - High-side / low-side MOSFET gate driver test", "BMS 0x78E", "TEST",
+                "cansend vcan0 78E#052FE70903010000; sleep 1; cansend vcan0 78E#042FE70900000000",
+                "Tests the high-side and low-side MOSFET gate driver logic on the BMS power stage.",
+                "Target ECU: BMS (CAN 0x78E)\nService: 0x2F | DID: 0xE709 (GateDriver)\nRequest ON Frame: [05 2F E7 09 03 01 00 00]\nRelease Frame: [04 2F E7 09 00 00 00 00]");
+
+        addTestItem(container, "BMS", "Analog Front End (AFE) Reset", "IOxE70D (2F E7 0D 03) - Software reset of cell monitoring AFE chip", "BMS 0x78E", "RESET",
+                "cansend vcan0 78E#052FE70D03010000; sleep 1; cansend vcan0 78E#042FE70D00000000",
+                "Performs a warm reset of the multichannel battery cell voltage and thermistor ADC monitoring chip (AFE) to clear communication locks.",
+                "Target ECU: BMS (CAN 0x78E)\nService: 0x2F | DID: 0xE70D (AFEReset)\nRequest ON Frame: [05 2F E7 0D 03 01 00 00]\nRelease Frame: [04 2F E7 0D 00 00 00 00]");
+
+        addTestItem(container, "BMS", "Auxiliary 12V Battery Charger", "IOx0423 (2F 04 23 03) - DC-DC auxiliary battery charging circuit", "VCU 0x786", "TEST",
+                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F042303010000; sleep 2; cansend vcan0 786#042F042300000000",
+                "Verifies the DC-DC buck converter circuit responsible for charging the 12V auxiliary battery from the main traction pack.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x0423 (Aux Battery Charger)\nRequest ON Frame: [05 2F 04 23 03 01 00 00]\nRelease Frame: [04 2F 04 23 00 00 00 00]");
+
+        // --- Category: MCU (Motor & Inverter) ---
+        addTestItem(container, "MCU", "Motor FOC Auto-Tune Start", "ROx06F1 (31 01 05 F1) - Calibrates motor resolver offset and inductance", "MCU 0x7A6", "START",
+                "cansend vcan0 7A6#04310105F1000000",
+                "Initiates resolver angle alignment and d/q-axis stator inductance mapping for Field-Oriented Control (FOC). Required after motor or inverter replacement.",
+                "Target ECU: MCU (CAN 0x7A6)\nService: 0x31 | RID: 0x05F1 (AutoTuneStart)\nPrerequisite: Scooter MUST be on center stand with rear wheel freely suspended.\nFrame: [04 31 01 05 F1 00 00 00]");
+
+        addTestItem(container, "MCU", "Motor FOC Auto-Tune Stop", "ROx06F1 (31 02 06 F1) - Force stops active motor auto-calibration", "MCU 0x7A6", "STOP",
+                "cansend vcan0 7A6#04310206F1000000",
+                "Forcefully halts the autotuning sequence and returns the motor controller to standard idle mode.",
+                "Target ECU: MCU (CAN 0x7A6)\nService: 0x31 | RID: 0x06F1 (AutoTuneStop)\nFrame: [04 31 02 06 F1 00 00 00]");
+
+        addTestItem(container, "MCU", "Motor Auto-Tune Counter Query", "ROx06F1 (31 03 06 F1) - Reads successful auto-tune calibration counter", "MCU 0x7A6", "QUERY",
+                "cansend vcan0 7A6#04310306F1000000",
+                "Queries the number of successful resolver calibrations recorded in motor controller flash memory.",
+                "Target ECU: MCU (CAN 0x7A6)\nService: 0x31 | RID: 0x06F1 (AutotuneResult)\nSubfunction: 0x03 (RequestRoutineResults)\nFrame: [04 31 03 06 F1 00 00 00]");
+
+        // --- Category: BUS (CAN, LIN & UART Transceivers) ---
+        addTestItem(container, "BUS", "Smart Module (SOM) UART Loopback", "ROxBF03/4 (31 01 BF 03) - VCU to SOM high-speed UART communication test", "VCU 0x786", "TEST",
+                "cansend vcan0 786#043101BF03000000",
+                "Transmits known byte patterns across the VCU-to-Android Smart Module serial bus to verify baud rate stability and frame parity.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF03 & 0xBF04\nFrame: [04 31 01 BF 03 00 00 00]");
+
+        addTestItem(container, "BUS", "Handlebar Controller (HBC) LIN Bus", "ROxBF05 (31 01 BF 05) - Tests LIN physical layer to handlebar switches", "VCU 0x786", "TEST",
+                "cansend vcan0 786#043101BF05000000",
+                "Performs communication loopback across the LIN transceiver to the handlebar switch pods.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF05 (HBC_LIN_Communication)\nFrame: [04 31 01 BF 05 00 00 00]");
+
+        addTestItem(container, "BUS", "Head Unit (HU) CAN Bus Check", "ROxBF06 (31 01 BF 06) - Validates display cluster CAN bus communication", "VCU 0x786", "TEST",
+                "cansend vcan0 786#043101BF06000000",
+                "Tests CAN transceiver frame reception between the Vehicle Control Unit and the Head Unit display cluster.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF06 (HU_CAN_Communication)\nFrame: [04 31 01 BF 06 00 00 00]");
+
+        addTestItem(container, "BUS", "Smart Module (SOM) Self-Check", "ROxBF02 (31 01 BF 02) - Internal self-diagnostic check on Android SOM", "VCU 0x786", "RUN CHECK",
+                "cansend vcan0 786#043101BF02000000",
+                "Executes internal diagnostics on the Smart Module covering kernel watchdog, storage read/write integrity, and thermal zones.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF02 (Perform_Selfcheck_on_SOM)\nFrame: [04 31 01 BF 02 00 00 00]");
+
+        addTestItem(container, "BUS", "MCU Peripherals Loopback", "ROxBF01 (31 01 BF 01) - Validates inverter and controller hardware interfaces", "VCU 0x786", "RUN CHECK",
+                "cansend vcan0 786#043101BF01000000",
+                "Validates inverter hardware communication, phase current transducers, gate driver fault lines, and thermistors.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF01 (Check_MCU_peripherals)\nFrame: [04 31 01 BF 01 00 00 00]");
+
         // --- Category: LOCKS ---
         addTestItem(container, "LOCKS", "Trunk / Boot Latch Release", "IOx0402 (2F 04 02 03) - Triggers under-seat electric release latch", "VCU 0x786", "ACTUATE",
                 "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F040203010000; sleep 1; cansend vcan0 786#042F040200000000",
@@ -312,22 +359,6 @@ public final class TestingTab implements Tab, Bus.Listener {
                 "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F040103010000; sleep 1; cansend vcan0 786#042F040100000000",
                 "Energizes the 12V anti-theft alarm siren circuit for 1 second to verify driver transistor functionality and wiring harness continuity.",
                 "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x0401 (Alarm 12V supply control)\nRequest ON Frame: [05 2F 04 01 03 01 00 00]\nRelease Frame: [04 2F 04 01 00 00 00 00]");
-
-        // --- Category: AUDIO ---
-        addTestItem(container, "AUDIO", "Vehicle Horn Test", "IOx0410 (2F 04 10 03) - Sends momentary pulse to 12V horn relay", "VCU 0x786", "PULSE 300ms",
-                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F041003010000; sleep 0.3; cansend vcan0 786#042F041000000000",
-                "Issues a short 300ms 12V pulse to the vehicle electromagnetic horn to test audible alerting without holding the physical handlebar button.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x0410 (Horn 12V supply control)\nRequest ON Frame: [05 2F 04 10 03 01 00 00]\nRelease Frame: [04 2F 04 10 00 00 00 00]");
-
-        addTestItem(container, "AUDIO", "Speaker Amplifier Supply", "IOx03FF (2F 03 FF 03) - Powers internal head unit audio amplifier rail", "VCU 0x786", "ENABLE 2s",
-                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F03FF03010000; sleep 2; cansend vcan0 786#042F03FF00000000",
-                "Switches on the power supply rail for the Head Unit (HU) / SOM stereo speaker amplifier to verify sound output circuitry.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x03FF (Speaker Supply Enable)\nRequest ON Frame: [05 2F 03 FF 03 01 00 00]\nRelease Frame: [04 2F 03 FF 00 00 00 00]");
-
-        addTestItem(container, "AUDIO", "Find My Scooter Locator Pattern", "Triggers synchronized horn chime and hazard flasher locator pulse", "VCU 0x786", "TRIGGER",
-                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F041003010000; cansend vcan0 786#052F040503010000; sleep 0.4; cansend vcan0 786#042F041000000000; sleep 0.6; cansend vcan0 786#042F040500000000",
-                "Simulates the companion app locate function by coordinating a momentary horn chirp with simultaneous front and rear hazard light flashes.",
-                "Target ECU: VCU (CAN 0x786)\nCombines Horn (0x0410) and Front DRL (0x0405) actuations with session control.");
 
         // --- Category: LIGHTS ---
         addTestItem(container, "LIGHTS", "Front Light Low Beam", "IOx0406 (2F 04 06 03) - Front low beam LED 12V control circuit", "VCU 0x786", "PULSE 3s",
@@ -370,6 +401,22 @@ public final class TestingTab implements Tab, Bus.Listener {
                 "Illuminates the luggage compartment interior LED lamp to confirm driver circuit and bulb health.",
                 "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x040C (Boot Light 12V supply control)\nRequest ON Frame: [05 2F 04 0C 03 01 00 00]\nRelease Frame: [04 2F 04 0C 00 00 00 00]");
 
+        // --- Category: AUDIO ---
+        addTestItem(container, "AUDIO", "Vehicle Horn Test", "IOx0410 (2F 04 10 03) - Sends momentary pulse to 12V horn relay", "VCU 0x786", "PULSE 300ms",
+                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F041003010000; sleep 0.3; cansend vcan0 786#042F041000000000",
+                "Issues a short 300ms 12V pulse to the vehicle electromagnetic horn to test audible alerting without holding the physical handlebar button.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x0410 (Horn 12V supply control)\nRequest ON Frame: [05 2F 04 10 03 01 00 00]\nRelease Frame: [04 2F 04 10 00 00 00 00]");
+
+        addTestItem(container, "AUDIO", "Speaker Amplifier Supply", "IOx03FF (2F 03 FF 03) - Powers internal head unit audio amplifier rail", "VCU 0x786", "ENABLE 2s",
+                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F03FF03010000; sleep 2; cansend vcan0 786#042F03FF00000000",
+                "Switches on the power supply rail for the Head Unit (HU) / SOM stereo speaker amplifier to verify sound output circuitry.",
+                "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x03FF (Speaker Supply Enable)\nRequest ON Frame: [05 2F 03 FF 03 01 00 00]\nRelease Frame: [04 2F 03 FF 00 00 00 00]");
+
+        addTestItem(container, "AUDIO", "Find My Scooter Locator Pattern", "Triggers synchronized horn chime and hazard flasher locator pulse", "VCU 0x786", "TRIGGER",
+                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F041003010000; cansend vcan0 786#052F040503010000; sleep 0.4; cansend vcan0 786#042F041000000000; sleep 0.6; cansend vcan0 786#042F040500000000",
+                "Simulates the companion app locate function by coordinating a momentary horn chirp with simultaneous front and rear hazard light flashes.",
+                "Target ECU: VCU (CAN 0x786)\nCombines Horn (0x0410) and Front DRL (0x0405) actuations with session control.");
+
         // --- Category: SWITCHES ---
         addTestItem(container, "SWITCHES", "Side Stand Switch Supply", "IOx03F7 (2F 03 F7 03) - Verifies 5V/12V sensor excitation supply rail", "VCU 0x786", "CHECK",
                 "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F03F703010000; sleep 1; cansend vcan0 786#042F03F700000000",
@@ -390,79 +437,6 @@ public final class TestingTab implements Tab, Bus.Listener {
                 "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F03FA03010000; sleep 1; cansend vcan0 786#042F03FA00000000",
                 "Tests excitation voltage across the front and rear brake caliper wear sensor loops to detect worn pads or severed sensor wires.",
                 "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x03FA (Right Brake pad wear) & 0x03FB (Left Brake pad wear)\nRequest ON Frame: [05 2F 03 FA 03 01 00 00]");
-
-        // --- Category: BMS ---
-        addTestItem(container, "BMS", "Active Cell Balancing Routine", "ROx05F8 (31 01 05 F8) - Initiates pack-wide cell voltage balancing", "BMS 0x78E", "START ROUTINE",
-                "cansend vcan0 78E#04310105F8000000",
-                "Instructs the Battery Management System (BMS) to begin cell balancing across all cell groups, bleeding excess charge through balancing resistors to equalize delta millivolts.",
-                "Target ECU: BMS (CAN 0x78E)\nService: 0x31 (RoutineControl) | RID: 0x05F8 (CellBalancing)\nFrame: [04 31 01 05 F8 00 00 00]\nMonitor balancing tags live in Diagnostics tab.");
-
-        addTestItem(container, "BMS", "BMS Pre-Charge FET Test", "IOxE70C (2F E7 0C 03) - Tests pre-charge resistor FET before main contactor", "BMS 0x78E", "TEST",
-                "cansend vcan0 78E#052FE70C03010000; sleep 1; cansend vcan0 78E#042FE70C00000000",
-                "Verifies the high-voltage pre-charge circuit that safely charges motor controller DC bus capacitors before the main battery contactor engages.",
-                "Target ECU: BMS (CAN 0x78E)\nService: 0x2F | DID: 0xE70C (PreChargeFET)\nRequest ON Frame: [05 2F E7 0C 03 01 00 00]\nRelease Frame: [04 2F E7 0C 00 00 00 00]");
-
-        addTestItem(container, "BMS", "BMS Gate Driver Enable", "IOxE709 (2F E7 09 03) - High-side / low-side MOSFET gate driver test", "BMS 0x78E", "TEST",
-                "cansend vcan0 78E#052FE70903010000; sleep 1; cansend vcan0 78E#042FE70900000000",
-                "Tests the high-side and low-side MOSFET gate driver logic on the BMS power stage.",
-                "Target ECU: BMS (CAN 0x78E)\nService: 0x2F | DID: 0xE709 (GateDriver)\nRequest ON Frame: [05 2F E7 09 03 01 00 00]\nRelease Frame: [04 2F E7 09 00 00 00 00]");
-
-        addTestItem(container, "BMS", "Analog Front End (AFE) Reset", "IOxE70D (2F E7 0D 03) - Software reset of cell monitoring AFE chip", "BMS 0x78E", "RESET",
-                "cansend vcan0 78E#052FE70D03010000; sleep 1; cansend vcan0 78E#042FE70D00000000",
-                "Performs a warm reset of the multichannel battery cell voltage and thermistor ADC monitoring chip (AFE) to clear communication locks.",
-                "Target ECU: BMS (CAN 0x78E)\nService: 0x2F | DID: 0xE70D (AFEReset)\nRequest ON Frame: [05 2F E7 0D 03 01 00 00]\nRelease Frame: [04 2F E7 0D 00 00 00 00]");
-
-        addTestItem(container, "BMS", "BMS Overload Fault Clear", "IOxE70E (2F E7 0E 03) - Clears hardware latched overcurrent/overload flag", "BMS 0x78E", "CLEAR",
-                "cansend vcan0 78E#052FE70E03010000; sleep 1; cansend vcan0 78E#042FE70E00000000",
-                "Clears latched hardware overcurrent, short circuit, and overload protection status bits from BMS non-volatile registers.",
-                "Target ECU: BMS (CAN 0x78E)\nService: 0x2F | DID: 0xE70E (OverloadClear)\nRequest ON Frame: [05 2F E7 0E 03 01 00 00]\nRelease Frame: [04 2F E7 0E 00 00 00 00]");
-
-        addTestItem(container, "BMS", "Auxiliary 12V Battery Charger", "IOx0423 (2F 04 23 03) - DC-DC auxiliary battery charging circuit", "VCU 0x786", "TEST",
-                "cansend vcan0 786#0210030000000000; cansend vcan0 786#052F042303010000; sleep 2; cansend vcan0 786#042F042300000000",
-                "Verifies the DC-DC buck converter circuit responsible for charging the 12V auxiliary battery from the main traction pack.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x2F | DID: 0x0423 (Aux Battery Charger)\nRequest ON Frame: [05 2F 04 23 03 01 00 00]\nRelease Frame: [04 2F 04 23 00 00 00 00]");
-
-        // --- Category: MCU ---
-        addTestItem(container, "MCU", "Motor FOC Auto-Tune Start", "ROx06F1 (31 01 05 F1) - Calibrates motor resolver offset and inductance", "MCU 0x7A6", "START",
-                "cansend vcan0 7A6#04310105F1000000",
-                "Initiates resolver angle alignment and d/q-axis stator inductance mapping for Field-Oriented Control (FOC). Required after motor or inverter replacement.",
-                "Target ECU: MCU (CAN 0x7A6)\nService: 0x31 | RID: 0x05F1 (AutoTuneStart)\nPrerequisite: Scooter MUST be on center stand with rear wheel freely suspended.\nFrame: [04 31 01 05 F1 00 00 00]");
-
-        addTestItem(container, "MCU", "Motor FOC Auto-Tune Stop", "ROx06F1 (31 02 06 F1) - Force stops active motor auto-calibration", "MCU 0x7A6", "STOP",
-                "cansend vcan0 7A6#04310206F1000000",
-                "Forcefully halts the autotuning sequence and returns the motor controller to standard idle mode.",
-                "Target ECU: MCU (CAN 0x7A6)\nService: 0x31 | RID: 0x06F1 (AutoTuneStop)\nFrame: [04 31 02 06 F1 00 00 00]");
-
-        addTestItem(container, "MCU", "Motor Auto-Tune Counter Query", "ROx06F1 (31 03 06 F1) - Reads successful auto-tune calibration counter", "MCU 0x7A6", "QUERY",
-                "cansend vcan0 7A6#04310306F1000000",
-                "Queries the number of successful resolver calibrations recorded in motor controller flash memory.",
-                "Target ECU: MCU (CAN 0x7A6)\nService: 0x31 | RID: 0x06F1 (AutotuneResult)\nSubfunction: 0x03 (RequestRoutineResults)\nFrame: [04 31 03 06 F1 00 00 00]");
-
-        // --- Category: BUS ---
-        addTestItem(container, "BUS", "Smart Module (SOM) UART Loopback", "ROxBF03/4 (31 01 BF 03) - VCU to SOM high-speed UART communication test", "VCU 0x786", "TEST",
-                "cansend vcan0 786#043101BF03000000",
-                "Transmits known byte patterns across the VCU-to-Android Smart Module serial bus to verify baud rate stability and frame parity.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF03 & 0xBF04\nFrame: [04 31 01 BF 03 00 00 00]");
-
-        addTestItem(container, "BUS", "Handlebar Controller (HBC) LIN Bus", "ROxBF05 (31 01 BF 05) - Tests LIN physical layer to handlebar switches", "VCU 0x786", "TEST",
-                "cansend vcan0 786#043101BF05000000",
-                "Performs communication loopback across the LIN transceiver to the handlebar switch pods.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF05 (HBC_LIN_Communication)\nFrame: [04 31 01 BF 05 00 00 00]");
-
-        addTestItem(container, "BUS", "Head Unit (HU) CAN Bus Check", "ROxBF06 (31 01 BF 06) - Validates display cluster CAN bus communication", "VCU 0x786", "TEST",
-                "cansend vcan0 786#043101BF06000000",
-                "Tests CAN transceiver frame reception between the Vehicle Control Unit and the Head Unit display cluster.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF06 (HU_CAN_Communication)\nFrame: [04 31 01 BF 06 00 00 00]");
-
-        addTestItem(container, "BUS", "Smart Module (SOM) Self-Check", "ROxBF02 (31 01 BF 02) - Internal self-diagnostic check on Android SOM", "VCU 0x786", "RUN CHECK",
-                "cansend vcan0 786#043101BF02000000",
-                "Executes internal diagnostics on the Smart Module covering kernel watchdog, storage read/write integrity, and thermal zones.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF02 (Perform_Selfcheck_on_SOM)\nFrame: [04 31 01 BF 02 00 00 00]");
-
-        addTestItem(container, "BUS", "MCU Peripherals Loopback", "ROxBF01 (31 01 BF 01) - Validates inverter and controller hardware interfaces", "VCU 0x786", "RUN CHECK",
-                "cansend vcan0 786#043101BF01000000",
-                "Validates inverter hardware communication, phase current transducers, gate driver fault lines, and thermistors.",
-                "Target ECU: VCU (CAN 0x786)\nService: 0x31 | RID: 0xBF01 (Check_MCU_peripherals)\nFrame: [04 31 01 BF 01 00 00 00]");
     }
 
     private void addTestItem(LinearLayout parent, String category, String title, String subtitle,
@@ -484,34 +458,50 @@ public final class TestingTab implements Tab, Bus.Listener {
         LinearLayout textCol = Ui.column(activity);
         textCol.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
-        LinearLayout titleRow = Ui.row(activity);
-        titleRow.setGravity(Gravity.CENTER_VERTICAL);
-        TextView tvTitle = Ui.text(activity, title, 13.5f, Ui.TEXT);
-        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tvTitle.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        titleRow.addView(tvTitle);
+        LinearLayout eyebrowRow = Ui.row(activity);
+        eyebrowRow.setGravity(Gravity.CENTER_VERTICAL);
 
-        TextView ecuPill = Ui.text(activity, ecu, 9.5f, Ui.PRIMARY);
+        TextView ecuPill = Ui.text(activity, ecu, 9f, Ui.PRIMARY);
         ecuPill.setTypeface(Typeface.DEFAULT_BOLD);
         ecuPill.setSingleLine(true);
-        ecuPill.setBackground(Ui.round(activity, Ui.alpha(Ui.PRIMARY, 0x22), 6, 0));
+        ecuPill.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 6, 0));
         ecuPill.setPadding(Ui.dp(activity, 6), Ui.dp(activity, 2), Ui.dp(activity, 6), Ui.dp(activity, 2));
-        LinearLayout.LayoutParams ep = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        ep.leftMargin = Ui.dp(activity, 8);
-        titleRow.addView(ecuPill, ep);
-        textCol.addView(titleRow);
+        eyebrowRow.addView(ecuPill);
 
-        TextView tvSub = Ui.text(activity, subtitle, 11, Ui.MUTED);
+        TextView catTag = Ui.text(activity, category, 9f, Ui.MUTED);
+        catTag.setTypeface(Typeface.DEFAULT_BOLD);
+        catTag.setLetterSpacing(0.06f);
+        catTag.setPadding(Ui.dp(activity, 6), 0, 0, 0);
+        eyebrowRow.addView(catTag);
+
+        textCol.addView(eyebrowRow);
+
+        TextView tvTitle = Ui.text(activity, title, 14f, Ui.TEXT);
+        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvTitle.setPadding(0, Ui.dp(activity, 2), 0, 0);
+        textCol.addView(tvTitle);
+
+        TextView tvSub = Ui.text(activity, subtitle, 11f, Ui.MUTED);
+        tvSub.setSingleLine(true);
+        tvSub.setEllipsize(android.text.TextUtils.TruncateAt.END);
         tvSub.setPadding(0, Ui.dp(activity, 2), 0, 0);
         textCol.addView(tvSub);
 
         topRow.addView(textCol);
 
-        TextView badgeStatus = createStatusPill(activity, "IDLE", Ui.DIM);
-        badgeStatus.setSingleLine(true);
-        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        bp.leftMargin = Ui.dp(activity, 8);
-        topRow.addView(badgeStatus, bp);
+        // Compact Inline Action Button inside topRow
+        Button btnAction = new Button(activity);
+        btnAction.setText(actionText);
+        btnAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10.5f);
+        btnAction.setTypeface(Typeface.DEFAULT_BOLD);
+        btnAction.setTextColor(Ui.ACCENT_TEXT);
+        btnAction.setBackground(Ui.round(activity, Ui.PRIMARY, 10, 0));
+        btnAction.setPadding(Ui.dp(activity, 12), 0, Ui.dp(activity, 12), 0);
+        btnAction.setMinHeight(Ui.dp(activity, 32));
+        btnAction.setMinimumHeight(Ui.dp(activity, 32));
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Ui.dp(activity, 32));
+        btnLp.leftMargin = Ui.dp(activity, 8);
+        topRow.addView(btnAction, btnLp);
 
         ImageView chevron = new ImageView(activity);
         chevron.setImageResource(R.drawable.ic_expand_more);
@@ -522,66 +512,49 @@ public final class TestingTab implements Tab, Bus.Listener {
 
         card.addView(topRow);
 
-        // Action Trigger Button
-        Button btnAction = Ui.button(activity, actionText, null);
-        btnAction.setMinHeight(Ui.dp(activity, 36));
-        btnAction.setMinimumHeight(Ui.dp(activity, 36));
-        btnAction.setTextSize(11.5f);
-        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 36));
-        btnLp.topMargin = Ui.dp(activity, 8);
-        btnAction.setLayoutParams(btnLp);
-        card.addView(btnAction);
+        TextView badgeStatus = createStatusPill(activity, "IDLE", Ui.DIM);
+        badgeStatus.setSingleLine(true);
 
-        // Expandable Details Container (Hidden by default)
+        // Expandable Details Container (Clean, concise, zero clutter)
         LinearLayout detailsContainer = Ui.column(activity);
         detailsContainer.setVisibility(View.GONE);
-        detailsContainer.setPadding(0, Ui.dp(activity, 10), 0, 0);
+        detailsContainer.setPadding(0, Ui.dp(activity, 8), 0, 0);
 
         View div = Ui.divider(activity);
         detailsContainer.addView(div);
 
-        // 1. What This Test Does
-        TextView hExp = Ui.heading(activity, "What This Test Does");
-        hExp.setPadding(0, Ui.dp(activity, 8), 0, Ui.dp(activity, 2));
-        detailsContainer.addView(hExp);
-
-        TextView tvExp = Ui.text(activity, explanation, 11.5f, Ui.TEXT);
+        TextView tvExp = Ui.text(activity, explanation, 12, Ui.TEXT);
         tvExp.setLineSpacing(0, 1.25f);
+        tvExp.setPadding(0, Ui.dp(activity, 8), 0, Ui.dp(activity, 6));
         detailsContainer.addView(tvExp);
 
-        // 2. Safety & Preconditions
-        TextView hSafety = Ui.heading(activity, "Preconditions & Safety");
-        hSafety.setPadding(0, Ui.dp(activity, 10), 0, Ui.dp(activity, 2));
-        detailsContainer.addView(hSafety);
+        // Technical Spec Box (Compact, monospace, dark surface)
+        LinearLayout specBox = Ui.column(activity);
+        specBox.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 8, 0));
+        specBox.setPadding(Ui.dp(activity, 10), Ui.dp(activity, 8), Ui.dp(activity, 10), Ui.dp(activity, 8));
 
-        TextView tvPre = Ui.text(activity, "Scooter must remain stationary (Speed < 0.5 km/h).\nActuations auto-abort if vehicle motion is detected.", 11, Ui.WARNING);
-        tvPre.setTypeface(Typeface.DEFAULT_BOLD);
-        detailsContainer.addView(tvPre);
+        TextView tvEcuBadge = Ui.text(activity, "CAN COMMAND SEQUENCE (" + ecu + ")", 9, Ui.MUTED);
+        tvEcuBadge.setTypeface(Typeface.DEFAULT_BOLD);
+        tvEcuBadge.setLetterSpacing(0.06f);
+        specBox.addView(tvEcuBadge);
 
-        // 3. Technical Protocol Specification
-        TextView hProto = Ui.heading(activity, "Technical & CAN Protocol Specification");
-        hProto.setPadding(0, Ui.dp(activity, 10), 0, Ui.dp(activity, 2));
-        detailsContainer.addView(hProto);
+        TextView tvCanRef = Ui.text(activity, canCommand, 10f, Ui.PRIMARY);
+        tvCanRef.setTypeface(Typeface.MONOSPACE);
+        tvCanRef.setPadding(0, Ui.dp(activity, 3), 0, 0);
+        specBox.addView(tvCanRef);
 
-        TextView tvProto = Ui.text(activity, protocolDetails, 10.5f, Ui.PRIMARY);
-        tvProto.setTypeface(Typeface.MONOSPACE);
-        tvProto.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 8, 0));
-        tvProto.setPadding(Ui.dp(activity, 10), Ui.dp(activity, 8), Ui.dp(activity, 10), Ui.dp(activity, 8));
-        detailsContainer.addView(tvProto);
-
-        // 4. Live Test Execution Terminal Output (Inside the card)
-        TextView hConsole = Ui.heading(activity, "Live Test Execution Output");
-        hConsole.setPadding(0, Ui.dp(activity, 10), 0, Ui.dp(activity, 2));
-        detailsContainer.addView(hConsole);
+        detailsContainer.addView(specBox);
 
         TextView tvInlineConsole = new TextView(activity);
-        tvInlineConsole.setText("Ready. Tap [" + actionText + "] above to execute this test on the vehicle bus.");
+        tvInlineConsole.setVisibility(View.GONE);
         tvInlineConsole.setTextSize(10.5f);
-        tvInlineConsole.setTextColor(Ui.MUTED);
         tvInlineConsole.setTypeface(Typeface.MONOSPACE);
+        tvInlineConsole.setTextColor(Ui.TEXT);
         tvInlineConsole.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 8, 0));
-        tvInlineConsole.setPadding(Ui.dp(activity, 10), Ui.dp(activity, 8), Ui.dp(activity, 10), Ui.dp(activity, 8));
-        tvInlineConsole.setMinLines(3);
+        tvInlineConsole.setPadding(Ui.dp(activity, 10), Ui.dp(activity, 6), Ui.dp(activity, 10), Ui.dp(activity, 6));
+        LinearLayout.LayoutParams icLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        icLp.topMargin = Ui.dp(activity, 6);
+        tvInlineConsole.setLayoutParams(icLp);
         detailsContainer.addView(tvInlineConsole);
 
         card.addView(detailsContainer);
@@ -627,15 +600,10 @@ public final class TestingTab implements Tab, Bus.Listener {
         for (int i = 0; i < CATEGORIES.length; i++) {
             boolean active = CATEGORIES[i].equals(category);
             TextView chip = categoryChips.get(i);
-            chip.setTextColor(active ? Color.BLACK : Ui.MUTED);
-            chip.setBackground(Ui.round(activity, active ? Ui.PRIMARY : Ui.SURFACE_HIGH, 14, 0));
+            chip.setTextColor(active ? Ui.ACCENT_TEXT : Ui.MUTED);
+            chip.setBackground(Ui.round(activity, active ? Ui.PRIMARY : Ui.SURFACE_HIGH, 12, 0));
         }
 
-        // Toggle Switch & Sensor card
-        boolean showSwitches = category.equals("ALL") || category.equals("SWITCHES");
-        if (switchCard != null) {
-            switchCard.setVisibility(showSwitches ? View.VISIBLE : View.GONE);
-        }
 
         // Toggle each test item cleanly without leaving gaps
         for (TestItemView t : testItemViews) {
@@ -705,6 +673,7 @@ public final class TestingTab implements Tab, Bus.Listener {
     }
 
     private void logInline(TestItemView item, String message) {
+        item.tvInlineConsole.setVisibility(View.VISIBLE);
         String ts = timeFmt.format(new Date());
         String current = item.tvInlineConsole.getText().toString();
         String entry = "[" + ts + "] " + message;
@@ -809,19 +778,39 @@ public final class TestingTab implements Tab, Bus.Listener {
     // UI Helpers
     // -------------------------------------------------------------------------
 
-    private LinearLayout createSectionHeader(String title, String subtitle) {
+    private LinearLayout createSectionHeader(int iconResId, String title, String subtitle) {
         LinearLayout card = Ui.column(activity);
         card.setPadding(Ui.dp(activity, 14), Ui.dp(activity, 12), Ui.dp(activity, 14), Ui.dp(activity, 12));
         card.setBackground(Ui.round(activity, Ui.SURFACE, 16, 0));
 
-        TextView tvTitle = Ui.text(activity, title, 11, Ui.MUTED);
-        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tvTitle.setLetterSpacing(0.08f);
-        card.addView(tvTitle);
+        LinearLayout headerRow = Ui.row(activity);
+        headerRow.setGravity(Gravity.CENTER_VERTICAL);
+        headerRow.setPadding(0, 0, 0, Ui.dp(activity, 10));
 
-        TextView tvSub = Ui.text(activity, subtitle, 11.5f, Ui.DIM);
-        tvSub.setPadding(0, 0, 0, Ui.dp(activity, 10));
-        card.addView(tvSub);
+        if (iconResId != 0) {
+            LinearLayout iconBox = Ui.column(activity);
+            iconBox.setGravity(Gravity.CENTER);
+            iconBox.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 11, 0));
+            ImageView icon = new ImageView(activity);
+            icon.setImageResource(iconResId);
+            icon.setColorFilter(Ui.TEXT);
+            iconBox.addView(icon, new LinearLayout.LayoutParams(Ui.dp(activity, 20), Ui.dp(activity, 20)));
+
+            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(Ui.dp(activity, 36), Ui.dp(activity, 36));
+            ip.rightMargin = Ui.dp(activity, 12);
+            headerRow.addView(iconBox, ip);
+        }
+
+        LinearLayout titleCol = Ui.column(activity);
+        TextView tvTitle = Ui.text(activity, title, 15, Ui.TEXT);
+        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        TextView tvSub = Ui.text(activity, subtitle, 11, Ui.MUTED);
+        tvSub.setPadding(0, Ui.dp(activity, 2), 0, 0);
+        titleCol.addView(tvTitle);
+        titleCol.addView(tvSub);
+
+        headerRow.addView(titleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        card.addView(headerRow);
 
         return card;
     }

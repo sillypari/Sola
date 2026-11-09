@@ -1,2056 +1,2200 @@
-﻿{
-    "BMS": [
-        {
-            "Parameter Name": "Cell voltage minimum",
-            "DBC Name": "BMS0_Cell_Min_Voltage",
-            "Source": "CAN",
-            "CAN ID (Hex)": "170",
-            "CAN ID (Dec)": "368",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "Cell voltage maximum",
-            "DBC Name": "BMS0_Cell_Max_Voltage",
-            "Source": "CAN",
-            "CAN ID (Hex)": "170",
-            "CAN ID (Dec)": "368",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "Battery pack effective temperature (Tbatt)",
-            "DBC Name": "Effective_Battery_Temperature_00",
-            "Source": "CAN",
-            "CAN ID (Hex)": "160",
-            "CAN ID (Dec)": "352",
-            "Resolution": "0.1",
-            "offset": "-50",
-            "Physical Minimum": "-50",
-            "Physical Maximum": "78",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Cell Voltage deviation (CV dv)",
-            "Source": "UDS",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65535",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "BMS DC-DC Output voltage",
-            "DBC Name": "DCDC_Output_Voltage",
-            "Source": "CAN",
-            "CAN ID (Hex)": "153",
-            "CAN ID (Dec)": "339",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65535",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "Pack voltage",
-            "DBC Name": "BMS00_Battery_Pack_Voltage_Measured",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A8",
-            "CAN ID (Dec)": "424",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65535",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "Bus voltage",
-            "DBC Name": "Bus_Voltage_00",
-            "Source": "CAN",
-            "CAN ID (Hex)": "150",
-            "CAN ID (Dec)": "336",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65535",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "BMS digital output status ",
-            "Source": "UDS",
-            "Conversion": "     Digital Output                                        Corresponding Bits\n          DO_PA00_9V_DC_DC_DISABLE                =             0,\n        DO_PA13_12V_ENA                                     =             1,\n        DO_PB02_PRE_CHRGE_ENA                =             2,\n        DO_PC16_5V_PER_ENA                        =             3,\n        DO_PD04_3V3_MEASURE_ENA                =             4,\n        DO_PD05_DISCHG_ENA                        =             5,\n        DO_PD06_CHARGE_ENA                        =             6,\n        DO_PD07_GATE_DRIVER_ENA                =             7,\n        DO_PE05_BMS_STATUS                        =             8,\n        DO_PE07_OVERCURR_CLR                =             9,\n        DO_PE10_AFE_RESET                                =             10,"
-        },
-        {
-            "Parameter Name": "BMS digital inputs status (9V Supply status, AFE fault, Overcurrent, IMU interrupt1, IMU interrupt2, SoC input button, Plug sense)",
-            "Source": "UDS",
-            "CAN ID (Hex)": "6DA",
-            "CAN ID (Dec)": "1754",
-            "Conversion": "              Digital Input              Corresponding Bits\n                  \n        DI_PA01_PLUG_SENSE                     =              0,\n        DI_PC02_RTC_CLOCK_IN                  =              1,\n        DI_PC03_RTC_INT                              =              2,\n        DI_PC08_DISCHRG_OVERCURR      =              3,\n        DI_PC09_CHARGE_OVERCURR       =              4,\n        DI_PD02_12V_DC_DC_STATUS        =              5,\n        DI_PD03_9V_DC_DC_STATUS          =              6,\n        DI_PE06_SBC_LIMP                           =              7,\n        DI_PE11_AFE_FAULT                         =              8,"
-        },
-        {
-            "Parameter Name": "Battery current",
-            "DBC Name": "Battery_Current_00",
-            "Source": "CAN",
-            "CAN ID (Hex)": "140",
-            "CAN ID (Dec)": "320",
-            "Resolution": "0.01",
-            "offset": "-300",
-            "Physical Minimum": "-300",
-            "Physical Maximum": "355",
-            "Unit": "A"
-        },
-        {
-            "Parameter Name": "VCU BMS Authentication status",
-            "Source": "UDS",
-            "Conversion": "\n0x00: FAILED\n0x01: PASSED"
-        },
-        {
-            "Parameter Name": "Cycle number",
-            "DBC Name": "Cycle_Number",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6D8",
-            "CAN ID (Dec)": "1752",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "COUNT"
-        },
-        {
-            "Parameter Name": "TTC",
-            "DBC Name": "Time_to_Full_chargeSC_00",
-            "Source": "CAN",
-            "CAN ID (Hex)": "190",
-            "CAN ID (Dec)": "400",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "600",
-            "Unit": "Min"
-        },
-        {
-            "Parameter Name": "Drive current limit",
-            "Source": "UDS",
-            "Resolution": "0.01",
-            "offset": "-400",
-            "Physical Minimum": "-400",
-            "Physical Maximum": "255.66",
-            "Unit": "A"
-        },
-        {
-            "Parameter Name": "KwHr Accumalated - current cycle",
-            "DBC Name": "Kwhr_Accumulated_Current_Cycle",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6D8",
-            "CAN ID (Dec)": "1752",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "2.2",
-            "Unit": "KwHr"
-        },
-        {
-            "Parameter Name": "Factored_Charge_Amphr",
-            "DBC Name": "Factored_Charge_Amphr",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6D8",
-            "CAN ID (Dec)": "1752",
-            "Resolution": "0.01",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "100",
-            "Unit": "AmpHr"
-        },
-        {
-            "Parameter Name": "SoC",
-            "DBC Name": "Pack_SOC_00",
-            "Source": "CAN",
-            "CAN ID (Hex)": "11C",
-            "CAN ID (Dec)": "284",
-            "Resolution": "0.01",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655.36",
-            "Unit": "%"
-        },
-        {
-            "Parameter Name": "SoH",
-            "DBC Name": "Pack_SoH",
-            "Source": "CAN",
-            "CAN ID (Hex)": "150",
-            "CAN ID (Dec)": "336",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655.36",
-            "Unit": "m-ohms"
-        },
-        {
-            "Parameter Name": "Charge - Demand current",
-            "Source": "UDS",
-            "Resolution": "0.01",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655.36",
-            "Unit": "A"
-        },
-        {
-            "Parameter Name": "Charge - Demand voltage",
-            "Source": "UDS",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Charge mode",
-            "DBC Name": "Charger_Mode_Request",
-            "Source": "CAN",
-            "CAN ID (Hex)": "120",
-            "CAN ID (Dec)": "288",
-            "Conversion": {
-                "00": "Charge Disabled",
-                "01": "CC",
-                "02": "CV",
-                "03": "Charge Complete",
-                "04": "CC End",
-                "05": "CV End",
-                "06": "Balancing",
-                "07": "Standby"
-            }
-        },
-        {
-            "Parameter Name": "BMS mode",
-            "DBC Name": "BMS_Mode_00",
-            "Source": "CAN",
-            "CAN ID (Hex)": "11C",
-            "CAN ID (Dec)": "284",
-            "Conversion": {
-                "00": "Initialise",
-                "01": "Sleep Pending",
-                "02": "Reserved",
-                "03": "Standby",
-                "04": "Charge",
-                "05": "Discharge",
-                "06": "Sleep",
-                "07": "Fault",
-                "08": "Invalid"
-            }
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 1",
-            "DBC Name": "Cell_Voltage_Cell_1",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A5",
-            "CAN ID (Dec)": "421",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 2",
-            "DBC Name": "Cell_Voltage_Cell_2",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A5",
-            "CAN ID (Dec)": "421",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 3",
-            "DBC Name": "Cell_Voltage_Cell_3",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A5",
-            "CAN ID (Dec)": "421",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 4",
-            "DBC Name": "Cell_Voltage_Cell_4",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A5",
-            "CAN ID (Dec)": "421",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 5",
-            "DBC Name": "Cell_Voltage_Cell_5",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A6",
-            "CAN ID (Dec)": "422",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 6",
-            "DBC Name": "Cell_Voltage_Cell_6",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A6",
-            "CAN ID (Dec)": "422",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 7",
-            "DBC Name": "Cell_Voltage_Cell_7",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A6",
-            "CAN ID (Dec)": "422",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 8",
-            "DBC Name": "Cell_Voltage_Cell_8",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A6",
-            "CAN ID (Dec)": "422",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 9",
-            "DBC Name": "Cell_Voltage_Cell_9",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A9",
-            "CAN ID (Dec)": "425",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 10",
-            "DBC Name": "Cell_Voltage_Cell_10",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A9",
-            "CAN ID (Dec)": "425",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 11",
-            "DBC Name": "Cell_Voltage_Cell_11",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A9",
-            "CAN ID (Dec)": "425",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 12",
-            "DBC Name": "Cell_Voltage_Cell_12",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A9",
-            "CAN ID (Dec)": "425",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 13",
-            "DBC Name": "Cell_Voltage_Cell_13",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1AA",
-            "CAN ID (Dec)": "426",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Measured voltage - Cell 14",
-            "DBC Name": "Cell_Voltage_Cell_14",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1AA",
-            "CAN ID (Dec)": "426",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536",
-            "Unit": "V"
-        },
-        {
-            "Parameter Name": "Battery pack temperature1",
-            "DBC Name": "BMS00_Pack_Temperature_01",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A4",
-            "CAN ID (Dec)": "420",
-            "Resolution": "0.1",
-            "offset": "-50",
-            "Physical Minimum": "-50",
-            "Physical Maximum": "78",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Battery pack temperature2",
-            "DBC Name": "BMS00_Pack_Temperature_02",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A4",
-            "CAN ID (Dec)": "420",
-            "Resolution": "0.1",
-            "offset": "-50",
-            "Physical Minimum": "-50",
-            "Physical Maximum": "78",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Battery pack temperature3",
-            "DBC Name": "BMS00_Pack_Temperature_03",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A4",
-            "CAN ID (Dec)": "420",
-            "Resolution": "0.1",
-            "offset": "-50",
-            "Physical Minimum": "-50",
-            "Physical Maximum": "78",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Battery pack temperature4",
-            "DBC Name": "BMS00_Pack_Temperature_04",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A4",
-            "CAN ID (Dec)": "420",
-            "Resolution": "0.1",
-            "offset": "-50",
-            "Physical Minimum": "-50",
-            "Physical Maximum": "78",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Battery pack temperature5",
-            "DBC Name": "BMS00_Pack_Temperature_05",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A7",
-            "CAN ID (Dec)": "423",
-            "Resolution": "0.1",
-            "offset": "-50",
-            "Physical Minimum": "-50",
-            "Physical Maximum": "78",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Battery pack temperature6",
-            "DBC Name": "BMS00_Pack_Temperature_06",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A7",
-            "CAN ID (Dec)": "423",
-            "Resolution": "0.1",
-            "offset": "-50",
-            "Physical Minimum": "-50",
-            "Physical Maximum": "78",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Ah - Cell 1",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 2",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 3",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 4",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 5",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 6",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 7",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 8",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 9",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 10",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 11",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 12",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 13",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "Ah - Cell 14",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5",
-            "Unit": "Ah"
-        },
-        {
-            "Parameter Name": "IR - Cell 1",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 2",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 3",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 4",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 5",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 6",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 7",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 8",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 9",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 10",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 11",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 12",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 13",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "IR - Cell 14",
-            "Source": "UDS",
-            "Unit": "mOhm"
-        },
-        {
-            "Parameter Name": "OCV - Cell1",
-            "Source": "UDS",
-            "Resolution": "5",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell2",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell3",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell4",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell5",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell6",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell7",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell8",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell9",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell10",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell11",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell12",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell13",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "OCV - Cell14",
-            "Source": "UDS",
-            "Resolution": "5",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "5000",
-            "Unit": "mV"
-        },
-        {
-            "Parameter Name": "PDU temperature (AFE)",
-            "Source": "UDS",
-            "Resolution": "0.5",
-            "offset": "-40",
-            "Physical Minimum": "-40",
-            "Physical Maximum": "90",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Balancing temperature (AFE)",
-            "Source": "UDS",
-            "Resolution": "0.5",
-            "offset": "-40",
-            "Physical Minimum": "-40",
-            "Physical Maximum": "90",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Battery current (AFE)",
-            "Source": "UDS",
-            "Resolution": "0.01",
-            "offset": "-300",
-            "Physical Minimum": "-300",
-            "Physical Maximum": "355.36",
-            "Unit": "A"
-        },
-        {
-            "Parameter Name": "PDU temperature",
-            "DBC Name": "BMS00_PDU_Temperature_01",
-            "Source": "CAN",
-            "CAN ID (Hex)": "1A8",
-            "CAN ID (Dec)": "424",
-            "Resolution": "0.5",
-            "offset": "-40",
-            "Physical Minimum": "-40",
-            "Physical Maximum": "90",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Balancing temperature",
-            "DBC Name": "Balancing_Temperature",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6D8",
-            "CAN ID (Dec)": "1752",
-            "Resolution": "0.5",
-            "offset": "-40",
-            "Physical Minimum": "-40",
-            "Physical Maximum": "90",
-            "Unit": "degC"
-        },
-        {
-            "Parameter Name": "Cell balancing status",
-            "Source": "UDS",
-            "CAN ID (Hex)": "16D",
-            "CAN ID (Dec)": "365",
-            "Conversion": "Bit 0 - Cell 1\nBit 1 - Cell 2\nBit 2 - Cell 3\nBit 3 - Cell 4\nBit 4 - Cell 5\nBit 5 - Cell 6\nBit 6 - Cell 7\nBit 7 - Cell 8\nBit 8 - Cell 9\nBit 9 - Cell 10\nBit 10 - Cell 11\nBit 11 - Cell 12\nBit 12 - Cell 13\nBit 13 - Cell 14\""
-        },
-        {
-            "Parameter Name": "Shunt current sensor",
-            "Source": "UDS",
-            "Resolution": "100",
-            "Unit": "mA"
-        },
-        {
-            "Parameter Name": "Contactors",
-            "Source": "UDS",
-            "Conversion": "0x00 = Not_Applicable\n0x01 = Not_Available\n0x02 = Disconnected\n0x03 = Connect_Precharge\n0x04 = Connect_PrechargeMain\n0x05 = Connect_Pending\n0x06 = Connected\n0x07 = Disconnect_Pending\n0x08 = BC_Secondary_Connect_DSG\n0x09 = BV_Secondary_Connect_CHG"
-        },
-        {
-            "Parameter Name": "Accumulated Regen Power- current cycle",
-            "Source": "UDS",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "KwHr"
-        }
-    ],
-    "MCU": [
-        {
-            "Parameter Name": "Vehicle speed in kmph",
-            "DBC Name": "Vehicle_speed_in_kmph",
-            "Source": "CAN",
-            "CAN ID (Hex)": "313",
-            "CAN ID (Dec)": "787",
-            "Unit": "kmph",
-            "Resolution": "0.1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.6"
-        },
-        {
-            "Parameter Name": "MCU Temperature",
-            "DBC Name": "MCU_Temperatute",
-            "Source": "CAN",
-            "CAN ID (Hex)": "313",
-            "CAN ID (Dec)": "787",
-            "Unit": "degC",
-            "Resolution": "0.01",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655.36"
-        },
-        {
-            "Parameter Name": "Motor Temprature",
-            "DBC Name": "Motor_Temprature",
-            "Source": "CAN",
-            "CAN ID (Hex)": "313",
-            "CAN ID (Dec)": "787",
-            "Unit": "degC",
-            "Resolution": "0.01",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655.36"
-        },
-        {
-            "Parameter Name": "Motor RPM",
-            "DBC Name": "Motor_RPM",
-            "Source": "CAN",
-            "CAN ID (Hex)": "313",
-            "CAN ID (Dec)": "787",
-            "Unit": "rpm",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65536"
-        },
-        {
-            "Parameter Name": "MCU Power Status",
-            "DBC Name": "MCU_Power_Status",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "4"
-        },
-        {
-            "Parameter Name": "Throttle Value1",
-            "DBC Name": "Throttle_Value1",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "V",
-            "Resolution": "0.01",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655.36"
-        },
-        {
-            "Parameter Name": "Throttle Value2",
-            "DBC Name": "Throttle_Value2",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "V",
-            "Resolution": "0.01",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655.36"
-        },
-        {
-            "Parameter Name": "Regen Status",
-            "DBC Name": "Regen_Status",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "NA",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "1"
-        },
-        {
-            "Parameter Name": "Cruise Control Status",
-            "DBC Name": "Cruise_Control_Status",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "NA",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "1"
-        },
-        {
-            "Parameter Name": "Vehicle Discharge Mode",
-            "DBC Name": "Vehicle_Discharge_Mode",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "NA",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "15"
-        },
-        {
-            "Parameter Name": "Hill Hold Response",
-            "DBC Name": "Hill_Hold_Response",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "NA",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "NA"
-        },
-        {
-            "Parameter Name": "MCU Voltage",
-            "DBC Name": "MCU_Voltage",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "V",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "65.536"
-        },
-        {
-            "Parameter Name": "Motor Current",
-            "DBC Name": "Motor_Current",
-            "Source": "CAN",
-            "CAN ID (Hex)": "223",
-            "CAN ID (Dec)": "547",
-            "Unit": "mAmp",
-            "Resolution": "10",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "655360"
-        },
-        {
-            "Parameter Name": "Motor Torque",
-            "DBC Name": "Motor_Torque",
-            "Source": "CAN",
-            "CAN ID (Hex)": "223",
-            "CAN ID (Dec)": "547",
-            "Unit": "Nm",
-            "Resolution": "0.001",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "1048.576"
-        },
-        {
-            "Parameter Name": "MCU HW Version",
-            "DBC Name": "MCU_HW_Version",
-            "Source": "CAN",
-            "CAN ID (Hex)": "623",
-            "CAN ID (Dec)": "1571",
-            "Unit": "NA",
-            "Resolution": "100",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "4294967296"
-        },
-        {
-            "Parameter Name": "MCU Firmware Version",
-            "DBC Name": "MCU_Firmware_Version",
-            "Source": "CAN",
-            "CAN ID (Hex)": "623",
-            "CAN ID (Dec)": "1571",
-            "Unit": "NA",
-            "Resolution": "100",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "4294967296"
-        },
-        {
-            "Parameter Name": "MCU Power Status",
-            "DBC Name": "MCU_Power_Status",
-            "Source": "CAN",
-            "CAN ID (Hex)": "113",
-            "CAN ID (Dec)": "275",
-            "Unit": "NA",
-            "Resolution": "100.00%",
-            "offset": "0.00%",
-            "Physical Minimum": "0",
-            "Physical Maximum": "NA"
-        }
-    ],
-    "VCU": [
-        {
-            "Parameter Name" : "ESCL_Status",
-            "DBC Name": "ESCL_Status",
-            "Source": "CAN",
-            "CAN ID (Hex)": "4C0",
-            "CAN ID (Dec)": "1216",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "3",
-            "Unit": ""
-        },
-        {
-            "Parameter Name" : "StrLockUnlockCmd",
-            "DBC Name": "StrLockUnlockCmd",
-            "Source": "CAN",
-            "CAN ID (Hex)": "440",
-            "CAN ID (Dec)": "1088",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "3",
-            "Unit": ""
-        },
-        {
-            "Parameter Name" : "Vehicle_Lock_State_BCM",
-            "DBC Name": "Vehicle_state_BCM_ULock",
-            "Source": "CAN",
-            "CAN ID (Hex)": "144",
-            "CAN ID (Dec)": "324",
-            "Resolution": "1",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "0",
-            "Unit": ""
-        },
-        {
-            "Parameter Name": "BRAKE_L_SIGNAL",
-            "DBC Name": "Front_Brake_Press",
-            "Source": "CAN",
-            "CAN ID (Hex)": "15B",
-            "CAN ID (Dec)": "347",
-            "Conversion": {
-                "00": "Released",
-                "01": "Pressed"
-            }
-        },
-        {
-            "Parameter Name": "BRAKE_R_SIGNAL",
-            "DBC Name": "Rear_Brake_Press",
-            "Source": "CAN",
-            "CAN ID (Hex)": "15B",
-            "CAN ID (Dec)": "347",
-            "Conversion": {
-                "00": "Released",
-                "01": "Pressed"
-            }
-        },
-        {
-            "Parameter Name": "Spare",
-            "Source": "UDS"
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_HIGH_BEAM",
-            "DBC Name": "High_Low_beam_short_press",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6AC",
-            "CAN ID (Dec)": "1708",
-            "Conversion": {
-                "00": "Off",
-                "01": "On"
-            }
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_CRUISE_CONTROL",
-            "DBC Name": "Cruise_mode",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6AD",
-            "CAN ID (Dec)": "1709",
-            "Conversion": {
-                "00": "Off",
-                "01": "On"
-            }
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_IND_LEFT",
-            "DBC Name": "Left_Indicator",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6AC",
-            "CAN ID (Dec)": "1708",
-            "Conversion": {
-                "00": "Off",
-                "01": "On"
-            }
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_IND_RIGHT",
-            "DBC Name": "Right_Indicator",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6AC",
-            "CAN ID (Dec)": "1708",
-            "Conversion": {
-                "00": "Off",
-                "01": "On"
-            }
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_HORN",
-            "DBC Name": "Horn",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6AC",
-            "CAN ID (Dec)": "1708",
-            "Conversion": {
-                "00": "Off",
-                "01": "On"
-            }
-        },
-        {
-            "Parameter Name": "DRIVE MODE",
-            "DBC Name": "Drive_Mode",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6AD",
-            "CAN ID (Dec)": "1709",
-            "Conversion": {
-                "00": "Normal",
-                "01": "Eco",
-                "02": "Sport",
-                "03": "Boost",
-                "04": "Reverse",
-                "05": "Turbo"
-            }
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_ACCEPT_CONF_VOLUP",
-            "DBC Name": "SOM_Volume_Up",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BF",
-            "CAN ID (Dec)": "1727",
-            "Conversion": {
-                "00": "Released",
-                "01": "Pressed"
-            }
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_REJECT_CNCL_VOLDOWN",
-            "DBC Name": "SOM_Volume_down",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BF",
-            "CAN ID (Dec)": "1727",
-            "Conversion": {
-                "00": "Released",
-                "01": "Pressed"
-            }
-        },
-        {
-            "Parameter Name": "HBC_BUTTON_PLAY_PAUSE_VOICEASSIST",
-            "DBC Name": "Play_Pause_short_press",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6AD",
-            "CAN ID (Dec)": "1709",
-            "Conversion": {
-                "00": "Released",
-                "01": "Pressed"
-            }
-        },
-        {
-            "Parameter Name": "Side Stand Status",
-            "DBC Name": "Side_Stand_Status",
-            "Source": "CAN",
-            "CAN ID (Hex)": "353",
-            "CAN ID (Dec)": "851",
-            "Conversion": {
-                "01": "Applied",
-                "00": "Not Applied",
-                "02": "SNA"
-            }
-        },
-        {
-            "Parameter Name": "Seat Lock Status",
-            "DBC Name": "Current_Sense_of_Seat_supply",
-            "Source": "UDS",
-            "CAN ID (Hex)": "6C1",
-            "CAN ID (Dec)": "1729",
-            "Conversion": {
-                "00": "Unlock",
-                "01": "Lock"
-            }
-        },
-        {
-            "Parameter Name": "Brake Pad Status",
-            "DBC Name": "Brake_Pad_Status",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C7",
-            "CAN ID (Dec)": "1735",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Seat Status",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "ALS_Brightness",
-            "DBC Name": "Ambient_Light_Sensor_Value",
-            "Source": "CAN",
-            "CAN ID (Hex)": "363",
-            "CAN ID (Dec)": "867",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "84000",
-            "Unit": "%",
-            "Resolution": "2"
-        },
-        {
-            "Parameter Name": "Vehicle Speed",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "255",
-            "Unit": "kmph",
-            "Resolution": "1"
-        },
-        {
-            "Parameter Name": "Average_Speed",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "255",
-            "Unit": "kmph",
-            "Resolution": "1"
-        },
-        {
-            "Parameter Name": "Remaining_Range",
-            "DBC Name": "Vehicle_Range",
-            "Source": "CAN",
-            "CAN ID (Hex)": "353",
-            "CAN ID (Dec)": "851",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "255",
-            "Unit": "km",
-            "Resolution": "1"
-        },
-        {
-            "Parameter Name": "Odometer_Reading",
-            "DBC Name": "Odometer",
-            "Source": "CAN",
-            "CAN ID (Hex)": "143",
-            "CAN ID (Dec)": "323",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "999999",
-            "Unit": "km",
-            "Resolution": "1"
-        },
-        {
-            "Parameter Name": "DCDC converter output voltage",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "20",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Charger Connected",
-            "DBC Name": "Charger_Connected",
-            "Source": "CAN",
-            "CAN ID (Hex)": "62D",
-            "CAN ID (Dec)": "1581",
-            "Conversion": {
-                "02": "Slow Charger",
-                "01": "Fast Charger",
-                "00": "None"
-            }
-        },
-        {
-            "Parameter Name": "Charger Plugged-in",
-            "DBC Name": "Charger_Plugged_In",
-            "Source": "CAN",
-            "CAN ID (Hex)": "62D",
-            "CAN ID (Dec)": "1581",
-            "Conversion": {
-                "00": "Off",
-                "01": "On"
-            }
-        },
-        {
-            "Parameter Name": "Fast Charger Status",
-            "Source": "UDS",
-            "Conversion": "0 - Not Ready\n1- Ready"
-        },
-        {
-            "Parameter Name": "Slow Charger Authentication",
-            "Source": "UDS",
-            "Conversion": "0 -Failed\n1- Passed"
-        },
-        {
-            "Parameter Name": "Fast Charger Authentication",
-            "Source": "UDS",
-            "Conversion": "0 -Failed\n1- Passed"
-        },
-        {
-            "Parameter Name": "Slow Charger Status",
-            "Source": "UDS",
-            "Conversion": "0 - Not Ready\n1- Ready"
-        },
-        {
-            "Parameter Name": "Charging Rate",
-            "DBC Name": "Charging_Rate",
-            "Source": "CAN",
-            "CAN ID (Hex)": "180",
-            "CAN ID (Dec)": "384",
-            "Unit": "C",
-            "Conversion": {
-                "00": "SC_C_RATE_Battery_01",
-                "01": "SC_C_RATE_Battery_02",
-                "02": "SC_C_RATE_Battery_03",
-                "03": "FC_C_RATE_Battery_01",
-                "04": "FC_C_RATE_Battery_02",
-                "05": "FC_C_RATE_Battery_03"
-            }
-        },
-        {
-            "Parameter Name": "Overall Battery Pack SOC",
-            "DBC Name": "Overall_SOC",
-            "Source": "CAN",
-            "CAN ID (Hex)": "120",
-            "CAN ID (Dec)": "288",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "100",
-            "Unit": "%",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "3.8V DC-DC PGOOD Status",
-            "DBC Name": "Sig_3_8V_DC_DC_PGOOD_STATUS",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "5V DC-DC PGOOD Status",
-            "DBC Name": "Sig_5V_Dc_Dc_PGOOD_STATUS",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "3V3 LDO PGOOD Status",
-            "DBC Name": "Sig__V3_LDO_PGOOD_STATUS",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "SOM Digital Input 1 to MCU",
-            "DBC Name": "SOM_INPUT1_MCU",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "SOM Digital Input 2 to MCU",
-            "DBC Name": "SOM_INPUT2_MCU",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "BLE Output",
-            "DBC Name": "BLE_OUTPUT_STATUS",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "BLE Boot",
-            "Source": "UDS",
-            "Conversion": "0 -LOW; 1 -HIGH"
-        },
-        {
-            "Parameter Name": "Charger Plug Sense",
-            "DBC Name": "CHARGER_PLUG_SENSE_STATUS",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "IMU Interrupt 1",
-            "DBC Name": "IMU_INTERRUPT_1",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "IMU Interrupt 2",
-            "DBC Name": "IMU_INTERRUPT_2",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "RTC Interrupt",
-            "DBC Name": "RTC_INTERRUPT1",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "RTC Clock Input",
-            "DBC Name": "RTC_Clock_Input",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6BE",
-            "CAN ID (Dec)": "1726",
-            "Conversion": {
-                "00": "LOW",
-                "01": "HIGH"
-            }
-        },
-        {
-            "Parameter Name": "Spare",
-            "Source": "UDS",
-            "Conversion": "0 -LOW; 1 -HIGH"
-        },
-        {
-            "Parameter Name": "Spare",
-            "Source": "UDS",
-            "Conversion": "0 -LOW; 1 -HIGH"
-        },
-        {
-            "Parameter Name": "Spare",
-            "Source": "UDS",
-            "Conversion": "0 -LOW; 1 -HIGH"
-        },
-        {
-            "Parameter Name": "Spare",
-            "Source": "UDS",
-            "Conversion": "0 -LOW; 1 -HIGH"
-        },
-        {
-            "Parameter Name": "Current Sense of Seat Lock",
-            "DBC Name": "Current_Sense_of_Seat_supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C1",
-            "CAN ID (Dec)": "1729",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current Sense Head Unit supply",
-            "DBC Name": "Current_sense_of_Head_Unit_Supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C1",
-            "CAN ID (Dec)": "1729",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of SPARE2 & Horn supply",
-            "DBC Name": "Current_sense_of_SPARE2_supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C5",
-            "CAN ID (Dec)": "1733",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of High beam",
-            "DBC Name": "Current_sense_of_High_beam",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C5",
-            "CAN ID (Dec)": "1733",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of Low beam",
-            "DBC Name": "Current_sense_of_low_beam",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C5",
-            "CAN ID (Dec)": "1733",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of FC Contactors supply",
-            "DBC Name": "Current_sense_of_FC_Contactors_supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C2",
-            "CAN ID (Dec)": "1730",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of USB ",
-            "DBC Name": "Current_sense_of_USB_supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C2",
-            "CAN ID (Dec)": "1730",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of front DRL supply",
-            "DBC Name": "Current_sense_of_front_DRL_supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C6",
-            "CAN ID (Dec)": "1734",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current Sense of Speaker Supply",
-            "DBC Name": "Current_Sense_of_Speaker_Supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C2",
-            "CAN ID (Dec)": "1730",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current Sense of HBC Supply",
-            "DBC Name": "Current_Sense_of_HBC_Supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C6",
-            "CAN ID (Dec)": "1734",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of Siren Supply",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current sense of ESCL Supply",
-            "DBC Name": "Current_sense_of_ESCL_Supply",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C6",
-            "CAN ID (Dec)": "1734",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current Sense of 12V Indicators",
-            "DBC Name": "Current_Sense_of_12V_Indicators",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C3",
-            "CAN ID (Dec)": "1731",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current Sense of Lights Boot light",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current Sense of Lights  Brake Lamp",
-            "DBC Name": "Current_Sense_of_Brake_Lamp",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C3",
-            "CAN ID (Dec)": "1731",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Current Sense of Lights Position Lamp rear",
-            "DBC Name": "Current_Sense_of_Position_Lamp",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C3",
-            "CAN ID (Dec)": "1731",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "6553.5",
-            "Unit": "mA",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Sidestand Supply feedback Input",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Front Brake supply Feedback Input",
-            "DBC Name": "Front_Brake_supply_Feedback_Input",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C4",
-            "CAN ID (Dec)": "1732",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Rear Brake supply feedback Input",
-            "DBC Name": "Rear_Brake_supply_feedback_Input",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C4",
-            "CAN ID (Dec)": "1732",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "SSB Switch Supply Feedback Input",
-            "DBC Name": "SSB_Switch_Supply_Feedback_Input",
-            "Source": "CAN",
-            "CAN ID (Hex)": "6C4",
-            "CAN ID (Dec)": "1732",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "SSB LED Feedback Input",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "12V CPW Sense",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "CPW voltage sense",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "12V FC Sense",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "BMS 12V Sense",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "12V Sense",
-            "Source": "UDS",
-            "offset": "0",
-            "Physical Minimum": "0",
-            "Physical Maximum": "25.5",
-            "Unit": "V",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "Vehicle Mode Level_1",
-            "DBC Name": "Vehicle_Mode_Level_1",
-            "Source": "CAN",
-            "CAN ID (Hex)": "143",
-            "CAN ID (Dec)": "323",
-            "Conversion": {
-                "00": "SNA",
-                "01": "Idle",
-                "02": "Safe",
-                "03": "Slow Charge (SC)",
-                "04": "Fast Charge (FC)",
-                "05": "Discharge",
-                "06": "Reserved"
-            }
-        },
-        {
-            "Parameter Name": "Vehicle Mode Level_2",
-            "DBC Name": "Vehicle_Mode_Level_2",
-            "Source": "CAN",
-            "CAN ID (Hex)": "143",
-            "CAN ID (Dec)": "323",
-            "Conversion": {
-                "00": "SNA",
-                "01": "OFF",
-                "02": "VACATION",
-                "03": "SLEEP",
-                "04": "VEHICLE IDLE",
-                "05": "SC_CHARGE IDLE",
-                "06": "SC_CHARGE FAULT",
-                "07": "SC_CHARGE ACTIVE",
-                "08": "FC_CHARGE IDLE",
-                "09": "FC_CHARGE FAULT",
-                "0A": "FC_CHARGE ACTIVE",
-                "0B": "PARK",
-                "0C": "DRIVE",
-                "0D": "ALARM",
-                "0E": "Reserved"
-            }
-        },
-        {
-            "Parameter Name": "Vehicle Mode Level_3",
-            "DBC Name": "Vehicle_Mode_Level_3",
-            "Source": "CAN",
-            "CAN ID (Hex)": "143",
-            "CAN ID (Dec)": "323",
-            "Conversion": {
-                "00": "SNA",
-                "01": "ECU POWERUP",
-                "02": "DIAGNOSTIC",
-                "03": "AUX. BATT CHARGE",
-                "04": "DRIVE NORMAL",
-                "05": "LIMPHOME",
-                "06": "DRIVE FAULT",
-                "07": "ECOS",
-                "08": "SERVICE",
-                "09": "DYNO",
-                "0A" : "ABOUT_SCOOTER"
-            }
-        },
-        {
-            "Parameter Name": "Vehicle Mode Level_4",
-            "DBC Name": "Vehicle_Mode_Level_4",
-            "Source": "CAN",
-            "CAN ID (Hex)": "143",
-            "CAN ID (Dec)": "323",
-            "Conversion": {
-                "00": "SNA",
-                "01": "ECO",
-                "02": "NORMAL",
-                "03": "SPORT",
-                "04": "BOOST",
-                "05": "REVERSE",
-                "06": "TURBO"
-            }
-        },
-        {
-            "Parameter Name": "ACC_X",
-            "DBC Name": "Accelerometer_Xaxis",
-            "Source": "CAN",
-            "CAN ID (Hex)": "61D",
-            "CAN ID (Dec)": "1565",
-            "offset": "-2000",
-            "Physical Minimum": "-2000",
-            "Physical Maximum": "2000",
-            "Unit": "mg",
-            "Resolution": "0.0001"
-        },
-        {
-            "Parameter Name": "GYR_X",
-            "DBC Name": "Gyroscope_Xaxis",
-            "Source": "CAN",
-            "CAN ID (Hex)": "61D",
-            "CAN ID (Dec)": "1565",
-            "offset": "-2000",
-            "Physical Minimum": "-2000",
-            "Physical Maximum": "2000",
-            "Unit": "dps",
-            "Resolution": "0.0001"
-        },
-        {
-            "Parameter Name": "ACC_Y",
-            "DBC Name": "Accelerometer_Yaxis",
-            "Source": "CAN",
-            "CAN ID (Hex)": "63D",
-            "CAN ID (Dec)": "1597",
-            "offset": "-2000",
-            "Physical Minimum": "-2000",
-            "Physical Maximum": "2000",
-            "Unit": "mg",
-            "Resolution": "0.0001"
-        },
-        {
-            "Parameter Name": "GYR_Y",
-            "DBC Name": "Gyroscope_Yaxis",
-            "Source": "CAN",
-            "CAN ID (Hex)": "63D",
-            "CAN ID (Dec)": "1597",
-            "offset": "-2000",
-            "Physical Minimum": "-2000",
-            "Physical Maximum": "2000",
-            "Unit": "dps",
-            "Resolution": "0.0001"
-        },
-        {
-            "Parameter Name": "ACC_Z",
-            "DBC Name": "Accelerometer_Zaxis",
-            "Source": "CAN",
-            "CAN ID (Hex)": "64D",
-            "CAN ID (Dec)": "1613",
-            "offset": "-2000",
-            "Physical Minimum": "-2000",
-            "Physical Maximum": "2000",
-            "Unit": "mg",
-            "Resolution": "0.0001"
-        },
-        {
-            "Parameter Name": "GYR_Z",
-            "DBC Name": "Gyroscope_Zaxis",
-            "Source": "CAN",
-            "CAN ID (Hex)": "64D",
-            "CAN ID (Dec)": "1613",
-            "offset": "-2000",
-            "Physical Minimum": "-2000",
-            "Physical Maximum": "2000",
-            "Unit": "dps",
-            "Resolution": "0.0001"
-        },
-        {
-            "Parameter Name": "Resultant_Inclination_Calculated",
-            "DBC Name": "HARDCODE",
-            "Source": "CAN",
-            "CAN ID (Hex)": "64D",
-            "CAN ID (Dec)": "1613",
-            "offset": "-2000",
-            "Physical Minimum": "-2000",
-            "Physical Maximum": "2000",
-            "Unit": "dps",
-            "Resolution": "0.0001"
-        },
-        {
-            "Parameter Name": "Resultant_Inclination",
-            "DBC Name": "Vehicle_Resultant_Inclination",
-            "Source": "CAN",
-            "CAN ID (Hex)": "64D",
-            "CAN ID (Dec)": "1613",
-            "offset": "-180",
-            "Physical Minimum": "-180",
-            "Physical Maximum": "180",
-            "Unit": "deg",
-            "Resolution": "0.1"
-        },
-        {
-            "Parameter Name": "VCU IGN Status",
-            "Source": "UDS",
-            "Conversion": {
-                "00": "SNA",
-                "01": "OFF",
-                "02": "ON",
-                "03": "Invalid",
-                "04": "EOL IGN ON"
-            }
-        },
-        {
-            "Parameter Name": "Wakeup Reason",
-            "Source": "UDS",
-            "Conversion": "0x0 - No Request (Default Value)\n0x1 - CAN WakeUp\n0x2 - SSB Press(IGN ON)\n0x3 - Proximity(IGN ON)\n0x4 - App Lock Unlock(IGN ON)\n0x5 - RTC\n0x6 - Charger\n0x7 - Diagnostic WakeUp\n0x8 - Others HW WakeUp"
-        }
-    ]
+{
+  "BMS": [
+    {
+      "Parameter Name": "Cell voltage minimum",
+      "DBC Name": "BMS0_Cell_Min_Voltage",
+      "Source": "CAN",
+      "CAN ID (Hex)": "170",
+      "CAN ID (Dec)": "368",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "Cell voltage maximum",
+      "DBC Name": "BMS0_Cell_Max_Voltage",
+      "Source": "CAN",
+      "CAN ID (Hex)": "170",
+      "CAN ID (Dec)": "368",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "Battery pack effective temperature (Tbatt)",
+      "DBC Name": "Effective_Battery_Temperature_00",
+      "Source": "CAN",
+      "CAN ID (Hex)": "160",
+      "CAN ID (Dec)": "352",
+      "Resolution": "0.1",
+      "offset": "-50",
+      "Physical Minimum": "-50",
+      "Physical Maximum": "78",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Cell Voltage deviation (CV dv)",
+      "Source": "UDS",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65535",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "BMS DC-DC Output voltage",
+      "DBC Name": "DCDC_Output_Voltage",
+      "Source": "CAN",
+      "CAN ID (Hex)": "153",
+      "CAN ID (Dec)": "339",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65535",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "Pack voltage",
+      "DBC Name": "BMS00_Battery_Pack_Voltage_Measured",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A8",
+      "CAN ID (Dec)": "424",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65535",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "Bus voltage",
+      "DBC Name": "Bus_Voltage_00",
+      "Source": "CAN",
+      "CAN ID (Hex)": "150",
+      "CAN ID (Dec)": "336",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65535",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "BMS digital output status ",
+      "Source": "UDS",
+      "Conversion": "     Digital Output                                        Corresponding Bits\n          DO_PA00_9V_DC_DC_DISABLE                =             0,\n        DO_PA13_12V_ENA                                     =             1,\n        DO_PB02_PRE_CHRGE_ENA                =             2,\n        DO_PC16_5V_PER_ENA                        =             3,\n        DO_PD04_3V3_MEASURE_ENA                =             4,\n        DO_PD05_DISCHG_ENA                        =             5,\n        DO_PD06_CHARGE_ENA                        =             6,\n        DO_PD07_GATE_DRIVER_ENA                =             7,\n        DO_PE05_BMS_STATUS                        =             8,\n        DO_PE07_OVERCURR_CLR                =             9,\n        DO_PE10_AFE_RESET                                =             10,"
+    },
+    {
+      "Parameter Name": "BMS digital inputs status (9V Supply status, AFE fault, Overcurrent, IMU interrupt1, IMU interrupt2, SoC input button, Plug sense)",
+      "Source": "UDS",
+      "CAN ID (Hex)": "6DA",
+      "CAN ID (Dec)": "1754",
+      "Conversion": "              Digital Input              Corresponding Bits\n                  \n        DI_PA01_PLUG_SENSE                     =              0,\n        DI_PC02_RTC_CLOCK_IN                  =              1,\n        DI_PC03_RTC_INT                              =              2,\n        DI_PC08_DISCHRG_OVERCURR      =              3,\n        DI_PC09_CHARGE_OVERCURR       =              4,\n        DI_PD02_12V_DC_DC_STATUS        =              5,\n        DI_PD03_9V_DC_DC_STATUS          =              6,\n        DI_PE06_SBC_LIMP                           =              7,\n        DI_PE11_AFE_FAULT                         =              8,"
+    },
+    {
+      "Parameter Name": "Battery current",
+      "DBC Name": "Battery_Current_00",
+      "Source": "CAN",
+      "CAN ID (Hex)": "140",
+      "CAN ID (Dec)": "320",
+      "Resolution": "0.01",
+      "offset": "-300",
+      "Physical Minimum": "-300",
+      "Physical Maximum": "355",
+      "Unit": "A"
+    },
+    {
+      "Parameter Name": "VCU BMS Authentication status",
+      "Source": "UDS",
+      "Conversion": "\n0x00: FAILED\n0x01: PASSED"
+    },
+    {
+      "Parameter Name": "Cycle number",
+      "DBC Name": "Cycle_Number",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6D8",
+      "CAN ID (Dec)": "1752",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "COUNT"
+    },
+    {
+      "Parameter Name": "TTC",
+      "DBC Name": "Time_to_Full_chargeSC_00",
+      "Source": "CAN",
+      "CAN ID (Hex)": "190",
+      "CAN ID (Dec)": "400",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "600",
+      "Unit": "Min"
+    },
+    {
+      "Parameter Name": "Drive current limit",
+      "Source": "UDS",
+      "Resolution": "0.01",
+      "offset": "-400",
+      "Physical Minimum": "-400",
+      "Physical Maximum": "255.66",
+      "Unit": "A"
+    },
+    {
+      "Parameter Name": "KwHr Accumalated - current cycle",
+      "DBC Name": "Kwhr_Accumulated_Current_Cycle",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6D8",
+      "CAN ID (Dec)": "1752",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "2.2",
+      "Unit": "KwHr"
+    },
+    {
+      "Parameter Name": "Factored_Charge_Amphr",
+      "DBC Name": "Factored_Charge_Amphr",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6D8",
+      "CAN ID (Dec)": "1752",
+      "Resolution": "0.01",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "100",
+      "Unit": "AmpHr"
+    },
+    {
+      "Parameter Name": "SoC",
+      "DBC Name": "Pack_SOC_00",
+      "Source": "CAN",
+      "CAN ID (Hex)": "11C",
+      "CAN ID (Dec)": "284",
+      "Resolution": "0.01",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655.36",
+      "Unit": "%"
+    },
+    {
+      "Parameter Name": "SoH",
+      "DBC Name": "Pack_SoH",
+      "Source": "CAN",
+      "CAN ID (Hex)": "150",
+      "CAN ID (Dec)": "336",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655.36",
+      "Unit": "m-ohms"
+    },
+    {
+      "Parameter Name": "Charge - Demand current",
+      "Source": "UDS",
+      "Resolution": "0.01",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655.36",
+      "Unit": "A"
+    },
+    {
+      "Parameter Name": "Charge - Demand voltage",
+      "Source": "UDS",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Charge mode",
+      "DBC Name": "Charger_Mode_Request",
+      "Source": "CAN",
+      "CAN ID (Hex)": "120",
+      "CAN ID (Dec)": "288",
+      "Conversion": {
+        "00": "Charge Disabled",
+        "01": "CC",
+        "02": "CV",
+        "03": "Charge Complete",
+        "04": "CC End",
+        "05": "CV End",
+        "06": "Balancing",
+        "07": "Standby"
+      }
+    },
+    {
+      "Parameter Name": "BMS mode",
+      "DBC Name": "BMS_Mode_00",
+      "Source": "CAN",
+      "CAN ID (Hex)": "11C",
+      "CAN ID (Dec)": "284",
+      "Conversion": {
+        "00": "Initialise",
+        "01": "Sleep Pending",
+        "02": "Reserved",
+        "03": "Standby",
+        "04": "Charge",
+        "05": "Discharge",
+        "06": "Sleep",
+        "07": "Fault",
+        "08": "Invalid"
+      }
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 1",
+      "DBC Name": "Cell_Voltage_Cell_1",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A5",
+      "CAN ID (Dec)": "421",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 2",
+      "DBC Name": "Cell_Voltage_Cell_2",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A5",
+      "CAN ID (Dec)": "421",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 3",
+      "DBC Name": "Cell_Voltage_Cell_3",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A5",
+      "CAN ID (Dec)": "421",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 4",
+      "DBC Name": "Cell_Voltage_Cell_4",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A5",
+      "CAN ID (Dec)": "421",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 5",
+      "DBC Name": "Cell_Voltage_Cell_5",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A6",
+      "CAN ID (Dec)": "422",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 6",
+      "DBC Name": "Cell_Voltage_Cell_6",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A6",
+      "CAN ID (Dec)": "422",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 7",
+      "DBC Name": "Cell_Voltage_Cell_7",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A6",
+      "CAN ID (Dec)": "422",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 8",
+      "DBC Name": "Cell_Voltage_Cell_8",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A6",
+      "CAN ID (Dec)": "422",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 9",
+      "DBC Name": "Cell_Voltage_Cell_9",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A9",
+      "CAN ID (Dec)": "425",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 10",
+      "DBC Name": "Cell_Voltage_Cell_10",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A9",
+      "CAN ID (Dec)": "425",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 11",
+      "DBC Name": "Cell_Voltage_Cell_11",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A9",
+      "CAN ID (Dec)": "425",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 12",
+      "DBC Name": "Cell_Voltage_Cell_12",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A9",
+      "CAN ID (Dec)": "425",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 13",
+      "DBC Name": "Cell_Voltage_Cell_13",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1AA",
+      "CAN ID (Dec)": "426",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Measured voltage - Cell 14",
+      "DBC Name": "Cell_Voltage_Cell_14",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1AA",
+      "CAN ID (Dec)": "426",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536",
+      "Unit": "V"
+    },
+    {
+      "Parameter Name": "Battery pack temperature1",
+      "DBC Name": "BMS00_Pack_Temperature_01",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A4",
+      "CAN ID (Dec)": "420",
+      "Resolution": "0.1",
+      "offset": "-50",
+      "Physical Minimum": "-50",
+      "Physical Maximum": "78",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Battery pack temperature2",
+      "DBC Name": "BMS00_Pack_Temperature_02",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A4",
+      "CAN ID (Dec)": "420",
+      "Resolution": "0.1",
+      "offset": "-50",
+      "Physical Minimum": "-50",
+      "Physical Maximum": "78",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Battery pack temperature3",
+      "DBC Name": "BMS00_Pack_Temperature_03",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A4",
+      "CAN ID (Dec)": "420",
+      "Resolution": "0.1",
+      "offset": "-50",
+      "Physical Minimum": "-50",
+      "Physical Maximum": "78",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Battery pack temperature4",
+      "DBC Name": "BMS00_Pack_Temperature_04",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A4",
+      "CAN ID (Dec)": "420",
+      "Resolution": "0.1",
+      "offset": "-50",
+      "Physical Minimum": "-50",
+      "Physical Maximum": "78",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Battery pack temperature5",
+      "DBC Name": "BMS00_Pack_Temperature_05",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A7",
+      "CAN ID (Dec)": "423",
+      "Resolution": "0.1",
+      "offset": "-50",
+      "Physical Minimum": "-50",
+      "Physical Maximum": "78",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Battery pack temperature6",
+      "DBC Name": "BMS00_Pack_Temperature_06",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A7",
+      "CAN ID (Dec)": "423",
+      "Resolution": "0.1",
+      "offset": "-50",
+      "Physical Minimum": "-50",
+      "Physical Maximum": "78",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Ah - Cell 1",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 2",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 3",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 4",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 5",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 6",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 7",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 8",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 9",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 10",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 11",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 12",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 13",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "Ah - Cell 14",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5",
+      "Unit": "Ah"
+    },
+    {
+      "Parameter Name": "IR - Cell 1",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 2",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 3",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 4",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 5",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 6",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 7",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 8",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 9",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 10",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 11",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 12",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 13",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "IR - Cell 14",
+      "Source": "UDS",
+      "Unit": "mOhm"
+    },
+    {
+      "Parameter Name": "OCV - Cell1",
+      "Source": "UDS",
+      "Resolution": "5",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell2",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell3",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell4",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell5",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell6",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell7",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell8",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell9",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell10",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell11",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell12",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell13",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "OCV - Cell14",
+      "Source": "UDS",
+      "Resolution": "5",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "5000",
+      "Unit": "mV"
+    },
+    {
+      "Parameter Name": "PDU temperature (AFE)",
+      "Source": "UDS",
+      "Resolution": "0.5",
+      "offset": "-40",
+      "Physical Minimum": "-40",
+      "Physical Maximum": "90",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Balancing temperature (AFE)",
+      "Source": "UDS",
+      "Resolution": "0.5",
+      "offset": "-40",
+      "Physical Minimum": "-40",
+      "Physical Maximum": "90",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Battery current (AFE)",
+      "Source": "UDS",
+      "Resolution": "0.01",
+      "offset": "-300",
+      "Physical Minimum": "-300",
+      "Physical Maximum": "355.36",
+      "Unit": "A"
+    },
+    {
+      "Parameter Name": "PDU temperature",
+      "DBC Name": "BMS00_PDU_Temperature_01",
+      "Source": "CAN",
+      "CAN ID (Hex)": "1A8",
+      "CAN ID (Dec)": "424",
+      "Resolution": "0.5",
+      "offset": "-40",
+      "Physical Minimum": "-40",
+      "Physical Maximum": "90",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Balancing temperature",
+      "DBC Name": "Balancing_Temperature",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6D8",
+      "CAN ID (Dec)": "1752",
+      "Resolution": "0.5",
+      "offset": "-40",
+      "Physical Minimum": "-40",
+      "Physical Maximum": "90",
+      "Unit": "degC"
+    },
+    {
+      "Parameter Name": "Cell balancing status",
+      "Source": "UDS",
+      "CAN ID (Hex)": "16D",
+      "CAN ID (Dec)": "365",
+      "Conversion": "Bit 0 - Cell 1\nBit 1 - Cell 2\nBit 2 - Cell 3\nBit 3 - Cell 4\nBit 4 - Cell 5\nBit 5 - Cell 6\nBit 6 - Cell 7\nBit 7 - Cell 8\nBit 8 - Cell 9\nBit 9 - Cell 10\nBit 10 - Cell 11\nBit 11 - Cell 12\nBit 12 - Cell 13\nBit 13 - Cell 14\""
+    },
+    {
+      "Parameter Name": "Shunt current sensor",
+      "Source": "UDS",
+      "Resolution": "100",
+      "Unit": "mA"
+    },
+    {
+      "Parameter Name": "Contactors",
+      "Source": "UDS",
+      "Conversion": "0x00 = Not_Applicable\n0x01 = Not_Available\n0x02 = Disconnected\n0x03 = Connect_Precharge\n0x04 = Connect_PrechargeMain\n0x05 = Connect_Pending\n0x06 = Connected\n0x07 = Disconnect_Pending\n0x08 = BC_Secondary_Connect_DSG\n0x09 = BV_Secondary_Connect_CHG"
+    },
+    {
+      "Parameter Name": "Accumulated Regen Power- current cycle",
+      "Source": "UDS",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "KwHr"
+    },
+    {
+      "Parameter Name": "High Voltage Contactor State",
+      "DBC Name": "Contactor_state_00",
+      "Source": "CAN",
+      "CAN ID (Hex)": "11C",
+      "CAN ID (Dec)": "284",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "Pre-Charge System Health Status",
+      "DBC Name": "Battery_Precharge_failure_status_10ms",
+      "Source": "CAN",
+      "CAN ID (Hex)": "11C",
+      "CAN ID (Dec)": "284",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "Drive Current Derate Active Flag",
+      "DBC Name": "Battery_Derate_Drive_Current_Flag_10ms",
+      "Source": "CAN",
+      "CAN ID (Hex)": "11C",
+      "CAN ID (Dec)": "284",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "Charge Current Derate Active Flag",
+      "DBC Name": "Battery_Derate_Charge_Current_Flag_10ms",
+      "Source": "CAN",
+      "CAN ID (Hex)": "11C",
+      "CAN ID (Dec)": "284",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "BMS Pre-Charge Failure Monitor",
+      "DBC Name": "BMS00_Precharge_failure",
+      "Source": "CAN",
+      "CAN ID (Hex)": "410",
+      "CAN ID (Dec)": "1040",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "BMS Controller Memory Leakage Status",
+      "DBC Name": "BMS_Memory_Leakage",
+      "Source": "CAN",
+      "CAN ID (Hex)": "7E6",
+      "CAN ID (Dec)": "2022",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    }
+  ],
+  "MCU": [
+    {
+      "Parameter Name": "Vehicle speed in kmph",
+      "DBC Name": "Vehicle_speed_in_kmph",
+      "Source": "CAN",
+      "CAN ID (Hex)": "313",
+      "CAN ID (Dec)": "787",
+      "Unit": "kmph",
+      "Resolution": "0.1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.6"
+    },
+    {
+      "Parameter Name": "MCU Temperature",
+      "DBC Name": "MCU_Temperatute",
+      "Source": "CAN",
+      "CAN ID (Hex)": "313",
+      "CAN ID (Dec)": "787",
+      "Unit": "degC",
+      "Resolution": "0.01",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655.36"
+    },
+    {
+      "Parameter Name": "Motor Temprature",
+      "DBC Name": "Motor_Temprature",
+      "Source": "CAN",
+      "CAN ID (Hex)": "313",
+      "CAN ID (Dec)": "787",
+      "Unit": "degC",
+      "Resolution": "0.01",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655.36"
+    },
+    {
+      "Parameter Name": "Motor RPM",
+      "DBC Name": "Motor_RPM",
+      "Source": "CAN",
+      "CAN ID (Hex)": "313",
+      "CAN ID (Dec)": "787",
+      "Unit": "rpm",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65536"
+    },
+    {
+      "Parameter Name": "MCU Power Status",
+      "DBC Name": "MCU_Power_Status",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "4"
+    },
+    {
+      "Parameter Name": "Throttle Value1",
+      "DBC Name": "Throttle_Value1",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "V",
+      "Resolution": "0.01",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655.36"
+    },
+    {
+      "Parameter Name": "Throttle Value2",
+      "DBC Name": "Throttle_Value2",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "V",
+      "Resolution": "0.01",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655.36"
+    },
+    {
+      "Parameter Name": "Regen Status",
+      "DBC Name": "Regen_Status",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "NA",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1"
+    },
+    {
+      "Parameter Name": "Cruise Control Status",
+      "DBC Name": "Cruise_Control_Status",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "NA",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1"
+    },
+    {
+      "Parameter Name": "Vehicle Discharge Mode",
+      "DBC Name": "Vehicle_Discharge_Mode",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "NA",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "15"
+    },
+    {
+      "Parameter Name": "Hill Hold Response",
+      "DBC Name": "Hill_Hold_Response",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "NA",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "NA"
+    },
+    {
+      "Parameter Name": "MCU Voltage",
+      "DBC Name": "MCU_Voltage",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "V",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "65.536"
+    },
+    {
+      "Parameter Name": "Motor Current",
+      "DBC Name": "Motor_Current",
+      "Source": "CAN",
+      "CAN ID (Hex)": "223",
+      "CAN ID (Dec)": "547",
+      "Unit": "mAmp",
+      "Resolution": "10",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "655360"
+    },
+    {
+      "Parameter Name": "Motor Torque",
+      "DBC Name": "Motor_Torque",
+      "Source": "CAN",
+      "CAN ID (Hex)": "223",
+      "CAN ID (Dec)": "547",
+      "Unit": "Nm",
+      "Resolution": "0.001",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1048.576"
+    },
+    {
+      "Parameter Name": "MCU HW Version",
+      "DBC Name": "MCU_HW_Version",
+      "Source": "CAN",
+      "CAN ID (Hex)": "623",
+      "CAN ID (Dec)": "1571",
+      "Unit": "NA",
+      "Resolution": "100",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "4294967296"
+    },
+    {
+      "Parameter Name": "MCU Firmware Version",
+      "DBC Name": "MCU_Firmware_Version",
+      "Source": "CAN",
+      "CAN ID (Hex)": "623",
+      "CAN ID (Dec)": "1571",
+      "Unit": "NA",
+      "Resolution": "100",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "4294967296"
+    },
+    {
+      "Parameter Name": "MCU Power Status",
+      "DBC Name": "MCU_Power_Status",
+      "Source": "CAN",
+      "CAN ID (Hex)": "113",
+      "CAN ID (Dec)": "275",
+      "Unit": "NA",
+      "Resolution": "100.00%",
+      "offset": "0.00%",
+      "Physical Minimum": "0",
+      "Physical Maximum": "NA"
+    },
+    {
+      "Parameter Name": "Inverter Thermal Derate Warning",
+      "DBC Name": "Derate_Warning",
+      "Source": "CAN",
+      "CAN ID (Hex)": "210",
+      "CAN ID (Dec)": "528",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    }
+  ],
+  "VCU": [
+    {
+      "Parameter Name": "ESCL_Status",
+      "DBC Name": "ESCL_Status",
+      "Source": "CAN",
+      "CAN ID (Hex)": "4C0",
+      "CAN ID (Dec)": "1216",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "3",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "StrLockUnlockCmd",
+      "DBC Name": "StrLockUnlockCmd",
+      "Source": "CAN",
+      "CAN ID (Hex)": "440",
+      "CAN ID (Dec)": "1088",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "3",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "Vehicle_Lock_State_BCM",
+      "DBC Name": "Vehicle_state_BCM_ULock",
+      "Source": "CAN",
+      "CAN ID (Hex)": "144",
+      "CAN ID (Dec)": "324",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "0",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "BRAKE_L_SIGNAL",
+      "DBC Name": "Front_Brake_Press",
+      "Source": "CAN",
+      "CAN ID (Hex)": "15B",
+      "CAN ID (Dec)": "347",
+      "Conversion": {
+        "00": "Released",
+        "01": "Pressed"
+      }
+    },
+    {
+      "Parameter Name": "BRAKE_R_SIGNAL",
+      "DBC Name": "Rear_Brake_Press",
+      "Source": "CAN",
+      "CAN ID (Hex)": "15B",
+      "CAN ID (Dec)": "347",
+      "Conversion": {
+        "00": "Released",
+        "01": "Pressed"
+      }
+    },
+    {
+      "Parameter Name": "Spare",
+      "Source": "UDS"
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_HIGH_BEAM",
+      "DBC Name": "High_Low_beam_short_press",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6AC",
+      "CAN ID (Dec)": "1708",
+      "Conversion": {
+        "00": "Off",
+        "01": "On"
+      }
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_CRUISE_CONTROL",
+      "DBC Name": "Cruise_mode",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6AD",
+      "CAN ID (Dec)": "1709",
+      "Conversion": {
+        "00": "Off",
+        "01": "On"
+      }
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_IND_LEFT",
+      "DBC Name": "Left_Indicator",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6AC",
+      "CAN ID (Dec)": "1708",
+      "Conversion": {
+        "00": "Off",
+        "01": "On"
+      }
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_IND_RIGHT",
+      "DBC Name": "Right_Indicator",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6AC",
+      "CAN ID (Dec)": "1708",
+      "Conversion": {
+        "00": "Off",
+        "01": "On"
+      }
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_HORN",
+      "DBC Name": "Horn",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6AC",
+      "CAN ID (Dec)": "1708",
+      "Conversion": {
+        "00": "Off",
+        "01": "On"
+      }
+    },
+    {
+      "Parameter Name": "DRIVE MODE",
+      "DBC Name": "Drive_Mode",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6AD",
+      "CAN ID (Dec)": "1709",
+      "Conversion": {
+        "00": "Normal",
+        "01": "Eco",
+        "02": "Sport",
+        "03": "Boost",
+        "04": "Reverse",
+        "05": "Turbo"
+      }
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_ACCEPT_CONF_VOLUP",
+      "DBC Name": "SOM_Volume_Up",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BF",
+      "CAN ID (Dec)": "1727",
+      "Conversion": {
+        "00": "Released",
+        "01": "Pressed"
+      }
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_REJECT_CNCL_VOLDOWN",
+      "DBC Name": "SOM_Volume_down",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BF",
+      "CAN ID (Dec)": "1727",
+      "Conversion": {
+        "00": "Released",
+        "01": "Pressed"
+      }
+    },
+    {
+      "Parameter Name": "HBC_BUTTON_PLAY_PAUSE_VOICEASSIST",
+      "DBC Name": "Play_Pause_short_press",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6AD",
+      "CAN ID (Dec)": "1709",
+      "Conversion": {
+        "00": "Released",
+        "01": "Pressed"
+      }
+    },
+    {
+      "Parameter Name": "Side Stand Status",
+      "DBC Name": "Side_Stand_Status",
+      "Source": "CAN",
+      "CAN ID (Hex)": "353",
+      "CAN ID (Dec)": "851",
+      "Conversion": {
+        "01": "Applied",
+        "00": "Not Applied",
+        "02": "SNA"
+      }
+    },
+    {
+      "Parameter Name": "Seat Lock Status",
+      "DBC Name": "Current_Sense_of_Seat_supply",
+      "Source": "UDS",
+      "CAN ID (Hex)": "6C1",
+      "CAN ID (Dec)": "1729",
+      "Conversion": {
+        "00": "Unlock",
+        "01": "Lock"
+      }
+    },
+    {
+      "Parameter Name": "Brake Pad Status",
+      "DBC Name": "Brake_Pad_Status",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C7",
+      "CAN ID (Dec)": "1735",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Seat Status",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "ALS_Brightness",
+      "DBC Name": "Ambient_Light_Sensor_Value",
+      "Source": "CAN",
+      "CAN ID (Hex)": "363",
+      "CAN ID (Dec)": "867",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "84000",
+      "Unit": "%",
+      "Resolution": "2"
+    },
+    {
+      "Parameter Name": "Vehicle Speed",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "255",
+      "Unit": "kmph",
+      "Resolution": "1"
+    },
+    {
+      "Parameter Name": "Average_Speed",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "255",
+      "Unit": "kmph",
+      "Resolution": "1"
+    },
+    {
+      "Parameter Name": "Remaining_Range",
+      "DBC Name": "Vehicle_Range",
+      "Source": "CAN",
+      "CAN ID (Hex)": "353",
+      "CAN ID (Dec)": "851",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "255",
+      "Unit": "km",
+      "Resolution": "1"
+    },
+    {
+      "Parameter Name": "Odometer_Reading",
+      "DBC Name": "Odometer",
+      "Source": "CAN",
+      "CAN ID (Hex)": "143",
+      "CAN ID (Dec)": "323",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "999999",
+      "Unit": "km",
+      "Resolution": "1"
+    },
+    {
+      "Parameter Name": "DCDC converter output voltage",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "20",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Charger Connected",
+      "DBC Name": "Charger_Connected",
+      "Source": "CAN",
+      "CAN ID (Hex)": "62D",
+      "CAN ID (Dec)": "1581",
+      "Conversion": {
+        "02": "Slow Charger",
+        "01": "Fast Charger",
+        "00": "None"
+      }
+    },
+    {
+      "Parameter Name": "Charger Plugged-in",
+      "DBC Name": "Charger_Plugged_In",
+      "Source": "CAN",
+      "CAN ID (Hex)": "62D",
+      "CAN ID (Dec)": "1581",
+      "Conversion": {
+        "00": "Off",
+        "01": "On"
+      }
+    },
+    {
+      "Parameter Name": "Fast Charger Status",
+      "Source": "UDS",
+      "Conversion": "0 - Not Ready\n1- Ready"
+    },
+    {
+      "Parameter Name": "Slow Charger Authentication",
+      "Source": "UDS",
+      "Conversion": "0 -Failed\n1- Passed"
+    },
+    {
+      "Parameter Name": "Fast Charger Authentication",
+      "Source": "UDS",
+      "Conversion": "0 -Failed\n1- Passed"
+    },
+    {
+      "Parameter Name": "Slow Charger Status",
+      "Source": "UDS",
+      "Conversion": "0 - Not Ready\n1- Ready"
+    },
+    {
+      "Parameter Name": "Charging Rate",
+      "DBC Name": "Charging_Rate",
+      "Source": "CAN",
+      "CAN ID (Hex)": "180",
+      "CAN ID (Dec)": "384",
+      "Unit": "C",
+      "Conversion": {
+        "00": "SC_C_RATE_Battery_01",
+        "01": "SC_C_RATE_Battery_02",
+        "02": "SC_C_RATE_Battery_03",
+        "03": "FC_C_RATE_Battery_01",
+        "04": "FC_C_RATE_Battery_02",
+        "05": "FC_C_RATE_Battery_03"
+      }
+    },
+    {
+      "Parameter Name": "Overall Battery Pack SOC",
+      "DBC Name": "Overall_SOC",
+      "Source": "CAN",
+      "CAN ID (Hex)": "120",
+      "CAN ID (Dec)": "288",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "100",
+      "Unit": "%",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "3.8V DC-DC PGOOD Status",
+      "DBC Name": "Sig_3_8V_DC_DC_PGOOD_STATUS",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "5V DC-DC PGOOD Status",
+      "DBC Name": "Sig_5V_Dc_Dc_PGOOD_STATUS",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "3V3 LDO PGOOD Status",
+      "DBC Name": "Sig__V3_LDO_PGOOD_STATUS",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "SOM Digital Input 1 to MCU",
+      "DBC Name": "SOM_INPUT1_MCU",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "SOM Digital Input 2 to MCU",
+      "DBC Name": "SOM_INPUT2_MCU",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "BLE Output",
+      "DBC Name": "BLE_OUTPUT_STATUS",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "BLE Boot",
+      "Source": "UDS",
+      "Conversion": "0 -LOW; 1 -HIGH"
+    },
+    {
+      "Parameter Name": "Charger Plug Sense",
+      "DBC Name": "CHARGER_PLUG_SENSE_STATUS",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "IMU Interrupt 1",
+      "DBC Name": "IMU_INTERRUPT_1",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "IMU Interrupt 2",
+      "DBC Name": "IMU_INTERRUPT_2",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "RTC Interrupt",
+      "DBC Name": "RTC_INTERRUPT1",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "RTC Clock Input",
+      "DBC Name": "RTC_Clock_Input",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6BE",
+      "CAN ID (Dec)": "1726",
+      "Conversion": {
+        "00": "LOW",
+        "01": "HIGH"
+      }
+    },
+    {
+      "Parameter Name": "Spare",
+      "Source": "UDS",
+      "Conversion": "0 -LOW; 1 -HIGH"
+    },
+    {
+      "Parameter Name": "Spare",
+      "Source": "UDS",
+      "Conversion": "0 -LOW; 1 -HIGH"
+    },
+    {
+      "Parameter Name": "Spare",
+      "Source": "UDS",
+      "Conversion": "0 -LOW; 1 -HIGH"
+    },
+    {
+      "Parameter Name": "Spare",
+      "Source": "UDS",
+      "Conversion": "0 -LOW; 1 -HIGH"
+    },
+    {
+      "Parameter Name": "Current Sense of Seat Lock",
+      "DBC Name": "Current_Sense_of_Seat_supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C1",
+      "CAN ID (Dec)": "1729",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current Sense Head Unit supply",
+      "DBC Name": "Current_sense_of_Head_Unit_Supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C1",
+      "CAN ID (Dec)": "1729",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of SPARE2 & Horn supply",
+      "DBC Name": "Current_sense_of_SPARE2_supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C5",
+      "CAN ID (Dec)": "1733",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of High beam",
+      "DBC Name": "Current_sense_of_High_beam",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C5",
+      "CAN ID (Dec)": "1733",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of Low beam",
+      "DBC Name": "Current_sense_of_low_beam",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C5",
+      "CAN ID (Dec)": "1733",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of FC Contactors supply",
+      "DBC Name": "Current_sense_of_FC_Contactors_supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C2",
+      "CAN ID (Dec)": "1730",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of USB ",
+      "DBC Name": "Current_sense_of_USB_supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C2",
+      "CAN ID (Dec)": "1730",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of front DRL supply",
+      "DBC Name": "Current_sense_of_front_DRL_supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C6",
+      "CAN ID (Dec)": "1734",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current Sense of Speaker Supply",
+      "DBC Name": "Current_Sense_of_Speaker_Supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C2",
+      "CAN ID (Dec)": "1730",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current Sense of HBC Supply",
+      "DBC Name": "Current_Sense_of_HBC_Supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C6",
+      "CAN ID (Dec)": "1734",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of Siren Supply",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current sense of ESCL Supply",
+      "DBC Name": "Current_sense_of_ESCL_Supply",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C6",
+      "CAN ID (Dec)": "1734",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current Sense of 12V Indicators",
+      "DBC Name": "Current_Sense_of_12V_Indicators",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C3",
+      "CAN ID (Dec)": "1731",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current Sense of Lights Boot light",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current Sense of Lights  Brake Lamp",
+      "DBC Name": "Current_Sense_of_Brake_Lamp",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C3",
+      "CAN ID (Dec)": "1731",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Current Sense of Lights Position Lamp rear",
+      "DBC Name": "Current_Sense_of_Position_Lamp",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C3",
+      "CAN ID (Dec)": "1731",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "6553.5",
+      "Unit": "mA",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Sidestand Supply feedback Input",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Front Brake supply Feedback Input",
+      "DBC Name": "Front_Brake_supply_Feedback_Input",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C4",
+      "CAN ID (Dec)": "1732",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Rear Brake supply feedback Input",
+      "DBC Name": "Rear_Brake_supply_feedback_Input",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C4",
+      "CAN ID (Dec)": "1732",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "SSB Switch Supply Feedback Input",
+      "DBC Name": "SSB_Switch_Supply_Feedback_Input",
+      "Source": "CAN",
+      "CAN ID (Hex)": "6C4",
+      "CAN ID (Dec)": "1732",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "SSB LED Feedback Input",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "12V CPW Sense",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "CPW voltage sense",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "12V FC Sense",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "BMS 12V Sense",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "12V Sense",
+      "Source": "UDS",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "25.5",
+      "Unit": "V",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "Vehicle Mode Level_1",
+      "DBC Name": "Vehicle_Mode_Level_1",
+      "Source": "CAN",
+      "CAN ID (Hex)": "143",
+      "CAN ID (Dec)": "323",
+      "Conversion": {
+        "00": "SNA",
+        "01": "Idle",
+        "02": "Safe",
+        "03": "Slow Charge (SC)",
+        "04": "Fast Charge (FC)",
+        "05": "Discharge",
+        "06": "Reserved"
+      }
+    },
+    {
+      "Parameter Name": "Vehicle Mode Level_2",
+      "DBC Name": "Vehicle_Mode_Level_2",
+      "Source": "CAN",
+      "CAN ID (Hex)": "143",
+      "CAN ID (Dec)": "323",
+      "Conversion": {
+        "00": "SNA",
+        "01": "OFF",
+        "02": "VACATION",
+        "03": "SLEEP",
+        "04": "VEHICLE IDLE",
+        "05": "SC_CHARGE IDLE",
+        "06": "SC_CHARGE FAULT",
+        "07": "SC_CHARGE ACTIVE",
+        "08": "FC_CHARGE IDLE",
+        "09": "FC_CHARGE FAULT",
+        "0A": "FC_CHARGE ACTIVE",
+        "0B": "PARK",
+        "0C": "DRIVE",
+        "0D": "ALARM",
+        "0E": "Reserved"
+      }
+    },
+    {
+      "Parameter Name": "Vehicle Mode Level_3",
+      "DBC Name": "Vehicle_Mode_Level_3",
+      "Source": "CAN",
+      "CAN ID (Hex)": "143",
+      "CAN ID (Dec)": "323",
+      "Conversion": {
+        "00": "SNA",
+        "01": "ECU POWERUP",
+        "02": "DIAGNOSTIC",
+        "03": "AUX. BATT CHARGE",
+        "04": "DRIVE NORMAL",
+        "05": "LIMPHOME",
+        "06": "DRIVE FAULT",
+        "07": "ECOS",
+        "08": "SERVICE",
+        "09": "DYNO",
+        "0A": "ABOUT_SCOOTER"
+      }
+    },
+    {
+      "Parameter Name": "Vehicle Mode Level_4",
+      "DBC Name": "Vehicle_Mode_Level_4",
+      "Source": "CAN",
+      "CAN ID (Hex)": "143",
+      "CAN ID (Dec)": "323",
+      "Conversion": {
+        "00": "SNA",
+        "01": "ECO",
+        "02": "NORMAL",
+        "03": "SPORT",
+        "04": "BOOST",
+        "05": "REVERSE",
+        "06": "TURBO"
+      }
+    },
+    {
+      "Parameter Name": "ACC_X",
+      "DBC Name": "Accelerometer_Xaxis",
+      "Source": "CAN",
+      "CAN ID (Hex)": "61D",
+      "CAN ID (Dec)": "1565",
+      "offset": "-2000",
+      "Physical Minimum": "-2000",
+      "Physical Maximum": "2000",
+      "Unit": "mg",
+      "Resolution": "0.0001"
+    },
+    {
+      "Parameter Name": "GYR_X",
+      "DBC Name": "Gyroscope_Xaxis",
+      "Source": "CAN",
+      "CAN ID (Hex)": "61D",
+      "CAN ID (Dec)": "1565",
+      "offset": "-2000",
+      "Physical Minimum": "-2000",
+      "Physical Maximum": "2000",
+      "Unit": "dps",
+      "Resolution": "0.0001"
+    },
+    {
+      "Parameter Name": "ACC_Y",
+      "DBC Name": "Accelerometer_Yaxis",
+      "Source": "CAN",
+      "CAN ID (Hex)": "63D",
+      "CAN ID (Dec)": "1597",
+      "offset": "-2000",
+      "Physical Minimum": "-2000",
+      "Physical Maximum": "2000",
+      "Unit": "mg",
+      "Resolution": "0.0001"
+    },
+    {
+      "Parameter Name": "GYR_Y",
+      "DBC Name": "Gyroscope_Yaxis",
+      "Source": "CAN",
+      "CAN ID (Hex)": "63D",
+      "CAN ID (Dec)": "1597",
+      "offset": "-2000",
+      "Physical Minimum": "-2000",
+      "Physical Maximum": "2000",
+      "Unit": "dps",
+      "Resolution": "0.0001"
+    },
+    {
+      "Parameter Name": "ACC_Z",
+      "DBC Name": "Accelerometer_Zaxis",
+      "Source": "CAN",
+      "CAN ID (Hex)": "64D",
+      "CAN ID (Dec)": "1613",
+      "offset": "-2000",
+      "Physical Minimum": "-2000",
+      "Physical Maximum": "2000",
+      "Unit": "mg",
+      "Resolution": "0.0001"
+    },
+    {
+      "Parameter Name": "GYR_Z",
+      "DBC Name": "Gyroscope_Zaxis",
+      "Source": "CAN",
+      "CAN ID (Hex)": "64D",
+      "CAN ID (Dec)": "1613",
+      "offset": "-2000",
+      "Physical Minimum": "-2000",
+      "Physical Maximum": "2000",
+      "Unit": "dps",
+      "Resolution": "0.0001"
+    },
+    {
+      "Parameter Name": "Resultant_Inclination_Calculated",
+      "DBC Name": "HARDCODE",
+      "Source": "CAN",
+      "CAN ID (Hex)": "64D",
+      "CAN ID (Dec)": "1613",
+      "offset": "-2000",
+      "Physical Minimum": "-2000",
+      "Physical Maximum": "2000",
+      "Unit": "dps",
+      "Resolution": "0.0001"
+    },
+    {
+      "Parameter Name": "Resultant_Inclination",
+      "DBC Name": "Vehicle_Resultant_Inclination",
+      "Source": "CAN",
+      "CAN ID (Hex)": "64D",
+      "CAN ID (Dec)": "1613",
+      "offset": "-180",
+      "Physical Minimum": "-180",
+      "Physical Maximum": "180",
+      "Unit": "deg",
+      "Resolution": "0.1"
+    },
+    {
+      "Parameter Name": "VCU IGN Status",
+      "Source": "UDS",
+      "Conversion": {
+        "00": "SNA",
+        "01": "OFF",
+        "02": "ON",
+        "03": "Invalid",
+        "04": "EOL IGN ON"
+      }
+    },
+    {
+      "Parameter Name": "Wakeup Reason",
+      "Source": "UDS",
+      "Conversion": "0x0 - No Request (Default Value)\n0x1 - CAN WakeUp\n0x2 - SSB Press(IGN ON)\n0x3 - Proximity(IGN ON)\n0x4 - App Lock Unlock(IGN ON)\n0x5 - RTC\n0x6 - Charger\n0x7 - Diagnostic WakeUp\n0x8 - Others HW WakeUp"
+    },
+    {
+      "Parameter Name": "Fast Charger Positive Contactor Error",
+      "DBC Name": "HV_FC_POS_contactor_error_short",
+      "Source": "CAN",
+      "CAN ID (Hex)": "431",
+      "CAN ID (Dec)": "1073",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "Fast Charger Contactor Open Circuit",
+      "DBC Name": "HV_FC_POS_contactor_Open_circuit_fault",
+      "Source": "CAN",
+      "CAN ID (Hex)": "431",
+      "CAN ID (Dec)": "1073",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "DC-DC Converter Short Circuit Fault",
+      "DBC Name": "Vehicle_DCDC_faults_short",
+      "Source": "CAN",
+      "CAN ID (Hex)": "431",
+      "CAN ID (Dec)": "1073",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "DC-DC Converter Overtemperature Error",
+      "DBC Name": "Vehicle_DCDC_Overtemperature_error",
+      "Source": "CAN",
+      "CAN ID (Hex)": "431",
+      "CAN ID (Dec)": "1073",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    },
+    {
+      "Parameter Name": "VCU Core Memory Leakage Status",
+      "DBC Name": "VCU_Memory_Leakage",
+      "Source": "CAN",
+      "CAN ID (Hex)": "7D6",
+      "CAN ID (Dec)": "2006",
+      "Resolution": "1",
+      "offset": "0",
+      "Physical Minimum": "0",
+      "Physical Maximum": "1",
+      "Unit": ""
+    }
+  ]
 }

@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Google Material Symbols (Filled): Live Signals / Antenna Broadcast -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M5.65,4.65l-1.4-1.4Q5.73,1.7 7.71,0.85T12,0t4.29,0.85t3.46,2.4l-1.4,1.4Q17.15,3.4 15.51,2.7T12,2T8.49,2.7T5.65,4.65Zm2.8,2.8l-1.4-1.4Q8,5.1 9.26,4.55T12,4t2.74,0.55t2.21,1.5l-1.4,1.4q-0.68-0.68-1.59-1.06T12,6T10.04,6.39T8.45,7.45ZM9.54,22.96Q8.5,21.93 8.5,20.5V12.45q0-1.43 1.04-2.46T12,8.95t2.46,1.04t1.04,2.46V20.5q0,1.43-1.04,2.46T12,24T9.54,22.96Zm3.88-9.05Q14,13.33 14,12.5t-0.59-1.41T12,10.5t-1.41,0.59Q10,11.68 10,12.5t0.59,1.41T12,14.5t1.41-0.59Z" />
+</vector>
