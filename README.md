@@ -196,3 +196,4 @@ adb install -r app/build/outputs/apk/standard/debug/app-standard-debug.apk
 
 * Developed by **[@sillypari](https://github.com/sillypari)**
 * Project Repository: [https://github.com/sillypari/Sola](https://github.com/sillypari/Sola)
+
