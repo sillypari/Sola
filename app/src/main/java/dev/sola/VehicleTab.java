@@ -526,7 +526,7 @@ public final class VehicleTab implements Tab, Bus.Listener {
         }
         if (!Double.isNaN(s.packA)) {
             tvCurrent.setText(String.format(Locale.US, "%+.1f A", s.packA));
-            tvCurrent.setTextColor(s.packA < -5 ? Ui.PRIMARY : (s.packA > 5 ? Ui.POSITIVE : Ui.TEXT));
+            tvCurrent.setTextColor(s.packA > 0 ? Ui.POSITIVE : (s.packA < -10 ? Ui.PRIMARY : Ui.TEXT));
         }
         if (!Double.isNaN(s.packV) && !Double.isNaN(s.packA)) {
             double w = Math.abs(s.packV * s.packA);

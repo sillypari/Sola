@@ -1711,13 +1711,15 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
                 }
 
                 if (badgeBalancingSummary != null) {
+                    badgeBalancingSummary.setVisibility(View.VISIBLE);
                     if (balancingCount > 0) {
-                        badgeBalancingSummary.setVisibility(View.VISIBLE);
                         badgeBalancingSummary.setText(String.format(Locale.US, "● BALANCING (%d)", balancingCount));
                         badgeBalancingSummary.setTextColor(Ui.POSITIVE);
                         badgeBalancingSummary.setBackground(Ui.round(ctx, Ui.alpha(Ui.POSITIVE, 0x22), 12, 0));
                     } else {
-                        badgeBalancingSummary.setVisibility(View.GONE);
+                        badgeBalancingSummary.setText("BALANCED (0 Active)");
+                        badgeBalancingSummary.setTextColor(Ui.POSITIVE);
+                        badgeBalancingSummary.setBackground(Ui.round(ctx, Ui.alpha(Ui.POSITIVE, 0x16), 12, 0));
                     }
                 }
 
@@ -1748,11 +1750,28 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
                     }
                 }
 
-                // Update each cell card with BAL, MAX, or MIN tag
+                // Calculate average cell voltage to track real-time millivolt deviation per cell
+                double sumV = 0;
+                int countV = 0;
+                for (int i = 0; i < 14; i++) {
+                    double cv = s.cells[i];
+                    if (!Double.isNaN(cv) && cv > 0) {
+                        sumV += cv;
+                        countV++;
+                    }
+                }
+                double avgV = countV > 0 ? (sumV / countV) : 0;
+
+                // Update each cell card with BAL, MAX, or MIN tag and live millivolt deviation
                 for (int i = 0; i < 14; i++) {
                     double v = s.cells[i];
                     if (!Double.isNaN(v) && v > 0) {
-                        tvCellVoltages[i].setText(String.format(Locale.US, "%.3f V", v));
+                        if (avgV > 0) {
+                            double devMv = (v - avgV) * 1000.0;
+                            tvCellVoltages[i].setText(String.format(Locale.US, "%.3f V  (%+d mV)", v, Math.round(devMv)));
+                        } else {
+                            tvCellVoltages[i].setText(String.format(Locale.US, "%.3f V", v));
+                        }
 
                         boolean isBalancing = s.balancing != null && s.balancing[i];
                         if (isBalancing) {
@@ -1871,7 +1890,8 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
             tvEnergyBusV.setText(!Double.isNaN(bv) ? String.format(Locale.US, "%.2f V", bv) : "-- V");
         }
         if (tvEnergyCurrentA != null) {
-            tvEnergyCurrentA.setText(!Double.isNaN(s.packA) ? String.format(Locale.US, "%.1f A", s.packA) : "-- A");
+            tvEnergyCurrentA.setText(!Double.isNaN(s.packA) ? String.format(Locale.US, "%+.1f A", s.packA) : "-- A");
+            tvEnergyCurrentA.setTextColor(!Double.isNaN(s.packA) && s.packA > 0 ? Ui.POSITIVE : Ui.TEXT);
         }
 
         // 4. Update BMS Safe Operating Envelope
