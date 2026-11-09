@@ -55,6 +55,38 @@ public final class CanRecorder {
     private volatile Thread workerThread;
     private BlockingQueue<QueuedFrame> queue;
 
+    private static final String[] HEX_BYTES = new String[256];
+    private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
+
+    static {
+        for (int i = 0; i < 256; i++) {
+            HEX_BYTES[i] = "" + HEX_DIGITS[(i >>> 4) & 0x0F] + HEX_DIGITS[i & 0x0F];
+        }
+    }
+
+    private static void appendHex3(StringBuilder sb, int id) {
+        sb.append(HEX_DIGITS[(id >>> 8) & 0x0F]);
+        sb.append(HEX_DIGITS[(id >>> 4) & 0x0F]);
+        sb.append(HEX_DIGITS[id & 0x0F]);
+        sb.append('#');
+    }
+
+    private static void appendHex8(StringBuilder sb, int id) {
+        for (int i = 28; i >= 0; i -= 4) {
+            sb.append(HEX_DIGITS[(id >>> i) & 0x0F]);
+        }
+        sb.append('#');
+    }
+
+    private static void appendTimestamp(StringBuilder sb, long timeMs) {
+        long sec = timeMs / 1000;
+        long millis = timeMs % 1000;
+        sb.append(sec).append('.');
+        if (millis < 10) sb.append("00");
+        else if (millis < 100) sb.append('0');
+        sb.append(millis).append("000");
+    }
+
     public CanRecorder() {
     }
 
@@ -202,20 +234,20 @@ public final class CanRecorder {
                 }
 
                 line.setLength(0);
-                double ts = qf.timeMs / 1000.0;
                 line.append('(');
-                line.append(String.format(Locale.ROOT, "%.6f", ts));
+                appendTimestamp(line, qf.timeMs);
                 line.append(") vcan0 ");
 
                 if (qf.id > 0x7FF) {
-                    line.append(String.format(Locale.ROOT, "%08X#", qf.id));
+                    appendHex8(line, qf.id);
                 } else {
-                    line.append(String.format(Locale.ROOT, "%03X#", qf.id));
+                    appendHex3(line, qf.id);
                 }
 
                 if (qf.data != null) {
-                    for (int i = 0; i < qf.dlc && i < qf.data.length; i++) {
-                        line.append(String.format(Locale.ROOT, "%02X", qf.data[i] & 0xFF));
+                    int n = Math.min(qf.dlc, qf.data.length);
+                    for (int i = 0; i < n; i++) {
+                        line.append(HEX_BYTES[qf.data[i] & 0xFF]);
                     }
                 }
                 line.append('\n');
@@ -237,16 +269,18 @@ public final class CanRecorder {
             QueuedFrame leftover;
             while ((leftover = queue.poll()) != null && leftover != POISON_PILL) {
                 line.setLength(0);
-                double ts = leftover.timeMs / 1000.0;
-                line.append('(').append(String.format(Locale.ROOT, "%.6f", ts)).append(") vcan0 ");
+                line.append('(');
+                appendTimestamp(line, leftover.timeMs);
+                line.append(") vcan0 ");
                 if (leftover.id > 0x7FF) {
-                    line.append(String.format(Locale.ROOT, "%08X#", leftover.id));
+                    appendHex8(line, leftover.id);
                 } else {
-                    line.append(String.format(Locale.ROOT, "%03X#", leftover.id));
+                    appendHex3(line, leftover.id);
                 }
                 if (leftover.data != null) {
-                    for (int i = 0; i < leftover.dlc && i < leftover.data.length; i++) {
-                        line.append(String.format(Locale.ROOT, "%02X", leftover.data[i] & 0xFF));
+                    int n = Math.min(leftover.dlc, leftover.data.length);
+                    for (int i = 0; i < n; i++) {
+                        line.append(HEX_BYTES[leftover.data[i] & 0xFF]);
                     }
                 }
                 line.append('\n');

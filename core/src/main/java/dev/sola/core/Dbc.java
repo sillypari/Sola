@@ -31,6 +31,12 @@ public final class Dbc {
         public final double offset;
         public final String units;
 
+        public final int minByte;
+        public final int maxByte;
+        public final int shift;
+        public final long mask;
+        public final long signMask;
+
         Signal(String name, int startBit, int bitLength, boolean intel,
                boolean signed, double scaling, double offset, String units) {
             this.name = name;
@@ -41,6 +47,13 @@ public final class Dbc {
             this.scaling = scaling;
             this.offset = offset;
             this.units = units == null ? "" : units;
+
+            this.minByte = startBit >> 3;
+            int endBit = startBit + bitLength;
+            this.maxByte = (endBit + 7) >> 3;
+            this.shift = startBit - (minByte << 3);
+            this.mask = bitLength >= 64 ? -1L : ((1L << bitLength) - 1L);
+            this.signMask = (signed && bitLength < 64) ? (1L << (bitLength - 1)) : 0L;
         }
 
         /** The physical value of this signal inside an 8-byte payload. */
@@ -57,18 +70,14 @@ public final class Dbc {
             }
             long value = 0;
             if (intel) {
-                int minByte = startBit >> 3;
                 if (minByte >= payload.length) {
                     return 0;
                 }
-                int endBit = startBit + bitLength;
-                int maxByte = Math.min(payload.length, (endBit + 7) >> 3);
+                int limit = Math.min(payload.length, maxByte);
                 long packed = 0;
-                for (int b = minByte; b < maxByte; b++) {
+                for (int b = minByte; b < limit; b++) {
                     packed |= ((long) (payload[b] & 0xFF)) << ((b - minByte) << 3);
                 }
-                int shift = startBit - (minByte << 3);
-                long mask = bitLength == 64 ? -1L : ((1L << bitLength) - 1L);
                 value = (packed >>> shift) & mask;
             } else {
                 // DBC sawtooth numbering: the start bit is the MSB, bit 7 of a
@@ -87,12 +96,8 @@ public final class Dbc {
                     pos = bit == 0 ? pos + 15 : pos - 1;
                 }
             }
-            if (signed && bitLength < 64) {
-                long sign = 1L << (bitLength - 1);
-                if ((value & sign) != 0) {
-                    long mask = (1L << bitLength) - 1;
-                    value |= ~mask;
-                }
+            if (signMask != 0 && (value & signMask) != 0) {
+                value |= ~mask;
             }
             return value;
         }
@@ -153,6 +158,7 @@ public final class Dbc {
     }
 
     private final Map<Integer, Message> messages = new LinkedHashMap<>();
+    private final Message[] direct = new Message[0x800];
 
     private Dbc() {
     }
@@ -193,7 +199,11 @@ public final class Dbc {
                         Json.number(s, "offset", 0.0),
                         Json.string(s, "units", "")));
             }
-            dbc.messages.put(id, new Message(id, name, dlc, signals));
+            Message msg = new Message(id, name, dlc, signals);
+            dbc.messages.put(id, msg);
+            if (id >= 0 && id < 0x800) {
+                dbc.direct[id] = msg;
+            }
         }
         return dbc;
     }
@@ -214,7 +224,11 @@ public final class Dbc {
         return Collections.unmodifiableCollection(messages.values());
     }
 
+    /** Direct O(1) zero-allocation lookup for standard CAN IDs. */
     public Message message(int id) {
+        if (id >= 0 && id < 0x800) {
+            return direct[id];
+        }
         return messages.get(id);
     }
 
@@ -223,7 +237,7 @@ public final class Dbc {
      * Eliminates intermediate Map and Frame allocations at 1000+ frames/sec.
      */
     public void decodeInto(int canId, byte[] payload, Map<String, Double> target, Map<String, Long> targetTime, long now) {
-        Message m = messages.get(canId);
+        Message m = message(canId);
         if (m == null || payload == null || target == null) return;
         for (Signal s : m.signals) {
             target.put(s.name, s.value(payload));
@@ -235,7 +249,7 @@ public final class Dbc {
 
     /** Every signal value in the payload, keyed by signal name. */
     public Map<String, Double> decode(int canId, byte[] payload) {
-        Message m = messages.get(canId);
+        Message m = message(canId);
         if (m == null) {
             return Collections.emptyMap();
         }
@@ -248,7 +262,7 @@ public final class Dbc {
 
     /** Decodes a whole frame; unknown ids come back with an empty signal map. */
     public Frame decodeFrame(Can.Frame f) {
-        Message m = messages.get(f.id);
+        Message m = message(f.id);
         Map<String, Double> values = m == null
                 ? Collections.<String, Double>emptyMap()
                 : decode(f.id, f.data);

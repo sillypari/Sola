@@ -57,6 +57,7 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
     private TextView bannerBody;
     private View bannerSpacer;
     private TextView tvStatus;
+    private TextView tvSubtitle;
     private TextView tvTelemetry;
     private ImageView checkIcon;
 
@@ -274,131 +275,144 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
         bannerSpacer.setVisibility(View.GONE);
         content.addView(bannerSpacer);
 
-        // 0. Systems Operational Header Card
-        LinearLayout statusHeader = Ui.card(ctx, 14);
-        LinearLayout shRow = Ui.row(ctx);
-
-        LinearLayout checkCircle = Ui.column(ctx);
-        checkCircle.setGravity(Gravity.CENTER);
-        checkCircle.setBackground(Ui.round(ctx, Ui.alpha(Ui.POSITIVE, 0x1E), 16, 0));
-        checkIcon = new ImageView(ctx);
-        checkIcon.setImageResource(R.drawable.ic_check);
-        checkIcon.setColorFilter(Ui.POSITIVE);
-        checkCircle.addView(checkIcon, new LinearLayout.LayoutParams(Ui.dp(ctx, 18), Ui.dp(ctx, 18)));
-
-        LinearLayout.LayoutParams cip = new LinearLayout.LayoutParams(Ui.dp(ctx, 32), Ui.dp(ctx, 32));
-        cip.rightMargin = Ui.dp(ctx, 12);
-        shRow.addView(checkCircle, cip);
-
-        tvStatus = Ui.text(ctx, "Systems Operational", 15, Ui.TEXT);
-        tvStatus.setTypeface(Typeface.DEFAULT_BOLD);
-        shRow.addView(tvStatus, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        tvTelemetry = Ui.pin(ctx, "LIVE TELEMETRY", Ui.POSITIVE);
-        shRow.addView(tvTelemetry);
-        statusHeader.addView(shRow);
-        content.addView(statusHeader);
-
-        addVerticalSpace(content, 12);
-
-        // 1. Pack Balance Summary Hero Card
+        // 1. Pack Balance & System Health Hero Card (Axiom Style)
         LinearLayout hero = Ui.column(ctx);
         hero.setPadding(Ui.dp(ctx, 16), Ui.dp(ctx, 14), Ui.dp(ctx, 16), Ui.dp(ctx, 14));
         hero.setBackground(Ui.round(ctx, Ui.SURFACE, 20, 0));
 
-        LinearLayout topRow = Ui.row(ctx);
+        // Header Row: Health Icon + Title/Eyebrow + Live Pins on Right
+        LinearLayout topHeaderRow = Ui.row(ctx);
+        topHeaderRow.setGravity(Gravity.CENTER_VERTICAL);
 
-        LinearLayout deltaBox = Ui.column(ctx);
-        TextView lblDelta = Ui.text(ctx, "CELL SPREAD DELTA (ΔV)", 11, Ui.DIM);
-        lblDelta.setTypeface(Typeface.DEFAULT_BOLD);
-        lblDelta.setLetterSpacing(0.06f);
+        LinearLayout checkCircle = Ui.column(ctx);
+        checkCircle.setGravity(Gravity.CENTER);
+        int cPad = Ui.dp(ctx, 10);
+        checkCircle.setGravity(Gravity.CENTER);
+        checkCircle.setPadding(0, 0, 0, 0);
+        checkCircle.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
+        checkIcon = new ImageView(ctx);
+        checkIcon.setImageResource(R.drawable.ic_system_health);
+        checkIcon.setColorFilter(Ui.POSITIVE);
+        checkCircle.addView(checkIcon, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
 
-        tvDelta = Ui.text(ctx, "-- mV", 32, Ui.ACCENT);
-        tvDelta.setTypeface(Typeface.DEFAULT_BOLD);
+        LinearLayout.LayoutParams cip = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        cip.rightMargin = Ui.dp(ctx, 12);
+        topHeaderRow.addView(checkCircle, cip);
 
-        deltaBox.addView(lblDelta);
-        deltaBox.addView(tvDelta);
-        deltaBox.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        LinearLayout titleCol = Ui.column(ctx);
+        TextView eyebrow = Ui.text(ctx, "BMS & PACK HEALTH", 9.5f, Ui.MUTED);
+        eyebrow.setTypeface(Typeface.DEFAULT_BOLD);
+        eyebrow.setLetterSpacing(0.08f);
 
-        attachTooltip(deltaBox, "Cell Spread Delta", "BMS", "Delta_Voltage_00", "0x170",
-                "0 mV - 30 mV (Healthy)", "Voltage imbalance between the strongest and weakest cell in the 14-series string.");
+        tvStatus = Ui.text(ctx, "Systems Operational", 17f, Ui.TEXT);
+        tvStatus.setTypeface(Typeface.DEFAULT_BOLD);
+        tvStatus.setSingleLine(true);
+        tvStatus.setEllipsize(android.text.TextUtils.TruncateAt.END);
 
-        LinearLayout heroBadgesCol = Ui.column(ctx);
-        heroBadgesCol.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        tvSubtitle = Ui.text(ctx, "VCAN0 Telemetry (500 kbps)", 11.5f, Ui.MUTED);
+        tvSubtitle.setPadding(0, Ui.dp(ctx, 2), 0, 0);
+
+        titleCol.addView(eyebrow);
+        titleCol.addView(tvStatus);
+        titleCol.addView(tvSubtitle);
+        topHeaderRow.addView(titleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
         badgeVerdict = Ui.pin(ctx, "OPTIMAL", Ui.POSITIVE);
-        heroBadgesCol.addView(badgeVerdict);
+        tvTelemetry = badgeVerdict;
+        topHeaderRow.addView(badgeVerdict);
 
-        badgeBalancingSummary = Ui.pin(ctx, "BALANCING IDLE", Ui.DIM);
-        badgeBalancingSummary.setVisibility(View.GONE);
-        LinearLayout.LayoutParams bblp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        bblp.topMargin = Ui.dp(ctx, 4);
-        heroBadgesCol.addView(badgeBalancingSummary, bblp);
+        hero.addView(topHeaderRow);
 
-        topRow.addView(deltaBox);
-        topRow.addView(heroBadgesCol);
-        hero.addView(topRow);
+        // Divider Space
+        View heroDiv = new View(ctx);
+        heroDiv.setBackgroundColor(Ui.LINE);
+        LinearLayout.LayoutParams hdlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(ctx, 1));
+        hdlp.setMargins(0, Ui.dp(ctx, 12), 0, Ui.dp(ctx, 12));
+        hero.addView(heroDiv, hdlp);
 
-        // Row 1: Lowest Cell & Highest Cell
-        LinearLayout rowExtremes = Ui.row(ctx);
-        rowExtremes.setPadding(0, Ui.dp(ctx, 12), 0, 0);
+        // Even 2x2 Metrics Grid (Balanced, clean, zero floating blocks)
+        LinearLayout gridRow1 = Ui.row(ctx);
 
-        LinearLayout mMin = createMetricTile("Lowest Cell", "-- V", Ui.PRIMARY);
-        tvMinCell = (TextView) mMin.getChildAt(1);
-        attachTooltip(mMin, "Lowest Series Cell", "BMS", "BMS0_Cell_Min_Voltage", "0x170",
+        LinearLayout cardDelta = Ui.subCard(ctx, "Spread Delta", "-- mV", Ui.PRIMARY);
+        tvDelta = (TextView) cardDelta.getChildAt(1);
+        attachTooltip(cardDelta, "Cell Spread Delta", "BMS", "Delta_Voltage_00", "0x170",
+                "0 mV - 30 mV (Healthy)", "Voltage imbalance between the strongest and weakest cell in the 14-series string.");
+
+        LinearLayout cardRdc = Ui.subCard(ctx, "DC Resistance", "~47.2 mΩ", Ui.TEXT);
+        tvResistance = (TextView) cardRdc.getChildAt(1);
+        attachTooltip(cardRdc, "Pack DC Internal Resistance", "BMS", "Pack_Internal_Resistance", "0x150",
+                "35 mΩ - 65 mΩ", "Calculated DC equivalent internal series resistance of the battery stack.");
+
+        gridRow1.addView(cardDelta);
+        View g1 = new View(ctx);
+        g1.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(ctx, 8), 1));
+        gridRow1.addView(g1);
+        gridRow1.addView(cardRdc);
+        hero.addView(gridRow1);
+
+        LinearLayout gridRow2 = Ui.row(ctx);
+        gridRow2.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+
+        LinearLayout cardMin = Ui.subCard(ctx, "Lowest Cell", "-- V", Ui.PRIMARY);
+        tvMinCell = (TextView) cardMin.getChildAt(1);
+        attachTooltip(cardMin, "Lowest Series Cell", "BMS", "BMS0_Cell_Min_Voltage", "0x170",
                 "3.00 V - 4.20 V", "Voltage of the lowest individual cell in the 14-series string.");
 
-        LinearLayout mMax = createMetricTile("Highest Cell", "-- V", Ui.WARNING);
-        tvMaxCell = (TextView) mMax.getChildAt(1);
-        attachTooltip(mMax, "Highest Series Cell", "BMS", "BMS0_Cell_Max_Voltage", "0x170",
+        LinearLayout cardMax = Ui.subCard(ctx, "Highest Cell", "-- V", Ui.WARNING);
+        tvMaxCell = (TextView) cardMax.getChildAt(1);
+        attachTooltip(cardMax, "Highest Series Cell", "BMS", "BMS0_Cell_Max_Voltage", "0x170",
                 "3.00 V - 4.20 V", "Voltage of the highest individual cell in the 14-series string.");
 
-        View sGap = new View(ctx);
-        sGap.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(ctx, 8), 1));
-        rowExtremes.addView(mMin);
-        rowExtremes.addView(sGap);
-        rowExtremes.addView(mMax);
-        hero.addView(rowExtremes);
-
-        // Row 2: Full-Width Pack DC Internal Resistance Card
-        LinearLayout rdcCard = Ui.row(ctx);
-        rdcCard.setGravity(Gravity.CENTER_VERTICAL);
-        rdcCard.setPadding(Ui.dp(ctx, 12), Ui.dp(ctx, 10), Ui.dp(ctx, 12), Ui.dp(ctx, 10));
-        rdcCard.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 12, 0));
-        LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        rlp.topMargin = Ui.dp(ctx, 8);
-        rdcCard.setLayoutParams(rlp);
-
-        LinearLayout rdcTextCol = Ui.column(ctx);
-        TextView lblRdc = Ui.text(ctx, "PACK DC INTERNAL RESISTANCE", 10, Ui.DIM);
-        lblRdc.setTypeface(Typeface.DEFAULT_BOLD);
-        lblRdc.setLetterSpacing(0.04f);
-
-        tvResistance = Ui.text(ctx, "~47.2 mΩ (Nominal)", 15, Ui.TEXT);
-        tvResistance.setTypeface(Typeface.DEFAULT_BOLD);
-        tvResistance.setPadding(0, Ui.dp(ctx, 2), 0, 0);
-
-        rdcTextCol.addView(lblRdc);
-        rdcTextCol.addView(tvResistance);
-        rdcCard.addView(rdcTextCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        badgeResistance = Ui.pin(ctx, "RESTING", Ui.DIM);
-        rdcCard.addView(badgeResistance);
-        attachTooltip(rdcCard, "Pack DC Internal Resistance", "BMS", "Pack_Internal_Resistance", "0x150",
-                "35 mΩ - 65 mΩ", "Calculated DC equivalent internal series resistance of the battery stack.");
-        hero.addView(rdcCard);
+        gridRow2.addView(cardMin);
+        View g2 = new View(ctx);
+        g2.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(ctx, 8), 1));
+        gridRow2.addView(g2);
+        gridRow2.addView(cardMax);
+        hero.addView(gridRow2);
         content.addView(hero);
 
         addVerticalSpace(content, 12);
 
-        // 2. 14S Individual Cell Grid with Live Balancing Indicators
-        TextView headerCells = Ui.heading(ctx, "14-Series Cells & Balancing");
-        headerCells.setPadding(0, Ui.dp(ctx, 16), 0, Ui.dp(ctx, 8));
-        content.addView(headerCells);
+        // 2. 14S Individual Cell Grid Card with Live Balancing Indicators
+        LinearLayout cellsCard = Ui.card(ctx);
+        LinearLayout chHeader = Ui.row(ctx);
+        chHeader.setPadding(0, 0, 0, Ui.dp(ctx, 12));
+        chHeader.setGravity(Gravity.CENTER_VERTICAL);
+
+        LinearLayout chIconBox = Ui.column(ctx);
+        chIconBox.setGravity(Gravity.CENTER);
+        chIconBox.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
+        ImageView icCh = new ImageView(ctx);
+        icCh.setImageResource(R.drawable.ic_battery);
+        icCh.setColorFilter(Ui.TEXT);
+        chIconBox.addView(icCh, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
+        LinearLayout.LayoutParams chIp = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        chIp.rightMargin = Ui.dp(ctx, 12);
+        chHeader.addView(chIconBox, chIp);
+
+        LinearLayout chTitleCol = Ui.column(ctx);
+        chTitleCol.setPadding(Ui.dp(ctx, 10), 0, 0, 0);
+        TextView tChTitle = Ui.text(ctx, "14-Series Cell Diagnostics", 16, Ui.TEXT);
+        tChTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        TextView tChSub = Ui.text(ctx, "AFE Multi-Channel ADC • Live Balancing", 11, Ui.MUTED);
+        chTitleCol.addView(tChTitle);
+        chTitleCol.addView(tChSub);
+        chHeader.addView(chTitleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        badgeBalancingSummary = Ui.pin(ctx, "BALANCED", Ui.POSITIVE);
+        chHeader.addView(badgeBalancingSummary);
+        cellsCard.addView(chHeader);
+
+        // Divider
+        View cellDiv = new View(ctx);
+        cellDiv.setBackgroundColor(Ui.LINE);
+        LinearLayout.LayoutParams cdlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(ctx, 1));
+        cdlp.setMargins(0, 0, 0, Ui.dp(ctx, 10));
+        cellsCard.addView(cellDiv, cdlp);
 
         for (int row = 0; row < 7; row++) {
             LinearLayout rowLayout = Ui.row(ctx);
-            rowLayout.setPadding(0, 0, 0, Ui.dp(ctx, 8));
+            rowLayout.setPadding(0, 0, 0, Ui.dp(ctx, 6));
 
             int c1Idx = row * 2;
             int c2Idx = row * 2 + 1;
@@ -412,8 +426,10 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
             rowLayout.addView(space);
             rowLayout.addView(cellCards[c2Idx]);
 
-            content.addView(rowLayout);
+            cellsCard.addView(rowLayout);
         }
+
+        content.addView(cellsCard);
 
         addVerticalSpace(content, 12);
 
@@ -425,12 +441,14 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         LinearLayout thIconBox = Ui.column(ctx);
         thIconBox.setGravity(Gravity.CENTER);
-        thIconBox.setBackground(Ui.round(ctx, Ui.PRIMARY_CONTAINER, 16, 0));
+        thIconBox.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
         ImageView icTh = new ImageView(ctx);
-        icTh.setImageResource(R.drawable.ic_battery);
-        icTh.setColorFilter(Ui.PRIMARY);
-        thIconBox.addView(icTh, new LinearLayout.LayoutParams(Ui.dp(ctx, 18), Ui.dp(ctx, 18)));
-        thHeader.addView(thIconBox, new LinearLayout.LayoutParams(Ui.dp(ctx, 32), Ui.dp(ctx, 32)));
+        icTh.setImageResource(R.drawable.ic_thermostat);
+        icTh.setColorFilter(Ui.TEXT);
+        thIconBox.addView(icTh, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
+        LinearLayout.LayoutParams thIp = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        thIp.rightMargin = Ui.dp(ctx, 12);
+        thHeader.addView(thIconBox, thIp);
 
         TextView tThTitle = Ui.text(ctx, "8-Sensor Pack Thermal Heatmap", 16, Ui.TEXT);
         tThTitle.setTypeface(Typeface.DEFAULT_BOLD);
@@ -512,7 +530,7 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         // 4. Battery Energy, Health & Cycles Card (Assimilating Factory App)
         LinearLayout energyCard = Ui.card(ctx);
-        energyCard.addView(Ui.cardHeader(ctx, R.drawable.ic_battery, "Battery Energy, Cycles & Telemetry"));
+        energyCard.addView(Ui.cardHeader(ctx, R.drawable.ic_bms, "Battery Energy, Cycles & Telemetry"));
 
         LinearLayout enGrid1 = Ui.row(ctx);
         LinearLayout tSoh = Ui.subCard(ctx, "State of Health (SOH)", "-- %", Ui.POSITIVE);
@@ -595,12 +613,14 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         LinearLayout envIconBox = Ui.column(ctx);
         envIconBox.setGravity(Gravity.CENTER);
-        envIconBox.setBackground(Ui.round(ctx, Ui.PRIMARY_CONTAINER, 16, 0));
+        envIconBox.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
         ImageView icEnv = new ImageView(ctx);
-        icEnv.setImageResource(R.drawable.ic_battery);
-        icEnv.setColorFilter(Ui.PRIMARY);
-        envIconBox.addView(icEnv, new LinearLayout.LayoutParams(Ui.dp(ctx, 18), Ui.dp(ctx, 18)));
-        envHeader.addView(envIconBox, new LinearLayout.LayoutParams(Ui.dp(ctx, 32), Ui.dp(ctx, 32)));
+        icEnv.setImageResource(R.drawable.ic_thermostat);
+        icEnv.setColorFilter(Ui.TEXT);
+        envIconBox.addView(icEnv, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
+        LinearLayout.LayoutParams envIp = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        envIp.rightMargin = Ui.dp(ctx, 12);
+        envHeader.addView(envIconBox, envIp);
 
         TextView tEnvTitle = Ui.text(ctx, "BMS Safe Operating Limits", 16, Ui.TEXT);
         tEnvTitle.setTypeface(Typeface.DEFAULT_BOLD);
@@ -665,173 +685,79 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         addVerticalSpace(content, 12);
 
-        // 6. Motor & Powertrain Telemetry Card
-        LinearLayout motorCard = Ui.card(ctx);
-        motorCard.addView(Ui.cardHeader(ctx, R.drawable.ic_speed, "Motor & Powertrain Telemetry"));
+        // 6. Battery Lifetime Analytics Card (Grouped with High-Voltage Pack Architecture)
+        LinearLayout lifeCard = Ui.card(ctx);
+        lifeCard.addView(Ui.cardHeader(ctx, R.drawable.ic_lifetime, "Battery Lifetime & Health Analytics"));
 
-        LinearLayout mGrid1 = Ui.row(ctx);
-        LinearLayout tThrot = Ui.subCard(ctx, "Throttle Input", "0.94 V", Ui.PRIMARY);
-        tvThrottle = (TextView) tThrot.getChildAt(1);
-        attachTooltip(tThrot, "Throttle Primary Sensor", "MCU", "Throttle_Value1", "0x113",
-                "0.85 V - 4.25 V", "Analog voltage output of primary Hall-effect twist-grip accelerator sensor.");
+        LinearLayout lGrid1 = Ui.row(ctx);
+        LinearLayout tLifeCyc = Ui.subCard(ctx, "Lifetime Charge Cycles", "163 Cycles", Ui.TEXT);
+        tvLifetimeCycles = (TextView) tLifeCyc.getChildAt(1);
+        attachTooltip(tLifeCyc, "Lifetime Charge Cycles", "BMS", "Cycle_Number", "0x6D8",
+                "0 - 2000 Cycles", "Lifetime equivalent full charge cycles recorded in BMS non-volatile memory.");
 
-        LinearLayout tRpm = Ui.subCard(ctx, "Motor Speed", "0 RPM", Ui.TEXT);
-        tvMotorRpm = (TextView) tRpm.getChildAt(1);
-        attachTooltip(tRpm, "Motor Speed", "MCU", "Motor_RPM", "0x313",
-                "0 RPM - 8000 RPM", "Rotational speed of the IPM traction motor shaft.");
+        LinearLayout tLifeBalT = Ui.subCard(ctx, "Balancing Resistor Temp", "33.0 °C", Ui.TEXT);
+        tvBalancingTemp = (TextView) tLifeBalT.getChildAt(1);
+        attachTooltip(tLifeBalT, "Balancing Resistor Temp", "BMS", "Balancing_Temperature", "0x6D8",
+                "20.0 °C - 60.0 °C", "Balancing resistor array temperature during cell equalization.");
 
-        mGrid1.addView(tThrot);
-        addGridDivider(mGrid1);
-        mGrid1.addView(tRpm);
-        motorCard.addView(mGrid1);
+        lGrid1.addView(tLifeCyc);
+        addGridDivider(lGrid1);
+        lGrid1.addView(tLifeBalT);
+        lifeCard.addView(lGrid1);
 
-        LinearLayout mGrid2 = Ui.row(ctx);
-        mGrid2.setPadding(0, Ui.dp(ctx, 8), 0, 0);
-        LinearLayout tTorque = Ui.subCard(ctx, "Motor Torque", "0.0 Nm", Ui.TEXT);
-        tvMotorTorque = (TextView) tTorque.getChildAt(1);
-        attachTooltip(tTorque, "Motor Torque", "MCU", "Motor_Torque", "0x223",
-                "-20 Nm - 58 Nm", "Mechanical torque delivered at the electric motor output shaft.");
+        LinearLayout lGrid2 = Ui.row(ctx);
+        lGrid2.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+        LinearLayout tDevChg = Ui.subCard(ctx, "Max Spread In Charge", "50 mV", Ui.TEXT);
+        tvMaxDevCharge = (TextView) tDevChg.getChildAt(1);
+        attachTooltip(tDevChg, "Max Cell Spread in Charge", "BMS", "Max_Cell_Deviation_Observed_during_Charge", "0x6D8",
+                "0 mV - 60 mV", "Worst cell voltage deviation recorded during battery charging.");
 
-        LinearLayout tCurr = Ui.subCard(ctx, "Motor Current", "0.0 A", Ui.TEXT);
-        tvMotorCurrent = (TextView) tCurr.getChildAt(1);
-        attachTooltip(tCurr, "Motor Phase Current", "MCU", "Motor_Current", "0x223",
-                "0 A - 250 A", "Root-mean-square phase AC current supplied to three-phase motor stator windings.");
+        LinearLayout tDevDis = Ui.subCard(ctx, "Max Spread In Discharge", "69 mV", Ui.TEXT);
+        tvMaxDevDischarge = (TextView) tDevDis.getChildAt(1);
+        attachTooltip(tDevDis, "Max Cell Spread in Discharge", "BMS", "Max_Cell_Deviation_Observed_during_Discharge", "0x6D8",
+                "0 mV - 80 mV", "Worst cell voltage deviation recorded during full-throttle acceleration.");
 
-        mGrid2.addView(tTorque);
-        addGridDivider(mGrid2);
-        mGrid2.addView(tCurr);
-        motorCard.addView(mGrid2);
+        lGrid2.addView(tDevChg);
+        addGridDivider(lGrid2);
+        lGrid2.addView(tDevDis);
+        lifeCard.addView(lGrid2);
 
-        LinearLayout mGrid3 = Ui.row(ctx);
-        mGrid3.setPadding(0, Ui.dp(ctx, 8), 0, 0);
-        LinearLayout tMcuV = Ui.subCard(ctx, "MCU Inverter Voltage", "-- V", Ui.TEXT);
-        tvMcuVoltage = (TextView) tMcuV.getChildAt(1);
-        attachTooltip(tMcuV, "MCU Inverter Voltage", "MCU", "MCU_Voltage", "0x113",
-                "42.0 V - 58.8 V", "DC link capacitor voltage measured at the motor controller inverter.");
+        LinearLayout lGrid3 = Ui.row(ctx);
+        lGrid3.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+        LinearLayout tBalEv = Ui.subCard(ctx, "Balancing Trigger Count", "-- Counts", Ui.TEXT);
+        tvBalancingEvents = (TextView) tBalEv.getChildAt(1);
+        attachTooltip(tBalEv, "Balancing Trigger Count", "BMS", "Number_of_times_balancing_started_due_to_Deviation", "0x6D8",
+                "Count", "Lifetime number of times cell balancing was triggered by cell voltage deviation.");
 
-        LinearLayout tFreq = Ui.subCard(ctx, "Motor Frequency", "0 Hz", Ui.TEXT);
-        tvMotorFreq = (TextView) tFreq.getChildAt(1);
-        attachTooltip(tFreq, "Motor Frequency", "MCU", "Motor_Frequency", "0x313",
-                "0 Hz - 600 Hz", "Fundamental electrical excitation frequency driven into stator windings.");
+        LinearLayout tBalDur = Ui.subCard(ctx, "Total Balancing Duration", "-- hrs", Ui.TEXT);
+        tvBalancingDuration = (TextView) tBalDur.getChildAt(1);
+        attachTooltip(tBalDur, "Total Balancing Duration", "BMS", "Total_Balancing_Duration", "0x6D8",
+                "Hours", "Cumulative total hours spent equalizing cell voltages.");
 
-        mGrid3.addView(tMcuV);
-        addGridDivider(mGrid3);
-        mGrid3.addView(tFreq);
-        motorCard.addView(mGrid3);
+        lGrid3.addView(tBalEv);
+        addGridDivider(lGrid3);
+        lGrid3.addView(tBalDur);
+        lifeCard.addView(lGrid3);
 
-        LinearLayout mGrid4 = Ui.row(ctx);
-        mGrid4.setPadding(0, Ui.dp(ctx, 8), 0, 0);
-        LinearLayout tMcuT = Ui.subCard(ctx, "MCU Heatsink Temp", "-- °C", Ui.TEXT);
-        tvMcuTemp = (TextView) tMcuT.getChildAt(1);
-        attachTooltip(tMcuT, "MCU Heatsink Temperature", "MCU", "MCU_Temperatute", "0x313",
-                "20.0 °C - 75.0 °C", "Operating temperature of motor controller power inverter switching modules.");
-
-        LinearLayout tMotT = Ui.subCard(ctx, "Motor Stator Temp", "-- °C", Ui.TEXT);
-        tvMotorTemp = (TextView) tMotT.getChildAt(1);
-        attachTooltip(tMotT, "Motor Stator Temperature", "MCU", "Motor_Temprature", "0x313",
-                "20.0 °C - 90.0 °C", "Internal stator winding core temperature measured by motor embedded thermistor.");
-
-        mGrid4.addView(tMcuT);
-        addGridDivider(mGrid4);
-        mGrid4.addView(tMotT);
-        motorCard.addView(mGrid4);
-
-        content.addView(motorCard);
+        content.addView(lifeCard);
 
         addVerticalSpace(content, 12);
 
-        // 7. Auxiliary 12V & Chassis Power Rails Subsystem (Assimilating Factory App)
-        LinearLayout auxCard = Ui.card(ctx);
-        LinearLayout auxHeader = Ui.row(ctx);
-        auxHeader.setPadding(0, 0, 0, Ui.dp(ctx, 14));
-
-        LinearLayout auxIconBox = Ui.column(ctx);
-        auxIconBox.setGravity(Gravity.CENTER);
-        auxIconBox.setBackground(Ui.round(ctx, Ui.PRIMARY_CONTAINER, 16, 0));
-        ImageView icAux = new ImageView(ctx);
-        icAux.setImageResource(R.drawable.ic_speed);
-        icAux.setColorFilter(Ui.PRIMARY);
-        auxIconBox.addView(icAux, new LinearLayout.LayoutParams(Ui.dp(ctx, 18), Ui.dp(ctx, 18)));
-        auxHeader.addView(auxIconBox, new LinearLayout.LayoutParams(Ui.dp(ctx, 32), Ui.dp(ctx, 32)));
-
-        TextView tAuxTitle = Ui.text(ctx, "Auxiliary 12V & Power Rails", 16, Ui.TEXT);
-        tAuxTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        tAuxTitle.setPadding(Ui.dp(ctx, 10), 0, 0, 0);
-        auxHeader.addView(tAuxTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        badgeAuxCharging = Ui.pin(ctx, "STANDBY", Ui.DIM);
-        auxHeader.addView(badgeAuxCharging);
-        auxCard.addView(auxHeader);
-
-        LinearLayout axGrid1 = Ui.row(ctx);
-        LinearLayout tDcdc = Ui.subCard(ctx, "12V DC-DC Output Rail", "-- V", Ui.PRIMARY);
-        tvDcdcVolt = (TextView) tDcdc.getChildAt(1);
-        attachTooltip(tDcdc, "12V DC-DC Converter Rail", "VCU", "DCDC_Output_Voltage", "0x153",
-                "13.8 V - 14.4 V", "Step-down DC-DC converter output supplying auxiliary lighting and horns.");
-
-        LinearLayout tAuxSt = Ui.subCard(ctx, "Aux 12V Battery", "Standby", Ui.TEXT);
-        tvAuxStatus = (TextView) tAuxSt.getChildAt(1);
-        attachTooltip(tAuxSt, "Aux 12V Battery State", "VCU", "Charging_status_of_AUX_battery", "0x6BE",
-                "Standby / Charging", "State of the auxiliary low-voltage battery trickle charging circuit.");
-
-        axGrid1.addView(tDcdc);
-        addGridDivider(axGrid1);
-        axGrid1.addView(tAuxSt);
-        auxCard.addView(axGrid1);
-
-        LinearLayout axGrid2 = Ui.row(ctx);
-        axGrid2.setPadding(0, Ui.dp(ctx, 8), 0, 0);
-        LinearLayout tDrain = Ui.subCard(ctx, "Aux Idle Drain", "-- Ah", Ui.TEXT);
-        tvAuxDrain = (TextView) tDrain.getChildAt(1);
-        attachTooltip(tDrain, "Auxiliary Idle Drain", "VCU", "Total_Ah_Lost_in_charging_Aux_battery_in_Idle", "0x6BE",
-                "0.0 Ah - 2.0 Ah", "Total low-voltage charge lost supplying quiescent telematics in idle sleep.");
-
-        LinearLayout tBrakePad = Ui.subCard(ctx, "Brake Pad Sensor", "-- V", Ui.TEXT);
-        tvBrakePadWear = (TextView) tBrakePad.getChildAt(1);
-        attachTooltip(tBrakePad, "Brake Pad Wear Sensor", "VCU", "Brake_Pad_Status", "0x6C7",
-                "0.5 V - 3.5 V", "Analog voltage feedback from brake caliper friction pad wear detection circuit.");
-
-        axGrid2.addView(tDrain);
-        addGridDivider(axGrid2);
-        axGrid2.addView(tBrakePad);
-        auxCard.addView(axGrid2);
-
-        // Power Rails PGOOD Row
-        LinearLayout axGrid3 = Ui.row(ctx);
-        axGrid3.setPadding(0, Ui.dp(ctx, 8), 0, 0);
-
-        LinearLayout tPg38 = Ui.subCard(ctx, "3.8V Rail PGOOD", "GOOD", Ui.POSITIVE);
-        tvPgood3v8 = (TextView) tPg38.getChildAt(1);
-        attachTooltip(tPg38, "3.8V DC-DC PGOOD", "VCU", "Sig_3_8V_DC_DC_PGOOD_STATUS", "0x6BE",
-                "Logic 1 (Good)", "Power Good status signal for internal 3.8V logic power rail.");
-
-        LinearLayout tPg50 = Ui.subCard(ctx, "5.0V Rail PGOOD", "GOOD", Ui.POSITIVE);
-        tvPgood5v0 = (TextView) tPg50.getChildAt(1);
-        attachTooltip(tPg50, "5.0V DC-DC PGOOD", "VCU", "Sig_5V_Dc_Dc_PGOOD_STATUS", "0x6BE",
-                "Logic 1 (Good)", "Power Good status signal for 5.0V sensor and transceiver power rail.");
-
-        axGrid3.addView(tPg38);
-        addGridDivider(axGrid3);
-        axGrid3.addView(tPg50);
-        auxCard.addView(axGrid3);
-
-        content.addView(auxCard);
-
-        addVerticalSpace(content, 12);
-
-        // 8. Charger & Session Intelligence Card
+        // 7. Charger & Session Intelligence Card (Grouped with High-Voltage Pack Architecture)
         LinearLayout chgCard = Ui.card(ctx);
         LinearLayout chgHeader = Ui.row(ctx);
         chgHeader.setPadding(0, 0, 0, Ui.dp(ctx, 14));
 
         LinearLayout chgIconBox = Ui.column(ctx);
         chgIconBox.setGravity(Gravity.CENTER);
-        chgIconBox.setBackground(Ui.round(ctx, Ui.PRIMARY_CONTAINER, 16, 0));
+        chgIconBox.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
         ImageView icChg = new ImageView(ctx);
-        icChg.setImageResource(R.drawable.ic_battery);
-        icChg.setColorFilter(Ui.PRIMARY);
-        chgIconBox.addView(icChg, new LinearLayout.LayoutParams(Ui.dp(ctx, 18), Ui.dp(ctx, 18)));
-        chgHeader.addView(chgIconBox, new LinearLayout.LayoutParams(Ui.dp(ctx, 32), Ui.dp(ctx, 32)));
+        icChg.setImageResource(R.drawable.ic_charging);
+        icChg.setColorFilter(Ui.TEXT);
+        chgIconBox.addView(icChg, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
+        LinearLayout.LayoutParams chgIp = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        chgIp.rightMargin = Ui.dp(ctx, 12);
+        chgHeader.addView(chgIconBox, chgIp);
 
         TextView tChgTitle = Ui.text(ctx, "Charger & Session Telemetry", 16, Ui.TEXT);
         tChgTitle.setTypeface(Typeface.DEFAULT_BOLD);
@@ -913,9 +839,167 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         addVerticalSpace(content, 12);
 
+        // 8. Motor & Powertrain Telemetry Card
+        LinearLayout motorCard = Ui.card(ctx);
+        motorCard.addView(Ui.cardHeader(ctx, R.drawable.ic_mcu, "Motor & Powertrain Telemetry"));
+
+        LinearLayout mGrid1 = Ui.row(ctx);
+        LinearLayout tThrot = Ui.subCard(ctx, "Throttle Input", "0.94 V", Ui.PRIMARY);
+        tvThrottle = (TextView) tThrot.getChildAt(1);
+        attachTooltip(tThrot, "Throttle Primary Sensor", "MCU", "Throttle_Value1", "0x113",
+                "0.85 V - 4.25 V", "Analog voltage output of primary Hall-effect twist-grip accelerator sensor.");
+
+        LinearLayout tRpm = Ui.subCard(ctx, "Motor Speed", "0 RPM", Ui.TEXT);
+        tvMotorRpm = (TextView) tRpm.getChildAt(1);
+        attachTooltip(tRpm, "Motor Speed", "MCU", "Motor_RPM", "0x313",
+                "0 RPM - 8000 RPM", "Rotational speed of the IPM traction motor shaft.");
+
+        mGrid1.addView(tThrot);
+        addGridDivider(mGrid1);
+        mGrid1.addView(tRpm);
+        motorCard.addView(mGrid1);
+
+        LinearLayout mGrid2 = Ui.row(ctx);
+        mGrid2.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+        LinearLayout tTorque = Ui.subCard(ctx, "Motor Torque", "0.0 Nm", Ui.TEXT);
+        tvMotorTorque = (TextView) tTorque.getChildAt(1);
+        attachTooltip(tTorque, "Motor Torque", "MCU", "Motor_Torque", "0x223",
+                "-20 Nm - 58 Nm", "Mechanical torque delivered at the electric motor output shaft.");
+
+        LinearLayout tCurr = Ui.subCard(ctx, "Motor Current", "0.0 A", Ui.TEXT);
+        tvMotorCurrent = (TextView) tCurr.getChildAt(1);
+        attachTooltip(tCurr, "Motor Phase Current", "MCU", "Motor_Current", "0x223",
+                "0 A - 250 A", "Root-mean-square phase AC current supplied to three-phase motor stator windings.");
+
+        mGrid2.addView(tTorque);
+        addGridDivider(mGrid2);
+        mGrid2.addView(tCurr);
+        motorCard.addView(mGrid2);
+
+        LinearLayout mGrid3 = Ui.row(ctx);
+        mGrid3.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+        LinearLayout tMcuV = Ui.subCard(ctx, "MCU Inverter Voltage", "-- V", Ui.TEXT);
+        tvMcuVoltage = (TextView) tMcuV.getChildAt(1);
+        attachTooltip(tMcuV, "MCU Inverter Voltage", "MCU", "MCU_Voltage", "0x113",
+                "42.0 V - 58.8 V", "DC link capacitor voltage measured at the motor controller inverter.");
+
+        LinearLayout tFreq = Ui.subCard(ctx, "Motor Frequency", "0 Hz", Ui.TEXT);
+        tvMotorFreq = (TextView) tFreq.getChildAt(1);
+        attachTooltip(tFreq, "Motor Frequency", "MCU", "Motor_Frequency", "0x313",
+                "0 Hz - 600 Hz", "Fundamental electrical excitation frequency driven into stator windings.");
+
+        mGrid3.addView(tMcuV);
+        addGridDivider(mGrid3);
+        mGrid3.addView(tFreq);
+        motorCard.addView(mGrid3);
+
+        LinearLayout mGrid4 = Ui.row(ctx);
+        mGrid4.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+        LinearLayout tMcuT = Ui.subCard(ctx, "MCU Heatsink Temp", "-- °C", Ui.TEXT);
+        tvMcuTemp = (TextView) tMcuT.getChildAt(1);
+        attachTooltip(tMcuT, "MCU Heatsink Temperature", "MCU", "MCU_Temperatute", "0x313",
+                "20.0 °C - 75.0 °C", "Operating temperature of motor controller power inverter switching modules.");
+
+        LinearLayout tMotT = Ui.subCard(ctx, "Motor Stator Temp", "-- °C", Ui.TEXT);
+        tvMotorTemp = (TextView) tMotT.getChildAt(1);
+        attachTooltip(tMotT, "Motor Stator Temperature", "MCU", "Motor_Temprature", "0x313",
+                "20.0 °C - 90.0 °C", "Internal stator winding core temperature measured by motor embedded thermistor.");
+
+        mGrid4.addView(tMcuT);
+        addGridDivider(mGrid4);
+        mGrid4.addView(tMotT);
+        motorCard.addView(mGrid4);
+
+        content.addView(motorCard);
+
+        addVerticalSpace(content, 12);
+
+        // 7. Auxiliary 12V & Chassis Power Rails Subsystem (Assimilating Factory App)
+        LinearLayout auxCard = Ui.card(ctx);
+        LinearLayout auxHeader = Ui.row(ctx);
+        auxHeader.setPadding(0, 0, 0, Ui.dp(ctx, 14));
+
+        LinearLayout auxIconBox = Ui.column(ctx);
+        auxIconBox.setGravity(Gravity.CENTER);
+        auxIconBox.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
+        ImageView icAux = new ImageView(ctx);
+        icAux.setImageResource(R.drawable.ic_bolt);
+        icAux.setColorFilter(Ui.TEXT);
+        auxIconBox.addView(icAux, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
+        LinearLayout.LayoutParams auxIp = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        auxIp.rightMargin = Ui.dp(ctx, 12);
+        auxHeader.addView(auxIconBox, auxIp);
+
+        TextView tAuxTitle = Ui.text(ctx, "Auxiliary 12V & Power Rails", 16, Ui.TEXT);
+        tAuxTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tAuxTitle.setPadding(Ui.dp(ctx, 10), 0, 0, 0);
+        auxHeader.addView(tAuxTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        badgeAuxCharging = Ui.pin(ctx, "STANDBY", Ui.DIM);
+        auxHeader.addView(badgeAuxCharging);
+        auxCard.addView(auxHeader);
+
+        LinearLayout axGrid1 = Ui.row(ctx);
+        LinearLayout tDcdc = Ui.subCard(ctx, "12V DC-DC Output Rail", "-- V", Ui.PRIMARY);
+        tvDcdcVolt = (TextView) tDcdc.getChildAt(1);
+        attachTooltip(tDcdc, "12V DC-DC Converter Rail", "VCU", "DCDC_Output_Voltage", "0x153",
+                "13.8 V - 14.4 V", "Step-down DC-DC converter output supplying auxiliary lighting and horns.");
+
+        LinearLayout tAuxSt = Ui.subCard(ctx, "Aux 12V Battery", "Standby", Ui.TEXT);
+        tvAuxStatus = (TextView) tAuxSt.getChildAt(1);
+        attachTooltip(tAuxSt, "Aux 12V Battery State", "VCU", "Charging_status_of_AUX_battery", "0x6BE",
+                "Standby / Charging", "State of the auxiliary low-voltage battery trickle charging circuit.");
+
+        axGrid1.addView(tDcdc);
+        addGridDivider(axGrid1);
+        axGrid1.addView(tAuxSt);
+        auxCard.addView(axGrid1);
+
+        LinearLayout axGrid2 = Ui.row(ctx);
+        axGrid2.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+        LinearLayout tDrain = Ui.subCard(ctx, "Aux Idle Drain", "-- Ah", Ui.TEXT);
+        tvAuxDrain = (TextView) tDrain.getChildAt(1);
+        attachTooltip(tDrain, "Auxiliary Idle Drain", "VCU", "Total_Ah_Lost_in_charging_Aux_battery_in_Idle", "0x6BE",
+                "0.0 Ah - 2.0 Ah", "Total low-voltage charge lost supplying quiescent telematics in idle sleep.");
+
+        LinearLayout tBrakePad = Ui.subCard(ctx, "Brake Pad Sensor", "-- V", Ui.TEXT);
+        tvBrakePadWear = (TextView) tBrakePad.getChildAt(1);
+        attachTooltip(tBrakePad, "Brake Pad Wear Sensor", "VCU", "Brake_Pad_Status", "0x6C7",
+                "0.5 V - 3.5 V", "Analog voltage feedback from brake caliper friction pad wear detection circuit.");
+
+        axGrid2.addView(tDrain);
+        addGridDivider(axGrid2);
+        axGrid2.addView(tBrakePad);
+        auxCard.addView(axGrid2);
+
+        // Power Rails PGOOD Row
+        LinearLayout axGrid3 = Ui.row(ctx);
+        axGrid3.setPadding(0, Ui.dp(ctx, 8), 0, 0);
+
+        LinearLayout tPg38 = Ui.subCard(ctx, "3.8V Rail PGOOD", "GOOD", Ui.POSITIVE);
+        tvPgood3v8 = (TextView) tPg38.getChildAt(1);
+        attachTooltip(tPg38, "3.8V DC-DC PGOOD", "VCU", "Sig_3_8V_DC_DC_PGOOD_STATUS", "0x6BE",
+                "Logic 1 (Good)", "Power Good status signal for internal 3.8V logic power rail.");
+
+        LinearLayout tPg50 = Ui.subCard(ctx, "5.0V Rail PGOOD", "GOOD", Ui.POSITIVE);
+        tvPgood5v0 = (TextView) tPg50.getChildAt(1);
+        attachTooltip(tPg50, "5.0V DC-DC PGOOD", "VCU", "Sig_5V_Dc_Dc_PGOOD_STATUS", "0x6BE",
+                "Logic 1 (Good)", "Power Good status signal for 5.0V sensor and transceiver power rail.");
+
+        axGrid3.addView(tPg38);
+        addGridDivider(axGrid3);
+        axGrid3.addView(tPg50);
+        auxCard.addView(axGrid3);
+
+        content.addView(auxCard);
+
+
+
+        addVerticalSpace(content, 12);
+
         // 9. Controls, Sensors & Safety Interlocks Card
         LinearLayout ctrlCard = Ui.card(ctx);
-        ctrlCard.addView(Ui.cardHeader(ctx, R.drawable.ic_warning, "Controls & Safety Interlocks"));
+        ctrlCard.addView(Ui.cardHeader(ctx, R.drawable.ic_controls, "Controls & Safety Interlocks"));
 
         LinearLayout ctrlGrid1 = Ui.row(ctx);
         LinearLayout tFrBrake = Ui.subCard(ctx, "Front Brake", "RELEASED", Ui.TEXT);
@@ -973,7 +1057,7 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         // 10. Handlebar Hardware Switch Tester Pad
         LinearLayout swCard = Ui.card(ctx);
-        swCard.addView(Ui.cardHeader(ctx, R.drawable.ic_code, "Handlebar Hardware Switches"));
+        swCard.addView(Ui.cardHeader(ctx, R.drawable.ic_handlebar_switch, "Handlebar Hardware Switches"));
 
         TextView swNote = Ui.text(ctx, "Live button tester: physical presses illuminate for 1.2s", 11, Ui.MUTED);
         swNote.setPadding(0, 0, 0, Ui.dp(ctx, 12));
@@ -1004,63 +1088,7 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
         }
         content.addView(swCard);
 
-        addVerticalSpace(content, 12);
 
-        // 11. Battery Lifetime Analytics Card
-        LinearLayout lifeCard = Ui.card(ctx);
-        lifeCard.addView(Ui.cardHeader(ctx, R.drawable.ic_battery, "Battery Lifetime & Health Analytics"));
-
-        LinearLayout lGrid1 = Ui.row(ctx);
-        LinearLayout tLifeCyc = Ui.subCard(ctx, "Lifetime Charge Cycles", "163 Cycles", Ui.TEXT);
-        tvLifetimeCycles = (TextView) tLifeCyc.getChildAt(1);
-        attachTooltip(tLifeCyc, "Lifetime Charge Cycles", "BMS", "Cycle_Number", "0x6D8",
-                "0 - 2000 Cycles", "Lifetime equivalent full charge cycles recorded in BMS non-volatile memory.");
-
-        LinearLayout tLifeBalT = Ui.subCard(ctx, "Balancing Resistor Temp", "33.0 °C", Ui.TEXT);
-        tvBalancingTemp = (TextView) tLifeBalT.getChildAt(1);
-        attachTooltip(tLifeBalT, "Balancing Resistor Temp", "BMS", "Balancing_Temperature", "0x6D8",
-                "20.0 °C - 60.0 °C", "Balancing resistor array temperature during cell equalization.");
-
-        lGrid1.addView(tLifeCyc);
-        addGridDivider(lGrid1);
-        lGrid1.addView(tLifeBalT);
-        lifeCard.addView(lGrid1);
-
-        LinearLayout lGrid2 = Ui.row(ctx);
-        lGrid2.setPadding(0, Ui.dp(ctx, 8), 0, 0);
-        LinearLayout tDevChg = Ui.subCard(ctx, "Max Spread In Charge", "50 mV", Ui.TEXT);
-        tvMaxDevCharge = (TextView) tDevChg.getChildAt(1);
-        attachTooltip(tDevChg, "Max Cell Spread in Charge", "BMS", "Max_Cell_Deviation_Observed_during_Charge", "0x6D8",
-                "0 mV - 60 mV", "Worst cell voltage deviation recorded during battery charging.");
-
-        LinearLayout tDevDis = Ui.subCard(ctx, "Max Spread In Discharge", "69 mV", Ui.TEXT);
-        tvMaxDevDischarge = (TextView) tDevDis.getChildAt(1);
-        attachTooltip(tDevDis, "Max Cell Spread in Discharge", "BMS", "Max_Cell_Deviation_Observed_during_Discharge", "0x6D8",
-                "0 mV - 80 mV", "Worst cell voltage deviation recorded during full-throttle acceleration.");
-
-        lGrid2.addView(tDevChg);
-        addGridDivider(lGrid2);
-        lGrid2.addView(tDevDis);
-        lifeCard.addView(lGrid2);
-
-        LinearLayout lGrid3 = Ui.row(ctx);
-        lGrid3.setPadding(0, Ui.dp(ctx, 8), 0, 0);
-        LinearLayout tBalEv = Ui.subCard(ctx, "Balancing Trigger Count", "-- Counts", Ui.TEXT);
-        tvBalancingEvents = (TextView) tBalEv.getChildAt(1);
-        attachTooltip(tBalEv, "Balancing Trigger Count", "BMS", "Number_of_times_balancing_started_due_to_Deviation", "0x6D8",
-                "Count", "Lifetime number of times cell balancing was triggered by cell voltage deviation.");
-
-        LinearLayout tBalDur = Ui.subCard(ctx, "Total Balancing Duration", "-- hrs", Ui.TEXT);
-        tvBalancingDuration = (TextView) tBalDur.getChildAt(1);
-        attachTooltip(tBalDur, "Total Balancing Duration", "BMS", "Total_Balancing_Duration", "0x6D8",
-                "Hours", "Cumulative total hours spent equalizing cell voltages.");
-
-        lGrid3.addView(tBalEv);
-        addGridDivider(lGrid3);
-        lGrid3.addView(tBalDur);
-        lifeCard.addView(lGrid3);
-
-        content.addView(lifeCard);
 
         addVerticalSpace(content, 12);
 
@@ -1071,12 +1099,14 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         LinearLayout ahIconBox = Ui.column(ctx);
         ahIconBox.setGravity(Gravity.CENTER);
-        ahIconBox.setBackground(Ui.round(ctx, Ui.PRIMARY_CONTAINER, 16, 0));
+        ahIconBox.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
         ImageView icAh = new ImageView(ctx);
-        icAh.setImageResource(R.drawable.ic_code);
-        icAh.setColorFilter(Ui.PRIMARY);
-        ahIconBox.addView(icAh, new LinearLayout.LayoutParams(Ui.dp(ctx, 18), Ui.dp(ctx, 18)));
-        ahRow.addView(ahIconBox, new LinearLayout.LayoutParams(Ui.dp(ctx, 32), Ui.dp(ctx, 32)));
+        icAh.setImageResource(R.drawable.ic_advanced_hardware);
+        icAh.setColorFilter(Ui.TEXT);
+        ahIconBox.addView(icAh, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
+        LinearLayout.LayoutParams ahIp = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        ahIp.rightMargin = Ui.dp(ctx, 12);
+        ahRow.addView(ahIconBox, ahIp);
 
         TextView tAdvTitle = Ui.text(ctx, "Advanced Hardware Diagnostics", 16, Ui.TEXT);
         tAdvTitle.setTypeface(Typeface.DEFAULT_BOLD);
@@ -1233,34 +1263,42 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         LinearLayout iconBox = Ui.column(ctx);
         iconBox.setGravity(Gravity.CENTER);
-        iconBox.setBackground(Ui.round(ctx, Ui.PRIMARY_CONTAINER, 16, 0));
+        iconBox.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 11, 0));
         ImageView icCat = new ImageView(ctx);
-        icCat.setImageResource(R.drawable.ic_search);
-        icCat.setColorFilter(Ui.PRIMARY);
-        iconBox.addView(icCat, new LinearLayout.LayoutParams(Ui.dp(ctx, 18), Ui.dp(ctx, 18)));
-        headerRow.addView(iconBox, new LinearLayout.LayoutParams(Ui.dp(ctx, 32), Ui.dp(ctx, 32)));
+        icCat.setImageResource(R.drawable.ic_live_signal);
+        icCat.setColorFilter(Ui.TEXT);
+        iconBox.addView(icCat, new LinearLayout.LayoutParams(Ui.dp(ctx, 20), Ui.dp(ctx, 20)));
+        LinearLayout.LayoutParams catIp = new LinearLayout.LayoutParams(Ui.dp(ctx, 36), Ui.dp(ctx, 36));
+        catIp.rightMargin = Ui.dp(ctx, 12);
+        headerRow.addView(iconBox, catIp);
 
         LinearLayout titleCol = Ui.column(ctx);
         titleCol.setPadding(Ui.dp(ctx, 10), 0, 0, 0);
         TextView tvTitle = Ui.text(ctx, "Complete Live Signals Catalog", 16, Ui.TEXT);
         tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        TextView tvSub = Ui.text(ctx, "All 199 factory signals with instant search & telemetry inspection", 11, Ui.MUTED);
+        int totalCatalogSignals = catalog != null ? catalog.getAll().size() : 211;
+        TextView tvSub = Ui.text(ctx, "All " + totalCatalogSignals + " factory signals with instant search & telemetry inspection", 11, Ui.MUTED);
         titleCol.addView(tvTitle);
         titleCol.addView(tvSub);
         headerRow.addView(titleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
-        tvCatalogCountBadge = Ui.pin(ctx, "199 SIGNALS", Ui.MUTED);
+        tvCatalogCountBadge = Ui.pin(ctx, totalCatalogSignals + " SIGNALS", Ui.MUTED);
         headerRow.addView(tvCatalogCountBadge);
+
+        final android.content.SharedPreferences catPrefs = ctx.getSharedPreferences("sola", android.content.Context.MODE_PRIVATE);
+        catalogExpanded = catPrefs.getBoolean("expand_signals_catalog", false);
 
         ivCatalogChevron = new ImageView(ctx);
         ivCatalogChevron.setImageResource(R.drawable.ic_expand_more);
         ivCatalogChevron.setColorFilter(Ui.MUTED);
+        ivCatalogChevron.setRotation(catalogExpanded ? 180f : 0f);
         LinearLayout.LayoutParams chLp = new LinearLayout.LayoutParams(Ui.dp(ctx, 24), Ui.dp(ctx, 24));
         chLp.leftMargin = Ui.dp(ctx, 8);
         headerRow.addView(ivCatalogChevron, chLp);
 
         View.OnClickListener toggleCatalog = v -> {
             catalogExpanded = !catalogExpanded;
+            catPrefs.edit().putBoolean("expand_signals_catalog", catalogExpanded).apply();
             ivCatalogChevron.animate().rotation(catalogExpanded ? 180f : 0f).setDuration(200).start();
             tvCatalogCountBadge.setTextColor(catalogExpanded ? Ui.PRIMARY : Ui.MUTED);
 
@@ -1279,7 +1317,10 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
         // Catalog Expandable Container
         catalogRowsContainer = Ui.column(ctx);
         catalogRowsContainer.setPadding(0, Ui.dp(ctx, 14), 0, 0);
-        catalogRowsContainer.setVisibility(View.GONE);
+        catalogRowsContainer.setVisibility(catalogExpanded ? View.VISIBLE : View.GONE);
+        if (catalogExpanded) {
+            filterCatalog();
+        }
 
         // Search Bar
         etSearchSignals = new EditText(ctx);
@@ -1525,33 +1566,40 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
     private LinearLayout createCellCard(int index) {
         LinearLayout card = Ui.column(ctx);
-        int pad = Ui.dp(ctx, 12);
-        card.setPadding(pad, pad, pad, pad);
-        card.setBackground(Ui.round(ctx, Ui.SURFACE, 14, 0));
+        int padH = Ui.dp(ctx, 10);
+        int padV = Ui.dp(ctx, 6);
+        card.setPadding(padH, padV, padH, padV);
+        card.setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, 0));
+        card.setGravity(Gravity.CENTER_VERTICAL);
 
         LinearLayout top = Ui.row(ctx);
+        top.setGravity(Gravity.CENTER_VERTICAL);
 
-        TextView lbl = Ui.text(ctx, String.format(Locale.US, "CELL %02d", index + 1), 11, Ui.DIM);
+        TextView lbl = Ui.text(ctx, String.format(Locale.US, "CELL %02d", index + 1), 9.5f, Ui.MUTED);
         lbl.setTypeface(Typeface.DEFAULT_BOLD);
+        lbl.setLetterSpacing(0.04f);
+        lbl.setSingleLine(true);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         lbl.setLayoutParams(lp);
 
         TextView tag = new TextView(ctx);
-        tag.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f);
+        tag.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8.5f);
         tag.setTypeface(Typeface.DEFAULT_BOLD);
         tag.setLetterSpacing(0.04f);
         tag.setGravity(Gravity.CENTER);
         tag.setIncludeFontPadding(false);
-        tag.setPadding(Ui.dp(ctx, 8), Ui.dp(ctx, 3), Ui.dp(ctx, 8), Ui.dp(ctx, 3));
+        tag.setSingleLine(true);
+        tag.setPadding(Ui.dp(ctx, 5), Ui.dp(ctx, 2), Ui.dp(ctx, 5), Ui.dp(ctx, 2));
         tag.setVisibility(View.GONE);
         tvCellTags[index] = tag;
 
         top.addView(lbl);
         top.addView(tag);
 
-        TextView v = Ui.text(ctx, "-- V", 18, Ui.TEXT);
+        TextView v = Ui.text(ctx, "-- V", 14.5f, Ui.TEXT);
         v.setTypeface(Typeface.DEFAULT_BOLD);
-        v.setPadding(0, Ui.dp(ctx, 4), 0, 0);
+        v.setSingleLine(true);
+        v.setPadding(0, Ui.dp(ctx, 2), 0, 0);
         tvCellVoltages[index] = v;
 
         card.addView(top);
@@ -1564,14 +1612,13 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
         card.setOnLongClickListener(view -> {
             view.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
             String vStr = tvCellVoltages[cIdx].getText().toString();
-            String cellName = String.format(Locale.US, "Measured voltage - Cell %d", cIdx + 1);
             ParameterDialog.show(activity, String.format(Locale.US, "Series Cell %02d", cIdx + 1), "BMS CELL",
                     vStr, "V", "Cell_Voltage_Cell_" + (cIdx + 1), (cIdx < 4 ? "0x1A5" : (cIdx < 8 ? "0x1A6" : (cIdx < 12 ? "0x1A9" : "0x1AA"))),
                     "3.00 V - 4.20 V", "Direct terminal voltage of series cell " + (cIdx + 1) + " measured by the Analog Front End (AFE) IC.");
             return true;
         });
 
-        LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(0, Ui.dp(ctx, 50), 1f);
         card.setLayoutParams(cardLp);
         return card;
     }
@@ -1589,9 +1636,13 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
             bannerSpacer.setVisibility(View.VISIBLE);
             bannerBody.setText("Connected to scooter daemon, but no CAN frames yet. Turn on the dash or tap the power button.");
             if (tvStatus != null) tvStatus.setText("Waiting for CAN Frames");
-            if (tvTelemetry != null) {
-                tvTelemetry.setText("IDLE");
-                tvTelemetry.setTextColor(Ui.DIM);
+            if (tvSubtitle != null) {
+                tvSubtitle.setText("Turn on display or wake scooter");
+                tvSubtitle.setTextColor(Ui.DIM);
+            }
+            if (badgeVerdict != null) {
+                badgeVerdict.setText("IDLE");
+                badgeVerdict.setTextColor(Ui.DIM);
             }
             if (checkIcon != null) checkIcon.setColorFilter(Ui.DIM);
         } else if (stale && connected) {
@@ -1599,18 +1650,22 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
             bannerSpacer.setVisibility(View.VISIBLE);
             bannerBody.setText("No vehicle CAN data for more than 6 seconds (telematics trickle only). The scooter may be asleep or locked — turn the dash on.");
             if (tvStatus != null) tvStatus.setText("Vehicle Asleep / Trickle");
-            if (tvTelemetry != null) {
-                tvTelemetry.setText("ASLEEP");
-                tvTelemetry.setTextColor(Ui.WARNING);
+            if (tvSubtitle != null) {
+                tvSubtitle.setText("Trickle heartbeat detected (sleep mode)");
+                tvSubtitle.setTextColor(Ui.WARNING);
+            }
+            if (badgeVerdict != null) {
+                badgeVerdict.setText("ASLEEP");
+                badgeVerdict.setTextColor(Ui.WARNING);
             }
             if (checkIcon != null) checkIcon.setColorFilter(Ui.WARNING);
         } else {
             banner.setVisibility(View.GONE);
             bannerSpacer.setVisibility(View.GONE);
             if (tvStatus != null) tvStatus.setText("Systems Operational");
-            if (tvTelemetry != null) {
-                tvTelemetry.setText("LIVE TELEMETRY");
-                tvTelemetry.setTextColor(Ui.POSITIVE);
+            if (tvSubtitle != null) {
+                tvSubtitle.setText("VCAN0 Telemetry (500 kbps)");
+                tvSubtitle.setTextColor(Ui.MUTED);
             }
             if (checkIcon != null) checkIcon.setColorFilter(Ui.POSITIVE);
         }
@@ -1693,7 +1748,7 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
                     }
                 }
 
-                // Update each cell card with BALANCING, MAX, or MIN tag
+                // Update each cell card with BAL, MAX, or MIN tag
                 for (int i = 0; i < 14; i++) {
                     double v = s.cells[i];
                     if (!Double.isNaN(v) && v > 0) {
@@ -1702,26 +1757,30 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
                         boolean isBalancing = s.balancing != null && s.balancing[i];
                         if (isBalancing) {
                             tvCellTags[i].setVisibility(View.VISIBLE);
-                            tvCellTags[i].setText("BALANCING");
+                            tvCellTags[i].setText("BAL");
                             tvCellTags[i].setTextColor(Ui.POSITIVE);
-                            tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.POSITIVE, 0x28), 8, 0));
-                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 14, 0));
+                            tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.POSITIVE, 0x28), 6, 0));
+                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, Ui.alpha(Ui.POSITIVE, 0x60)));
                         } else if (i == maxIdx) {
                             tvCellTags[i].setVisibility(View.VISIBLE);
                             tvCellTags[i].setText("MAX");
                             tvCellTags[i].setTextColor(Ui.WARNING);
-                            tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.WARNING, 0x28), 8, 0));
-                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 14, 0));
+                            tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.WARNING, 0x28), 6, 0));
+                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, Ui.alpha(Ui.WARNING, 0x60)));
                         } else if (i == minIdx) {
                             tvCellTags[i].setVisibility(View.VISIBLE);
                             tvCellTags[i].setText("MIN");
                             tvCellTags[i].setTextColor(Ui.PRIMARY);
-                            tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.PRIMARY, 0x28), 8, 0));
-                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 14, 0));
+                            tvCellTags[i].setBackground(Ui.round(ctx, Ui.alpha(Ui.PRIMARY, 0x28), 6, 0));
+                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, Ui.alpha(Ui.PRIMARY, 0x60)));
                         } else {
                             tvCellTags[i].setVisibility(View.GONE);
-                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE, 14, 0));
+                            cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, 0));
                         }
+                    } else {
+                        tvCellVoltages[i].setText("-- V");
+                        tvCellTags[i].setVisibility(View.GONE);
+                        cellCards[i].setBackground(Ui.round(ctx, Ui.SURFACE_HIGH, 10, 0));
                     }
                 }
             }
@@ -1777,7 +1836,16 @@ public final class DiagnosticsTab implements Tab, Bus.Listener {
 
         // 3. Update Battery Energy, Health & Cycles
         if (tvEnergySoh != null) {
-            tvEnergySoh.setText(!Double.isNaN(s.soh) ? String.format(Locale.US, "%.0f %%", s.soh) : "-- %");
+            double effectiveSoh = !Double.isNaN(s.sohCalculated) ? s.sohCalculated : s.soh;
+            if (!Double.isNaN(effectiveSoh)) {
+                if (!Double.isNaN(s.soh) && Math.abs(s.soh - effectiveSoh) > 0.5) {
+                    tvEnergySoh.setText(String.format(Locale.US, "%.0f %% (BMS: %.0f%%)", effectiveSoh, s.soh));
+                } else {
+                    tvEnergySoh.setText(String.format(Locale.US, "%.0f %%", effectiveSoh));
+                }
+            } else {
+                tvEnergySoh.setText("-- %");
+            }
         }
         if (tvEnergySoc != null) {
             tvEnergySoc.setText(!Double.isNaN(s.soc) ? String.format(Locale.US, "%.1f %%", s.soc) : "-- %");

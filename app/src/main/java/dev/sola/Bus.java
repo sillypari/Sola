@@ -86,6 +86,7 @@ public final class Bus {
     private final Set<String> simulated = new LinkedHashSet<>();
     private final java.util.concurrent.ExecutorService diagExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
     private final AtomicBoolean diagInFlight = new AtomicBoolean(false);
+    private volatile boolean extendedUdsMode = false;
 
     private final Runnable udsWakeAndKeepAlive = new Runnable() {
         @Override
@@ -96,28 +97,37 @@ public final class Bus {
                 long now = System.currentTimeMillis();
                 Live l = live;
                 Live.Snapshot snap = l == null ? null : l.snapshot();
-                final boolean isQuiet = snap == null || snap.pps <= 5 || (snap.lastFrameMs > 0 && now - snap.lastFrameMs > 2500);
+                final boolean isQuiet = snap == null || snap.pps <= 5 || (snap.lastFrameMs > 0 && now - snap.lastFrameMs > 3000);
 
                 if (diagInFlight.compareAndSet(false, true)) {
                     diagExecutor.submit(() -> {
                         try {
-                            if (isQuiet) {
-                                // Scooter is asleep / locked / quiet:
-                                // 1. CAN NM Wakeup Frame (0x003)
-                                // 2. VCU (0x786) & BMS (0x78E) Extended Diagnostic Session (10 03)
-                                // 3. Tester Present Keep-Alive (3E 80)
-                                // 4. Poll Battery Information 1 (22 E1 00), Battery Status (22 E1 03), and Contactor Voltage (22 E3 01)
-                                rpc.shell("cansend vcan0 003#0100000000000000; "
-                                        + "cansend vcan0 786#0210030000000000; "
-                                        + "cansend vcan0 78E#0210030000000000; "
-                                        + "cansend vcan0 78E#023E800000000000; "
-                                        + "cansend vcan0 786#023E800000000000; "
-                                        + "cansend vcan0 78E#0322E10000000000; "
-                                        + "cansend vcan0 78E#0322E10300000000; "
-                                        + "cansend vcan0 78E#0322E30100000000", 3000);
+                            if (extendedUdsMode) {
+                                if (isQuiet) {
+                                    // Full UDS Diagnostic Session & Battery Polling (Earlier proven implementation)
+                                    // 1. CAN NM Wakeup Frame (0x003)
+                                    // 2. VCU (0x786) & BMS (0x78E) Extended Diagnostic Session (10 03)
+                                    // 3. Tester Present Keep-Alive (3E 80)
+                                    // 4. Poll Battery Information 1 (22 E1 00), Battery Status (22 E1 03), Contactor Voltage (22 E3 01)
+                                    rpc.shell("cansend vcan0 003#0100000000000000; "
+                                            + "cansend vcan0 786#0210030000000000; "
+                                            + "cansend vcan0 78E#0210030000000000; "
+                                            + "cansend vcan0 78E#023E800000000000; "
+                                            + "cansend vcan0 786#023E800000000000; "
+                                            + "cansend vcan0 78E#0322E10000000000; "
+                                            + "cansend vcan0 78E#0322E10300000000; "
+                                            + "cansend vcan0 78E#0322E30100000000", 3000);
+                                } else {
+                                    // Scooter is awake and broadcasting: send lightweight Tester Present keep-alive
+                                    rpc.shell("cansend vcan0 786#023E800000000000; cansend vcan0 78E#023E800000000000", 2000);
+                                }
                             } else {
-                                // Scooter is awake and broadcasting: send lightweight Tester Present keep-alive
-                                rpc.shell("cansend vcan0 786#023E800000000000; cansend vcan0 78E#023E800000000000", 2000);
+                                // In Normal (Passive) Mode: Non-intrusive CAN Network Management (NM) wakeup only.
+                                // Wakes up physical bus transceivers without issuing UDS 0x10 0x03 to BMS,
+                                // allowing high-voltage charging to proceed completely uninterrupted.
+                                if (isQuiet) {
+                                    rpc.shell("cansend vcan0 003#0100000000000000", 2000);
+                                }
                             }
                         } catch (Exception ignored) {
                         } finally {
@@ -127,7 +137,7 @@ public final class Bus {
                 }
             }
             if (running) {
-                ui.postDelayed(this, 2500);
+                ui.postDelayed(this, 3000);
             }
         }
     };
@@ -135,6 +145,16 @@ public final class Bus {
     public Bus(Context context, Conn conn) {
         this.context = context.getApplicationContext();
         this.conn = conn;
+        android.content.SharedPreferences prefs = context.getSharedPreferences("sola_can_mode", Context.MODE_PRIVATE);
+        this.extendedUdsMode = "uds".equalsIgnoreCase(prefs.getString("can_diagnostic_mode", "normal"));
+    }
+
+    public void setExtendedUdsMode(boolean enabled) {
+        this.extendedUdsMode = enabled;
+    }
+
+    public boolean isExtendedUdsMode() {
+        return extendedUdsMode;
     }
 
     // --------------------------------------------------------------- control

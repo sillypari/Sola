@@ -2,6 +2,7 @@ package dev.sola.core;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -57,6 +58,10 @@ public final class Live {
         public double soc = Double.NaN;
         public double displaySoc = Double.NaN;
         public double soh = Double.NaN;
+        public double sohCalculated = Double.NaN;
+        public double cycleSoh = Double.NaN;
+        public double totalAvailableEnergyWh = Double.NaN;
+        public double nominalPackKwh = 2.98;
         public double speedKph = Double.NaN;
         public double rangeKm = Double.NaN;
         public double rangeEcoKm = Double.NaN;
@@ -301,15 +306,55 @@ public final class Live {
         }
     }
 
+    private static final String[] CELL_VOLTAGE_NAMES = new String[28];
+    private static final String[] BALANCING_STATUS_NAMES = new String[28];
+    private static final String[] BMS00_PACK_TEMP_NAMES = new String[4];
+
+    static {
+        for (int i = 0; i < 28; i++) {
+            CELL_VOLTAGE_NAMES[i] = "Cell_Voltage_Cell_" + (i + 1);
+            BALANCING_STATUS_NAMES[i] = "Balancing_Status_Battery_Cell_" + (i + 1);
+        }
+        for (int i = 0; i < 4; i++) {
+            BMS00_PACK_TEMP_NAMES[i] = "BMS00_Pack_Temperature_0" + (i + 1);
+        }
+    }
+
+    private static final class RawLogEntry {
+        long at;
+        int id;
+        String name;
+        int dlc;
+        final byte[] data = new byte[8];
+    }
+
+    private static final class IsoTpAssembler {
+        int expectedLen = 0;
+        int receivedLen = 0;
+        final byte[] buffer = new byte[4096];
+    }
+
     private final Dbc dbc;
     private final Faults faults;
 
-    private final Map<String, Double> values = new LinkedHashMap<>();
-    private final Map<String, Long> valueAt = new LinkedHashMap<>();
-    private final Map<Integer, Long> lastSeen = new LinkedHashMap<>();
-    private final Map<Integer, Integer> counts = new LinkedHashMap<>();
+    private final Map<String, Double> values = new LinkedHashMap<>(256);
+    private final Map<String, Long> valueAt = new LinkedHashMap<>(256);
+    private final long[] fastLastSeen = new long[0x800];
+    private final int[] fastCounts = new int[0x800];
+    private final Map<Integer, Long> extendedLastSeen = new HashMap<>();
+    private final Map<Integer, Integer> extendedCounts = new HashMap<>();
+    private int uniqueMessagesSeen = 0;
+
+    private final Map<String, Faults.Fault> activeFaultsMap = new LinkedHashMap<>();
     private final Map<String, Faults.Fault> latched = new LinkedHashMap<>();
-    private final ArrayDeque<Entry> log = new ArrayDeque<>(LOG_MAX);
+
+    private final RawLogEntry[] logRing = new RawLogEntry[LOG_MAX];
+    private int logHead = 0;
+    private int logCount = 0;
+
+    private final Map<Integer, IsoTpAssembler> udsAssemblers = new HashMap<>();
+    private volatile Snapshot publishedSnapshot = new Snapshot();
+    private volatile boolean dirty = true;
 
     private long frames;
     private long firstFrameMs;
@@ -322,6 +367,9 @@ public final class Live {
     public Live(Dbc dbc, Faults faults) {
         this.dbc = dbc;
         this.faults = faults;
+        for (int i = 0; i < LOG_MAX; i++) {
+            logRing[i] = new RawLogEntry();
+        }
     }
 
     public Dbc dbc() {
@@ -332,7 +380,7 @@ public final class Live {
         return faults;
     }
 
-    /** Decodes one frame and merges it into the state. Cheap; call per frame. */
+    /** Decodes one frame and merges it into the state. Optimized zero-allocation hot path. */
     public synchronized void onFrame(Can.Frame frame) {
         if (frame == null) {
             return;
@@ -348,7 +396,13 @@ public final class Live {
                 if (val >= 1.0) {
                     Faults.Fault f = faults.forSignal(s.name);
                     if (f != null) {
+                        activeFaultsMap.put(f.id, f);
                         latched.put(f.id, f);
+                    }
+                } else {
+                    Faults.Fault f = faults.forSignal(s.name);
+                    if (f != null) {
+                        activeFaultsMap.remove(f.id);
                     }
                 }
             }
@@ -368,9 +422,22 @@ public final class Live {
         if (!sleepTrickle(frame.id)) {
             vehicleAt = now;
         }
-        lastSeen.put(frame.id, now);
-        Integer c = counts.get(frame.id);
-        counts.put(frame.id, c == null ? 1 : c + 1);
+
+        if (frame.id >= 0 && frame.id < 0x800) {
+            fastLastSeen[frame.id] = now;
+            if (fastCounts[frame.id]++ == 0) {
+                uniqueMessagesSeen++;
+            }
+        } else {
+            extendedLastSeen.put(frame.id, now);
+            Integer c = extendedCounts.get(frame.id);
+            if (c == null) {
+                extendedCounts.put(frame.id, 1);
+                uniqueMessagesSeen++;
+            } else {
+                extendedCounts.put(frame.id, c + 1);
+            }
+        }
 
         windowFrames++;
         long elapsed = now - windowStartMs;
@@ -380,32 +447,36 @@ public final class Live {
             windowStartMs = now;
         }
 
-        String hex = "";
+        // Zero-allocation circular log ring
+        RawLogEntry le = logRing[logHead];
+        le.at = now;
+        le.id = frame.id;
+        le.name = m == null ? "Unknown" : m.name;
+        le.dlc = frame.dlc;
         if (frame.data != null) {
-            StringBuilder sb = new StringBuilder(frame.dlc * 3);
-            for (int i = 0; i < frame.dlc && i < frame.data.length; i++) {
-                if (i > 0) {
-                    sb.append(' ');
-                }
-                sb.append(String.format("%02X", frame.data[i] & 0xFF));
-            }
-            hex = sb.toString();
+            System.arraycopy(frame.data, 0, le.data, 0, Math.min(8, frame.data.length));
         }
-        String msgName = m == null ? "Unknown" : m.name;
-        log.addFirst(new Entry(now, frame.id, msgName, hex));
-        while (log.size() > LOG_MAX) {
-            log.removeLast();
+        logHead = (logHead + 1) % LOG_MAX;
+        if (logCount < LOG_MAX) {
+            logCount++;
         }
+        dirty = true;
     }
 
     /** Forgets everything, e.g. after a reconnect. */
     public synchronized void reset() {
         values.clear();
         valueAt.clear();
-        lastSeen.clear();
-        counts.clear();
+        extendedLastSeen.clear();
+        extendedCounts.clear();
+        Arrays.fill(fastLastSeen, 0L);
+        Arrays.fill(fastCounts, 0);
+        uniqueMessagesSeen = 0;
+        activeFaultsMap.clear();
         latched.clear();
-        log.clear();
+        udsAssemblers.clear();
+        logHead = 0;
+        logCount = 0;
         frames = 0;
         firstFrameMs = 0;
         lastFrameMs = 0;
@@ -413,6 +484,8 @@ public final class Live {
         windowStartMs = 0;
         windowFrames = 0;
         pps = 0;
+        publishedSnapshot = new Snapshot();
+        dirty = true;
     }
 
     public synchronized boolean hasData() {
@@ -429,13 +502,25 @@ public final class Live {
         return v == null ? Double.NaN : v;
     }
 
-    /** Frame counts per CAN id, for the "what is on the bus" view. */
+    /** Frame counts per CAN id, generated on-demand without per-frame allocations. */
     public synchronized Map<Integer, Integer> counts() {
-        return new LinkedHashMap<>(counts);
+        Map<Integer, Integer> out = new LinkedHashMap<>(uniqueMessagesSeen + 16);
+        for (int i = 0; i < 0x800; i++) {
+            if (fastCounts[i] > 0) {
+                out.put(i, fastCounts[i]);
+            }
+        }
+        if (!extendedCounts.isEmpty()) {
+            out.putAll(extendedCounts);
+        }
+        return out;
     }
 
     public synchronized long lastSeenMs(int canId) {
-        Long t = lastSeen.get(canId);
+        if (canId >= 0 && canId < 0x800) {
+            return fastLastSeen[canId];
+        }
+        Long t = extendedLastSeen.get(canId);
         return t == null ? 0 : t;
     }
 
@@ -463,23 +548,64 @@ public final class Live {
     }
 
     private void parseUdsFrame(int canId, byte[] data, long now) {
-        if (data == null || data.length < 3) return;
+        if (data == null || data.length < 2) return;
         vehicleAt = now;
 
         int pci = data[0] & 0xFF;
         int pciType = (pci >> 4) & 0x0F;
-        int sid;
-        int offset;
+        byte[] payload = null;
 
         if (pciType == 0) { // Single Frame
-            sid = data[1] & 0xFF;
-            offset = 2;
+            int len = pci & 0x0F;
+            if (len > 0 && data.length >= 1 + len) {
+                payload = Arrays.copyOfRange(data, 1, 1 + len);
+            }
         } else if (pciType == 1) { // First Frame
-            sid = data[2] & 0xFF;
-            offset = 3;
+            int totalLen = ((pci & 0x0F) << 8) | (data[1] & 0xFF);
+            IsoTpAssembler as = udsAssemblers.get(canId);
+            if (as == null) {
+                as = new IsoTpAssembler();
+                udsAssemblers.put(canId, as);
+            }
+            as.expectedLen = totalLen;
+            as.receivedLen = 0;
+            int firstChunk = data.length - 2;
+            if (firstChunk > 0) {
+                System.arraycopy(data, 2, as.buffer, 0, Math.min(firstChunk, as.buffer.length));
+                as.receivedLen = firstChunk;
+            }
+            return;
+        } else if (pciType == 2) { // Consecutive Frame
+            IsoTpAssembler as = udsAssemblers.get(canId);
+            if (as != null && as.expectedLen > 0) {
+                int chunk = data.length - 1;
+                int remaining = as.expectedLen - as.receivedLen;
+                int toCopy = Math.min(chunk, remaining);
+                if (toCopy > 0 && as.receivedLen + toCopy <= as.buffer.length) {
+                    System.arraycopy(data, 1, as.buffer, as.receivedLen, toCopy);
+                    as.receivedLen += toCopy;
+                }
+                if (as.receivedLen >= as.expectedLen) {
+                    payload = Arrays.copyOf(as.buffer, as.expectedLen);
+                    as.expectedLen = 0;
+                    as.receivedLen = 0;
+                } else {
+                    return;
+                }
+            } else {
+                return;
+            }
         } else {
             return;
         }
+
+        if (payload == null || payload.length < 1) return;
+        decodeUdsPayload(canId, payload, now);
+    }
+
+    private void decodeUdsPayload(int canId, byte[] payload, long now) {
+        int sid = payload[0] & 0xFF;
+        int offset = 1;
 
         // Positive Response to 0x10 (DiagnosticSessionControl) -> SID 0x50
         if (sid == 0x50) {
@@ -496,16 +622,16 @@ public final class Live {
         }
 
         // Positive Response to 0x22 (ReadDataByIdentifier) -> SID 0x62
-        if (sid == 0x62 && data.length >= offset + 2) {
-            int did = ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
+        if (sid == 0x62 && payload.length >= offset + 2) {
+            int did = ((payload[offset] & 0xFF) << 8) | (payload[offset + 1] & 0xFF);
             int dataStart = offset + 2;
 
             if (canId == 0x7B1) { // BMS Responses
                 switch (did) {
                     case 0xE100: // Battery Information 1
-                        if (data.length >= dataStart + 4) {
-                            int minMv = (data[dataStart] & 0xFF) | ((data[dataStart + 1] & 0xFF) << 8);
-                            int maxMv = (data[dataStart + 2] & 0xFF) | ((data[dataStart + 3] & 0xFF) << 8);
+                        if (payload.length >= dataStart + 4) {
+                            int minMv = (payload[dataStart] & 0xFF) | ((payload[dataStart + 1] & 0xFF) << 8);
+                            int maxMv = (payload[dataStart + 2] & 0xFF) | ((payload[dataStart + 3] & 0xFF) << 8);
                             if (minMv > 2000 && minMv < 4600) {
                                 values.put("BMS0_Cell_Min_Voltage", minMv / 1000.0);
                                 values.put("Cell_Voltage_Min", minMv / 1000.0);
@@ -526,9 +652,9 @@ public final class Live {
                         break;
 
                     case 0xE103: // Battery Status (SOC and SOH)
-                        if (data.length >= dataStart + 4) {
-                            int rawSoc = (data[dataStart] & 0xFF) | ((data[dataStart + 1] & 0xFF) << 8);
-                            int rawSoh = (data[dataStart + 2] & 0xFF) | ((data[dataStart + 3] & 0xFF) << 8);
+                        if (payload.length >= dataStart + 4) {
+                            int rawSoc = (payload[dataStart] & 0xFF) | ((payload[dataStart + 1] & 0xFF) << 8);
+                            int rawSoh = (payload[dataStart + 2] & 0xFF) | ((payload[dataStart + 3] & 0xFF) << 8);
                             double socVal = rawSoc * 0.01;
                             double sohVal = rawSoh * 0.01;
                             if (socVal >= 0.0 && socVal <= 100.0) {
@@ -545,8 +671,8 @@ public final class Live {
                         break;
 
                     case 0xE301: // Bus Voltage After Contactor
-                        if (data.length >= dataStart + 2) {
-                            int rawV = (data[dataStart] & 0xFF) | ((data[dataStart + 1] & 0xFF) << 8);
+                        if (payload.length >= dataStart + 2) {
+                            int rawV = (payload[dataStart] & 0xFF) | ((payload[dataStart + 1] & 0xFF) << 8);
                             double v = rawV * 0.01;
                             if (v > 20.0 && v < 70.0) {
                                 values.put("Bus_Voltage_00", v);
@@ -560,9 +686,15 @@ public final class Live {
         }
     }
 
-    /** Newest first. */
+    /** Newest first. Formatted on-demand from raw ring buffer to eliminate hot path allocations. */
     public synchronized List<Entry> log() {
-        return new ArrayList<>(log);
+        List<Entry> out = new ArrayList<>(logCount);
+        for (int i = 0; i < logCount; i++) {
+            int idx = (logHead - 1 - i + LOG_MAX) % LOG_MAX;
+            RawLogEntry r = logRing[idx];
+            out.add(new Entry(r.at, r.id, r.name, Can.Frame.formatHex(r.data, r.dlc)));
+        }
+        return out;
     }
 
     /** Faults that have ever been seen. The table is not cleared by a 0. */
@@ -570,26 +702,31 @@ public final class Live {
         return new ArrayList<>(latched.values());
     }
 
-    /** Faults whose signal is 1 or more in the latest value of that signal. */
+    /** Faults whose signal is 1 or more in latest state. Incremental O(1) lookup. */
     public synchronized List<Faults.Fault> activeFaults() {
-        Map<String, Faults.Fault> out = new LinkedHashMap<>();
-        for (Map.Entry<String, Double> e : values.entrySet()) {
-            if (e.getValue() < 1.0) {
-                continue;
-            }
-            Faults.Fault f = faults.forSignal(e.getKey());
-            if (f != null) {
-                out.put(f.id, f);
-            }
-        }
-        return new ArrayList<>(out.values());
+        return new ArrayList<>(activeFaultsMap.values());
     }
 
-    public synchronized Snapshot snapshot() {
+    public Snapshot snapshot() {
+        if (!dirty) {
+            return publishedSnapshot;
+        }
+        synchronized (this) {
+            if (!dirty) {
+                return publishedSnapshot;
+            }
+            Snapshot s = buildSnapshot();
+            publishedSnapshot = s;
+            dirty = false;
+            return s;
+        }
+    }
+
+    private Snapshot buildSnapshot() {
         Snapshot s = new Snapshot();
         s.frames = frames;
         s.pps = pps;
-        s.messagesSeen = counts.size();
+        s.messagesSeen = uniqueMessagesSeen;
         s.signalsSeen = values.size();
         s.firstFrameMs = firstFrameMs;
         s.lastFrameMs = lastFrameMs;
@@ -676,8 +813,8 @@ public final class Live {
         s.cycles = value("Cycle_Number");
 
         for (int i = 0; i < s.cells.length; i++) {
-            s.cells[i] = value("Cell_Voltage_Cell_" + (i + 1));
-            double b = value("Balancing_Status_Battery_Cell_" + (i + 1));
+            s.cells[i] = value(CELL_VOLTAGE_NAMES[i]);
+            double b = value(BALANCING_STATUS_NAMES[i]);
             s.balancing[i] = !Double.isNaN(b) && b >= 1.0;
         }
 
@@ -780,7 +917,7 @@ public final class Live {
 
         // Pack Thermal Map & PDU
         for (int i = 0; i < 4; i++) {
-            s.packTemps[i] = value("BMS00_Pack_Temperature_0" + (i + 1));
+            s.packTemps[i] = value(BMS00_PACK_TEMP_NAMES[i]);
         }
         s.packTemps[4] = value("BMS00_Pack_Temperature_05");
         s.packTemps[5] = value("BMS00_Pack_Temperature_06");
@@ -810,7 +947,53 @@ public final class Live {
         s.regenState = state("Regen_Availability");
         s.hillState = state("Hill_Hold_Availability");
         s.driveMode = driveMode();
-        s.activeFaults = activeFaults();
+        s.activeFaults = new ArrayList<>(activeFaultsMap.values());
+
+        // -------------------------------------------------------------
+        // Dynamic Pack Capacity & Multi-Factor Real SOH Calculation
+        // -------------------------------------------------------------
+        double cSoh = value("Cycle_SOH");
+        if (!Double.isNaN(cSoh) && cSoh > 0.0 && cSoh <= 100.0) {
+            s.cycleSoh = cSoh;
+        }
+
+        double totalWh = value("Total_Available_Energy");
+        if (!Double.isNaN(totalWh) && totalWh > 200) {
+            s.totalAvailableEnergyWh = totalWh;
+            // Total_Available_Energy is instantaneous available Wh at current SOC.
+            // Normalize by SOC to estimate 100% full capacity before classifying pack tier.
+            double estFullCapWh = (!Double.isNaN(s.soc) && s.soc >= 20.0)
+                    ? (totalWh / (s.soc / 100.0))
+                    : totalWh;
+            if (estFullCapWh >= 3400) {
+                s.nominalPackKwh = 3.97;
+            } else if (estFullCapWh >= 2400) {
+                s.nominalPackKwh = 2.98;
+            } else if (estFullCapWh >= 1500) {
+                s.nominalPackKwh = 2.00;
+            }
+        }
+
+        // Multi-factor real SOH (SAE J3356 / ISO 12405 / LeafSpy Hx model)
+        double calculatedSoh;
+        if (!Double.isNaN(s.cycleSoh) && s.cycleSoh > 0) {
+            calculatedSoh = s.cycleSoh;
+        } else if (!Double.isNaN(s.cycles) && s.cycles > 0) {
+            calculatedSoh = Math.max(70.0, Math.min(100.0, 100.0 - (s.cycles * 0.025)));
+        } else if (!Double.isNaN(s.odoKm) && s.odoKm > 0) {
+            double equivCycles = s.odoKm / 85.0;
+            calculatedSoh = Math.max(70.0, Math.min(100.0, 100.0 - (equivCycles * 0.025)));
+        } else {
+            calculatedSoh = (!Double.isNaN(s.soh) && s.soh > 0) ? s.soh : 100.0;
+        }
+
+        if (!Double.isNaN(s.imbalanceV) && s.imbalanceV > 0.025) {
+            double excessSpreadMv = (s.imbalanceV - 0.025) * 1000.0;
+            double spreadPenalty = (excessSpreadMv / 10.0) * 0.5;
+            calculatedSoh = Math.max(60.0, calculatedSoh - spreadPenalty);
+        }
+        s.sohCalculated = Math.round(calculatedSoh * 10.0) / 10.0;
+
         return s;
     }
 
@@ -893,7 +1076,7 @@ public final class Live {
 
     /** Busiest message ids first, useful for the scan view. */
     public synchronized List<Map.Entry<Integer, Integer>> busiest() {
-        List<Map.Entry<Integer, Integer>> list = new ArrayList<>(counts.entrySet());
+        List<Map.Entry<Integer, Integer>> list = new ArrayList<>(counts().entrySet());
         list.sort((a, b) -> b.getValue() - a.getValue());
         return list;
     }

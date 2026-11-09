@@ -1,11 +1,22 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="123.43dp"
-    android:viewportWidth="14"
-    android:viewportHeight="16">
-
+    android:width="64dp"
+    android:height="24dp"
+    android:viewportWidth="96.0"
+    android:viewportHeight="34.0">
+    <!-- Geometric SOLA Mark: S -->
     <path
-        android:pathData="M5,0V4H9V0H11V4H14V6H12V8C12,10.419 10.282,12.437 8,12.9V16H6V12.9C3.718,12.437 2,10.419 2,8V6H0V4H3V0H5Z"
-        android:fillColor="#FFFFFF" />
-
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M21.5,10.2 C21.5,6.6 17.5,4.3 11.2,4.3 C5.0,4.3 1.2,6.8 1.2,11.2 C1.2,16.5 7.6,17.4 12.8,18.7 C17.8,19.9 21.5,21.2 21.5,24.4 C21.5,28.0 17.2,29.9 11.2,29.9 C4.8,29.9 1.2,27.2 1.2,23.2 L7.0,23.2 C7.0,24.8 8.8,25.6 11.2,25.6 C14.2,25.6 15.7,24.6 15.7,23.2 C15.7,20.6 10.6,19.6 5.5,18.2 C2.0,17.2 1.2,14.6 1.2,11.2 C1.2,6.8 5.4,4.3 11.2,4.3 C16.5,4.3 21.5,6.5 21.5,10.2 Z" />
+    <!-- Geometric SOLA Mark: O -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M39.999,4.293C32.832,4.28 27.000,10.027 27.000,17.136C26.987,24.231 32.792,30.004 39.972,30.004C47.139,30.018 52.971,24.27 52.971,17.162C52.971,10.066 47.166,4.306 39.999,4.293ZM39.972,24.009C36.151,24.009 33.056,20.932 33.056,17.149C33.07,13.365 36.164,10.302 39.985,10.302C43.807,10.302 46.901,13.378 46.901,17.162C46.901,20.945 43.794,24.009 39.972,24.009Z" />
+    <!-- Geometric SOLA Mark: L -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M60.695,23.298L60.719,4.972H55.054L55.124,22.337L55.031,28.903H64.295L67.539,23.298H60.695Z" />
+    <!-- Geometric SOLA Mark: A -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M80.245,16.048L87.422,28.904H93.762L80.258,4.753L66.691,28.904L72.922,28.892L80.245,16.048Z" />
 </vector>

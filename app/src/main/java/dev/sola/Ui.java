@@ -21,31 +21,86 @@ import android.widget.TextView;
  */
 public final class Ui {
 
-    // Axiom Exact Color Tokens (Material 3 Obsidian Elevation Hierarchy)
-    public static final int BG = 0xFF111318;                 // Base Canvas
-    public static final int SURFACE = 0xFF1C1E25;            // Surface Container (Outer Card, solid)
-    public static final int SURFACE_HIGH = 0xFF272A34;       // Surface Container High (Inner Sub-card, solid)
-    public static final int LINE = 0xFF373942;               // Outline / Subtle Dividers
+    // Material You / Pixel Quick-Settings Teal & Electric Cyan Palette
+    public static int BG = 0xFF0D1217;                 // Base Canvas
+    public static int SURFACE = 0xFF151C22;            // Surface Container (Outer Card, solid)
+    public static int SURFACE_HIGH = 0xFF1E2730;       // Surface Container High (Inner Sub-card, solid)
+    public static int LINE = 0xFF2A3642;               // Outline / Subtle Dividers
 
-    public static final int PRIMARY = 0xFFA8C7FA;            // Cyber Blue / Accent
-    public static final int PRIMARY_CONTAINER = 0xFF1F3354;
-    public static final int POSITIVE = 0xFF7CDA9A;           // Soft Mint Green
-    public static final int WARNING = 0xFFF6C177;            // Warm Amber
-    public static final int ERROR = 0xFFF28B82;              // Coral Red
+    public static int PRIMARY = 0xFF55D6F5;            // Electric Cyan Accent (#55D6F5)
+    public static int PRIMARY_CONTAINER = 0xFF01687B;  // Deep Teal (#01687B)
+    public static int POSITIVE = 0xFF4ADE80;           // Soft Mint Green
+    public static int WARNING = 0xFFFBBF24;            // Warm Amber
+    public static int ERROR = 0xFFF87171;              // Coral Red
 
-    public static final int TEXT = 0xFFE2E2E6;               // On Surface
-    public static final int MUTED = 0xFF90929C;              // On Surface Variant
-    public static final int DIM = 0xFF73757F;                // Muted Outline
+    public static int TEXT = 0xFFE6EDF3;               // On Surface
+    public static int MUTED = 0xFF94A3B8;              // On Surface Variant
+    public static int DIM = 0xFF64748B;                // Muted Outline
 
     // Legacy aliases for REA tab compatibility
-    public static final int CARD = SURFACE;
-    public static final int CARD_ELEV = SURFACE_HIGH;
-    public static final int ACCENT = PRIMARY;
-    public static final int ACCENT_TEXT = 0xFF002F65;
-    public static final int INFO = PRIMARY;
-    public static final int WARN = WARNING;
-    public static final int BAD = ERROR;
+    public static int CARD = SURFACE;
+    public static int CARD_ELEV = SURFACE_HIGH;
+    public static int ACCENT = PRIMARY;
+    public static int ACCENT_TEXT = 0xFF003640;
+    public static int INFO = PRIMARY;
+    public static int WARN = WARNING;
+    public static int BAD = ERROR;
     public static final String DASH = "—";
+
+    private static boolean isDark = true;
+
+    public static boolean isDarkTheme() {
+        return isDark;
+    }
+
+    public static void applyTheme(String mode, boolean isSystemNight) {
+        boolean dark;
+        if ("light".equalsIgnoreCase(mode)) {
+            dark = false;
+        } else if ("dark".equalsIgnoreCase(mode)) {
+            dark = true;
+        } else {
+            dark = isSystemNight;
+        }
+        isDark = dark;
+
+        if (dark) {
+            BG = 0xFF0D1217;
+            SURFACE = 0xFF151C22;
+            SURFACE_HIGH = 0xFF1E2730;
+            LINE = 0xFF2A3642;
+            PRIMARY = 0xFF55D6F5;
+            PRIMARY_CONTAINER = 0xFF01687B;
+            POSITIVE = 0xFF4ADE80;
+            WARNING = 0xFFFBBF24;
+            ERROR = 0xFFF87171;
+            TEXT = 0xFFE6EDF3;
+            MUTED = 0xFF94A3B8;
+            DIM = 0xFF64748B;
+            ACCENT_TEXT = 0xFF003640;
+        } else {
+            BG = 0xFFF1F5F9;
+            SURFACE = 0xFFFFFFFF;
+            SURFACE_HIGH = 0xFFE2E8F0;
+            LINE = 0xFFCBD5E1;
+            PRIMARY = 0xFF0284C7;
+            PRIMARY_CONTAINER = 0xFFBAE6FD;
+            POSITIVE = 0xFF16A34A;
+            WARNING = 0xFFD97706;
+            ERROR = 0xFFDC2626;
+            TEXT = 0xFF0F172A;
+            MUTED = 0xFF64748B;
+            DIM = 0xFF94A3B8;
+            ACCENT_TEXT = 0xFFFFFFFF;
+        }
+
+        CARD = SURFACE;
+        CARD_ELEV = SURFACE_HIGH;
+        ACCENT = PRIMARY;
+        INFO = PRIMARY;
+        WARN = WARNING;
+        BAD = ERROR;
+    }
 
     public static String fmt(double v, int decimals) {
         if (Double.isNaN(v)) return DASH;
@@ -130,12 +185,15 @@ public final class Ui {
         Button b = new Button(c);
         b.setText(label);
         b.setAllCaps(false);
-        b.setTextSize(13);
+        b.setTextSize(12);
         b.setTypeface(Typeface.DEFAULT_BOLD);
         b.setTextColor(TEXT);
-        b.setBackground(round(c, SURFACE_HIGH, 12, LINE));
-        b.setPadding(dp(c, 14), dp(c, 8), dp(c, 14), dp(c, 8));
-        b.setMinHeight(dp(c, 40));
+        b.setStateListAnimator(null);
+        b.setElevation(0);
+        b.setBackground(round(c, SURFACE_HIGH, 10, 0));
+        b.setPadding(dp(c, 12), dp(c, 6), dp(c, 12), dp(c, 6));
+        b.setMinHeight(dp(c, 36));
+        b.setMinimumHeight(dp(c, 36));
         b.setTransformationMethod(null);
         if (l != null) b.setOnClickListener(l);
         return b;
@@ -143,15 +201,15 @@ public final class Ui {
 
     public static Button accent(Context c, String label, View.OnClickListener l) {
         Button b = button(c, label, l);
-        b.setTextColor(Color.BLACK);
-        b.setBackground(round(c, PRIMARY, 12, 0));
+        b.setTextColor(ACCENT_TEXT);
+        b.setBackground(round(c, PRIMARY, 10, 0));
         return b;
     }
 
     public static Button danger(Context c, String label, View.OnClickListener l) {
         Button b = button(c, label, l);
         b.setTextColor(ERROR);
-        b.setBackground(round(c, alpha(ERROR, 0x1A), 12, alpha(ERROR, 0x44)));
+        b.setBackground(round(c, alpha(ERROR, 0x1A), 10, alpha(ERROR, 0x44)));
         return b;
     }
 
@@ -194,18 +252,19 @@ public final class Ui {
     public static LinearLayout cardHeader(Context c, int iconResId, String title) {
         LinearLayout h = row(c);
         h.setPadding(0, 0, 0, dp(c, 14));
+        h.setGravity(Gravity.CENTER_VERTICAL);
 
         if (iconResId != 0) {
             LinearLayout iconBox = column(c);
             iconBox.setGravity(Gravity.CENTER);
-            iconBox.setBackground(round(c, PRIMARY_CONTAINER, 16, 0));
+            iconBox.setBackground(round(c, SURFACE_HIGH, 11, 0));
             ImageView icon = new ImageView(c);
             icon.setImageResource(iconResId);
-            icon.setColorFilter(PRIMARY);
-            iconBox.addView(icon, new LinearLayout.LayoutParams(dp(c, 18), dp(c, 18)));
+            icon.setColorFilter(TEXT);
+            iconBox.addView(icon, new LinearLayout.LayoutParams(dp(c, 20), dp(c, 20)));
 
-            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(c, 32), dp(c, 32));
-            ip.rightMargin = dp(c, 10);
+            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(c, 36), dp(c, 36));
+            ip.rightMargin = dp(c, 12);
             h.addView(iconBox, ip);
         }
 
@@ -224,9 +283,13 @@ public final class Ui {
         TextView lbl = text(c, label.toUpperCase(), 9, MUTED);
         lbl.setTypeface(Typeface.DEFAULT_BOLD);
         lbl.setLetterSpacing(0.06f);
+        lbl.setSingleLine(true);
+        lbl.setEllipsize(android.text.TextUtils.TruncateAt.END);
 
         TextView val = text(c, value, 15, valColor != 0 ? valColor : TEXT);
         val.setTypeface(Typeface.DEFAULT_BOLD);
+        val.setSingleLine(true);
+        val.setEllipsize(android.text.TextUtils.TruncateAt.END);
         val.setPadding(0, dp(c, 3), 0, 0);
 
         box.addView(lbl);
@@ -245,7 +308,7 @@ public final class Ui {
         tv.setIncludeFontPadding(false);
         tv.setGravity(Gravity.CENTER);
         tv.setPadding(dp(c, 10), dp(c, 4), dp(c, 10), dp(c, 4));
-        tv.setBackground(round(c, alpha(color, 0x22), 12, 0));
+        tv.setBackground(round(c, SURFACE_HIGH, 12, 0));
         return tv;
     }
 
@@ -257,7 +320,7 @@ public final class Ui {
         tv.setIncludeFontPadding(false);
         tv.setGravity(Gravity.CENTER);
         tv.setPadding(dp(c, 10), dp(c, 4), dp(c, 10), dp(c, 4));
-        tv.setBackground(round(c, alpha(color, 0x22), 12, 0));
+        tv.setBackground(round(c, SURFACE_HIGH, 12, 0));
         return tv;
     }
 

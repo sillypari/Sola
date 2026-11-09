@@ -77,15 +77,25 @@ public final class Can {
             return new Frame(id, dlc, data);
         }
 
-        public String dataHex() {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < dlc; i++) {
-                if (i > 0) {
-                    sb.append(' ');
-                }
-                sb.append(String.format("%02X", data[i] & 0xFF));
+        private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+
+        public static String formatHex(byte[] data, int dlc) {
+            if (data == null || dlc <= 0) return "";
+            int n = Math.min(dlc, data.length);
+            if (n <= 0) return "";
+            char[] chars = new char[n * 3 - 1];
+            int ci = 0;
+            for (int i = 0; i < n; i++) {
+                if (i > 0) chars[ci++] = ' ';
+                int b = data[i] & 0xFF;
+                chars[ci++] = HEX_CHARS[b >>> 4];
+                chars[ci++] = HEX_CHARS[b & 0x0F];
             }
-            return sb.toString();
+            return new String(chars);
+        }
+
+        public String dataHex() {
+            return formatHex(data, dlc);
         }
 
         @Override

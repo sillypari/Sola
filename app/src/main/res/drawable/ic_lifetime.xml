@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Google Material Symbols (Filled): Battery Lifetime Analysis / SOH Heart Pulse -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M15,14V12h8v2H15Zm-4,7L7.83,18.15q-1.8-1.63-3.09-2.9t-2.12-2.4T1.39,10.68Q1,9.63 1,8.48Q1,6.13 2.58,4.56T6.5,3Q7.8,3 8.98,3.54T11,5.07q0.85-1 2.03-1.54T15.5,3q2.13,0 3.56,1.29T20.85,7.3q-0.45-0.18-0.9-0.26T19.08,6.95q-2.52,0-4.3,1.76Q13,10.48 13,13q0,1.3 0.53,2.46T15,17.45q-0.47,0.43-1.24,1.09T12.45,19.7L11,21Z" />
+</vector>

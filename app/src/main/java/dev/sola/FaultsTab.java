@@ -53,7 +53,8 @@ public final class FaultsTab implements Tab, Bus.Listener {
     private final ImageView headerIcon;
     private final TextView tvHeaderTitle;
     private final TextView tvHeaderSubtitle;
-    private final LinearLayout pinsRow;
+    private TextView tvSubActiveCount;
+    private TextView tvSubRegistry;
     private Button btnTopClear;
 
     // Filter Chips
@@ -111,51 +112,78 @@ public final class FaultsTab implements Tab, Bus.Listener {
         bannerSpacer.setVisibility(View.GONE);
         body.addView(bannerSpacer);
 
-        // 1. Systems Operational / Faults Status Hero Card
+        // 1. Systems Operational / Faults Status Hero Card (Axiom Style)
         LinearLayout heroCard = Ui.card(activity);
+
+        // Header Row: Health Icon + Title/Eyebrow + Action Button on Right
         LinearLayout topRow = Ui.row(activity);
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
 
         headerIconBox = Ui.column(activity);
         headerIconBox.setGravity(Gravity.CENTER);
-        int pad = Ui.dp(activity, 10);
-        headerIconBox.setPadding(pad, pad, pad, pad);
-        headerIconBox.setBackground(Ui.round(activity, Ui.alpha(Ui.POSITIVE, 0x1E), 16, 0));
+        headerIconBox.setPadding(0, 0, 0, 0);
+        headerIconBox.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 11, 0));
 
         headerIcon = new ImageView(activity);
-        headerIcon.setImageResource(R.drawable.ic_check);
+        headerIcon.setImageResource(R.drawable.ic_system_normal);
         headerIcon.setColorFilter(Ui.POSITIVE);
-        headerIconBox.addView(headerIcon, new LinearLayout.LayoutParams(Ui.dp(activity, 26), Ui.dp(activity, 26)));
-        topRow.addView(headerIconBox);
+        headerIconBox.addView(headerIcon, new LinearLayout.LayoutParams(Ui.dp(activity, 20), Ui.dp(activity, 20)));
+
+        LinearLayout.LayoutParams hip = new LinearLayout.LayoutParams(Ui.dp(activity, 36), Ui.dp(activity, 36));
+        hip.rightMargin = Ui.dp(activity, 12);
+        topRow.addView(headerIconBox, hip);
 
         LinearLayout titleCol = Ui.column(activity);
-        titleCol.setPadding(Ui.dp(activity, 14), 0, 0, 0);
+        TextView eyebrow = Ui.text(activity, "SYSTEM HEALTH", 9.5f, Ui.MUTED);
+        eyebrow.setTypeface(Typeface.DEFAULT_BOLD);
+        eyebrow.setLetterSpacing(0.08f);
 
-        tvHeaderTitle = Ui.text(activity, "Systems Operational", 16, Ui.TEXT);
+        tvHeaderTitle = Ui.text(activity, "All Systems Normal", 18, Ui.TEXT);
         tvHeaderTitle.setTypeface(Typeface.DEFAULT_BOLD);
 
-        tvHeaderSubtitle = Ui.text(activity, "No Faults Detected", 12.5f, Ui.POSITIVE);
-        tvHeaderSubtitle.setTypeface(Typeface.DEFAULT_BOLD);
+        tvHeaderSubtitle = Ui.text(activity, "No Faults Detected", 11.5f, Ui.POSITIVE);
         tvHeaderSubtitle.setPadding(0, Ui.dp(activity, 2), 0, 0);
 
+        titleCol.addView(eyebrow);
         titleCol.addView(tvHeaderTitle);
         titleCol.addView(tvHeaderSubtitle);
         topRow.addView(titleCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
-        btnTopClear = Ui.button(activity, "CLEAR DTCS", v -> executeUdsClearAll());
+        btnTopClear = Ui.button(activity, "CLEAR ALL", v -> executeUdsClearAll());
         btnTopClear.setTextSize(11);
-        btnTopClear.setTextColor(Ui.PRIMARY);
-        btnTopClear.setBackground(Ui.round(activity, Ui.alpha(Ui.PRIMARY, 0x22), 10, 0));
-        btnTopClear.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 6), Ui.dp(activity, 12), Ui.dp(activity, 6));
+        btnTopClear.setTypeface(Typeface.DEFAULT_BOLD);
+        btnTopClear.setTextColor(Color.WHITE);
+        btnTopClear.setBackground(Ui.round(activity, Ui.PRIMARY_CONTAINER, 12, 0));
+        btnTopClear.setPadding(Ui.dp(activity, 14), Ui.dp(activity, 6), Ui.dp(activity, 14), Ui.dp(activity, 6));
         btnTopClear.setMinHeight(Ui.dp(activity, 34));
         btnTopClear.setMinimumHeight(Ui.dp(activity, 34));
         topRow.addView(btnTopClear);
 
         heroCard.addView(topRow);
 
-        // Status Pins Row (0 ACTIVE - NORMAL - 201 MONITORED)
-        pinsRow = Ui.row(activity);
-        pinsRow.setPadding(0, Ui.dp(activity, 12), 0, 0);
-        heroCard.addView(pinsRow);
+        // Subtle Divider Line
+        View heroDiv = new View(activity);
+        heroDiv.setBackgroundColor(Ui.LINE);
+        LinearLayout.LayoutParams hdlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 1));
+        hdlp.setMargins(0, Ui.dp(activity, 12), 0, Ui.dp(activity, 12));
+        heroCard.addView(heroDiv, hdlp);
+
+        // 2 Evenly Sized Sub-Cards: Active Faults - DTC Registry
+        LinearLayout subCardRow = Ui.row(activity);
+
+        LinearLayout cardActive = Ui.subCard(activity, "Active Faults", "0 FAULTS", Ui.POSITIVE);
+        tvSubActiveCount = (TextView) cardActive.getChildAt(1);
+
+        LinearLayout cardReg = Ui.subCard(activity, "DTC Registry", "201 CODES", Ui.TEXT);
+        tvSubRegistry = (TextView) cardReg.getChildAt(1);
+
+        subCardRow.addView(cardActive);
+        View sp1 = new View(activity);
+        sp1.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(activity, 8), 1));
+        subCardRow.addView(sp1);
+        subCardRow.addView(cardReg);
+
+        heroCard.addView(subCardRow);
 
         body.addView(heroCard);
 
@@ -167,22 +195,62 @@ public final class FaultsTab implements Tab, Bus.Listener {
 
         addSpace(body, 14);
 
-        // 3. DTC Registry Section Header
+        // 3. MoveOS Factory DTC Knowledge Base (Expandable Card, Collapsed by default)
+        LinearLayout catalogCard = Ui.card(activity);
+
         LinearLayout regHeader = Ui.row(activity);
-        regHeader.addView(Ui.heading(activity, "Diagnostic Trouble Codes"),
-                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        tvRegistryCount = Ui.text(activity, "201 total", 11, Ui.MUTED);
+        regHeader.setGravity(Gravity.CENTER_VERTICAL);
+
+        LinearLayout regIconBox = Ui.column(activity);
+        regIconBox.setGravity(Gravity.CENTER);
+        regIconBox.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 11, 0));
+        ImageView regIcon = new ImageView(activity);
+        regIcon.setImageResource(R.drawable.ic_dtc);
+        regIcon.setColorFilter(Ui.TEXT);
+        regIconBox.addView(regIcon, new LinearLayout.LayoutParams(Ui.dp(activity, 20), Ui.dp(activity, 20)));
+        LinearLayout.LayoutParams rip = new LinearLayout.LayoutParams(Ui.dp(activity, 36), Ui.dp(activity, 36));
+        rip.rightMargin = Ui.dp(activity, 12);
+        regHeader.addView(regIconBox, rip);
+
+        LinearLayout regTitleCol = Ui.column(activity);
+        regTitleCol.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView tvCatTitle = Ui.text(activity, "Factory DTC Reference Library", 14, Ui.TEXT);
+        tvCatTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        TextView tvCatSub = Ui.text(activity, "Tap to search 201 MoveOS diagnostic trouble codes", 11, Ui.MUTED);
+        tvCatSub.setPadding(0, Ui.dp(activity, 2), 0, 0);
+        regTitleCol.addView(tvCatTitle);
+        regTitleCol.addView(tvCatSub);
+        regHeader.addView(regTitleCol);
+
+        tvRegistryCount = Ui.pin(activity, "201 CODES", Ui.PRIMARY);
         regHeader.addView(tvRegistryCount);
-        body.addView(regHeader);
+
+        final android.content.SharedPreferences faultPrefs = activity.getSharedPreferences("sola", android.content.Context.MODE_PRIVATE);
+        boolean regExpanded = faultPrefs.getBoolean("expand_faults_registry", false);
+
+        ImageView regChevron = new ImageView(activity);
+        regChevron.setImageResource(R.drawable.ic_expand_more);
+        regChevron.setColorFilter(Ui.MUTED);
+        regChevron.setRotation(regExpanded ? 180f : 0f);
+        LinearLayout.LayoutParams chLp = new LinearLayout.LayoutParams(Ui.dp(activity, 24), Ui.dp(activity, 24));
+        chLp.leftMargin = Ui.dp(activity, 8);
+        regHeader.addView(regChevron, chLp);
+
+        catalogCard.addView(regHeader);
+
+        // Collapsible Drawer
+        LinearLayout regDrawer = Ui.column(activity);
+        regDrawer.setVisibility(regExpanded ? View.VISIBLE : View.GONE);
+        regDrawer.setPadding(0, Ui.dp(activity, 12), 0, 0);
 
         // 4. Material 3 Search Bar
         LinearLayout searchContainer = Ui.searchBar(activity, "Search DTCs, components, symptoms...", query -> {
             currentQuery = query != null ? query.trim().toLowerCase(Locale.ROOT) : "";
             renderRegistry();
         });
-        body.addView(searchContainer);
+        regDrawer.addView(searchContainer);
 
-        addSpace(body, 10);
+        addSpace(regDrawer, 10);
 
         // 5. Category Filter Chips (Horizontal Scroll)
         HorizontalScrollView hScroll = new HorizontalScrollView(activity);
@@ -201,14 +269,13 @@ public final class FaultsTab implements Tab, Bus.Listener {
             chip.setPadding(Ui.dp(activity, 14), 0, Ui.dp(activity, 14), 0);
 
             boolean isSelected = cat.equals(selectedCategory);
-            chip.setTextColor(isSelected ? Color.BLACK : Ui.MUTED);
+            chip.setTextColor(isSelected ? Ui.ACCENT_TEXT : Ui.MUTED);
             chip.setBackground(Ui.round(activity, isSelected ? Ui.PRIMARY : Ui.SURFACE_HIGH, 12, 0));
 
             chip.setOnClickListener(v -> {
                 selectedCategory = cat;
                 updateFilterChipsUI();
                 renderRegistry();
-                page.post(() -> page.smoothScrollTo(0, 0));
             });
 
             filterChips[i] = chip;
@@ -218,13 +285,25 @@ public final class FaultsTab implements Tab, Bus.Listener {
             chipsRow.addView(chip, clp);
         }
         hScroll.addView(chipsRow);
-        body.addView(hScroll);
+        regDrawer.addView(hScroll);
 
-        addSpace(body, 10);
+        addSpace(regDrawer, 10);
 
         // 6. Registry Item List
         registryContainer = Ui.column(activity);
-        body.addView(registryContainer);
+        regDrawer.addView(registryContainer);
+
+        catalogCard.addView(regDrawer);
+
+        regHeader.setOnClickListener(v -> {
+            boolean expand = regDrawer.getVisibility() != View.VISIBLE;
+            regDrawer.setVisibility(expand ? View.VISIBLE : View.GONE);
+            regChevron.animate().rotation(expand ? 180f : 0f).setDuration(180).start();
+            faultPrefs.edit().putBoolean("expand_faults_registry", expand).apply();
+        });
+
+        body.addView(catalogCard);
+        addSpace(body, 16);
 
         // Initial render
         updateHeader(new ArrayList<>(), new ArrayList<>());
@@ -235,7 +314,7 @@ public final class FaultsTab implements Tab, Bus.Listener {
     private void updateFilterChipsUI() {
         for (int i = 0; i < CATEGORIES.length; i++) {
             boolean isSelected = CATEGORIES[i].equals(selectedCategory);
-            filterChips[i].setTextColor(isSelected ? Color.BLACK : Ui.MUTED);
+            filterChips[i].setTextColor(isSelected ? Ui.ACCENT_TEXT : Ui.MUTED);
             filterChips[i].setBackground(Ui.round(activity, isSelected ? Ui.PRIMARY : Ui.SURFACE_HIGH, 12, 0));
         }
     }
@@ -316,67 +395,52 @@ public final class FaultsTab implements Tab, Bus.Listener {
     }
 
     private void updateHeader(List<Faults.Fault> active, List<Faults.Fault> latched) {
-        pinsRow.removeAllViews();
         int activeCount = active != null ? active.size() : 0;
         int latchedCount = latched != null ? latched.size() : 0;
 
         if (activeCount == 0 && latchedCount == 0) {
-            headerIconBox.setBackground(Ui.round(activity, Ui.alpha(Ui.POSITIVE, 0x1E), 16, 0));
-            headerIcon.setImageResource(R.drawable.ic_check);
+            headerIcon.setImageResource(R.drawable.ic_system_normal);
             headerIcon.setColorFilter(Ui.POSITIVE);
 
-            tvHeaderTitle.setText("Systems Operational");
-            tvHeaderTitle.setTextColor(Ui.TEXT);
+            tvHeaderTitle.setText("All Systems Normal");
             tvHeaderSubtitle.setText("No Faults Detected");
             tvHeaderSubtitle.setTextColor(Ui.POSITIVE);
 
-            TextView pinActive = Ui.pin(activity, "0 ACTIVE", Ui.POSITIVE);
-            pinsRow.addView(pinActive);
-
-            TextView pinStatus = Ui.pin(activity, "NORMAL", Ui.PRIMARY);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.leftMargin = Ui.dp(activity, 8);
-            pinsRow.addView(pinStatus, lp);
-
-            TextView pinTotal = Ui.pin(activity, "ALL CLEAR", Ui.MUTED);
-            LinearLayout.LayoutParams lpTotal = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lpTotal.leftMargin = Ui.dp(activity, 8);
-            pinsRow.addView(pinTotal, lpTotal);
+            if (tvSubActiveCount != null) {
+                tvSubActiveCount.setText("0 FAULTS");
+                tvSubActiveCount.setTextColor(Ui.POSITIVE);
+            }
+            if (tvSubRegistry != null) {
+                tvSubRegistry.setText("201 CODES");
+                tvSubRegistry.setTextColor(Ui.TEXT);
+            }
 
             if (btnTopClear != null) {
-                btnTopClear.setText("CLEAR DTCS");
-                btnTopClear.setTextColor(Ui.PRIMARY);
-                btnTopClear.setBackground(Ui.round(activity, Ui.alpha(Ui.PRIMARY, 0x22), 10, 0));
+                btnTopClear.setText("CLEAR ALL");
+                btnTopClear.setTextColor(Color.WHITE);
+                btnTopClear.setBackground(Ui.round(activity, Ui.PRIMARY_CONTAINER, 12, 0));
             }
         } else {
-            headerIconBox.setBackground(Ui.round(activity, Ui.alpha(Ui.ERROR, 0x1E), 16, 0));
             headerIcon.setImageResource(R.drawable.ic_warning);
             headerIcon.setColorFilter(Ui.ERROR);
 
-            tvHeaderTitle.setText("Trouble Code Detected");
-            tvHeaderTitle.setTextColor(Ui.TEXT);
-            tvHeaderSubtitle.setText(activeCount + " Active - " + latchedCount + " Latched");
+            tvHeaderTitle.setText("Active Faults Detected");
+            tvHeaderSubtitle.setText(activeCount + " Active Faults");
             tvHeaderSubtitle.setTextColor(Ui.ERROR);
 
-            TextView pActive = Ui.pin(activity, activeCount + " ACTIVE", Ui.ERROR);
-            pinsRow.addView(pActive);
-
-            if (latchedCount > 0) {
-                TextView pLatched = Ui.pin(activity, latchedCount + " LATCHED", Ui.WARNING);
-                LinearLayout.LayoutParams lpL = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                lpL.leftMargin = Ui.dp(activity, 8);
-                pinsRow.addView(pLatched, lpL);
+            if (tvSubActiveCount != null) {
+                tvSubActiveCount.setText(activeCount + " ACTIVE");
+                tvSubActiveCount.setTextColor(Ui.ERROR);
             }
-
-            TextView pAttention = Ui.pin(activity, "ATTENTION", Ui.ERROR);
-            LinearLayout.LayoutParams lpAtt = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lpAtt.leftMargin = Ui.dp(activity, 8);
-            pinsRow.addView(pAttention, lpAtt);
+            if (tvSubRegistry != null) {
+                tvSubRegistry.setText(latchedCount > 0 ? latchedCount + " LATCHED" : "201 CODES");
+                tvSubRegistry.setTextColor(latchedCount > 0 ? Ui.WARNING : Ui.TEXT);
+            }
 
             if (btnTopClear != null) {
                 btnTopClear.setText("CLEAR " + (activeCount + latchedCount) + " DTCS");
-                btnTopClear.setTextColor(Ui.ERROR);
-                btnTopClear.setBackground(Ui.round(activity, Ui.alpha(Ui.ERROR, 0x22), 10, 0));
+                btnTopClear.setTextColor(Ui.ACCENT_TEXT);
+                btnTopClear.setBackground(Ui.round(activity, Ui.PRIMARY, 12, 0));
             }
         }
     }

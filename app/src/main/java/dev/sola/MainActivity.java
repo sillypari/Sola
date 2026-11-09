@@ -49,14 +49,26 @@ public final class MainActivity extends Activity implements Bus.Listener {
     };
 
     private static final int[] TAB_ICONS = {
-            R.drawable.ic_speed,
-            R.drawable.ic_battery,
+            R.drawable.ic_scooter,
+            R.drawable.ic_diagnostics,
             R.drawable.ic_testing,
             R.drawable.ic_warning,
-            R.drawable.ic_code
+            R.drawable.ic_terminal
     };
 
-    private final Conn conn = new Conn();
+    private static final class RetainedState {
+        final Conn conn;
+        final Bus bus;
+        final int activeTab;
+
+        RetainedState(Conn conn, Bus bus, int activeTab) {
+            this.conn = conn;
+            this.bus = bus;
+            this.activeTab = activeTab;
+        }
+    }
+
+    private Conn conn;
     private final Tab[] tabs = new Tab[5];
     private final LinearLayout[] navItemContainers = new LinearLayout[5];
     private final LinearLayout[] navPillContainers = new LinearLayout[5];
@@ -77,8 +89,41 @@ public final class MainActivity extends Activity implements Bus.Listener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        bus = new Bus(this, conn);
-        bus.start();
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        String themeMode = prefs.getString("app_theme", "dark");
+        boolean isSystemNight = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        Ui.applyTheme(themeMode, isSystemNight);
+
+        // Configure Status Bar & Navigation Bar appearance for Light / Dark themes
+        Window window = getWindow();
+        window.setStatusBarColor(Ui.BG);
+        window.setNavigationBarColor(Ui.SURFACE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            View decor = window.getDecorView();
+            int flags = decor.getSystemUiVisibility();
+            if (!Ui.isDarkTheme()) {
+                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                }
+            } else {
+                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                }
+            }
+            decor.setSystemUiVisibility(flags);
+        }
+
+        RetainedState retained = (RetainedState) getLastNonConfigurationInstance();
+        if (retained != null && retained.conn != null) {
+            conn = retained.conn;
+            bus = retained.bus;
+        } else {
+            conn = new Conn();
+            bus = new Bus(this, conn);
+            bus.start();
+        }
 
         // Core REA features consolidated into Axiom's 5 destinations
         tabs[0] = new VehicleTab(this, conn, bus);
@@ -87,21 +132,42 @@ public final class MainActivity extends Activity implements Bus.Listener {
         tabs[3] = new FaultsTab(this, conn, bus);
         tabs[4] = new DeveloperTab(this, conn, bus);
 
-        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         currentAddress = prefs.getString(KEY_ADDRESS, "192.168.1.96");
 
         setContentView(buildRoot());
-        selectTab(0);
+        int initialTab = retained != null ? retained.activeTab : (savedInstanceState != null ? savedInstanceState.getInt("active_tab", 0) : 0);
+        selectTab(initialTab);
 
         bus.attach(this);
     }
 
     @Override
+    public Object onRetainNonConfigurationInstance() {
+        if (bus != null) {
+            bus.detach(this);
+        }
+        return new RetainedState(conn, bus, currentTab);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("active_tab", currentTab);
+    }
+
+    @Override
     protected void onDestroy() {
         if (bus != null) {
-            bus.stop();
+            bus.detach(this);
         }
-        conn.close();
+        if (!isChangingConfigurations()) {
+            if (bus != null) {
+                bus.stop();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
         super.onDestroy();
     }
 
@@ -112,11 +178,11 @@ public final class MainActivity extends Activity implements Bus.Listener {
                 if (s != null && s.pps > 0) {
                     liveBadge.setText(String.format(Locale.US, "● %d PPS", s.pps));
                     liveBadge.setTextColor(Ui.POSITIVE);
-                    liveBadge.setBackground(Ui.round(this, Ui.alpha(Ui.POSITIVE, 0x22), 12, 0));
+                    liveBadge.setBackground(Ui.round(this, Ui.SURFACE_HIGH, 12, 0));
                 } else {
                     liveBadge.setText("● CONNECTED");
                     liveBadge.setTextColor(Ui.PRIMARY);
-                    liveBadge.setBackground(Ui.round(this, Ui.alpha(Ui.PRIMARY, 0x22), 12, 0));
+                    liveBadge.setBackground(Ui.round(this, Ui.SURFACE_HIGH, 12, 0));
                 }
             } else {
                 liveBadge.setText("OFFLINE");
@@ -137,19 +203,18 @@ public final class MainActivity extends Activity implements Bus.Listener {
         topBar.setPadding(Ui.dp(this, 16), Ui.dp(this, 12), Ui.dp(this, 16), Ui.dp(this, 12));
         topBar.setBackgroundColor(Ui.BG);
 
-        // Left: App Icon & Sola Brand
+        // Left: Clean Brand Logo & Wordmark
         LinearLayout brandCol = Ui.row(this);
+        brandCol.setGravity(Gravity.CENTER_VERTICAL);
         brandCol.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        ImageView appIcon = new ImageView(this);
-        appIcon.setImageResource(R.drawable.ic_app);
-        appIcon.setColorFilter(Ui.PRIMARY);
-        brandCol.addView(appIcon, new LinearLayout.LayoutParams(Ui.dp(this, 26), Ui.dp(this, 26)));
-
-        TextView title = Ui.text(this, "Sola", 20, Ui.TEXT);
-        title.setTypeface(Typeface.DEFAULT_BOLD);
-        title.setPadding(Ui.dp(this, 10), 0, 0, 0);
-        brandCol.addView(title);
+        ImageView brandLogo = new ImageView(this);
+        brandLogo.setImageResource(Ui.isDarkTheme() ? R.drawable.ic_sola_brand : R.drawable.ic_sola_brand_light);
+        brandLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        brandLogo.setAdjustViewBounds(true);
+        LinearLayout.LayoutParams brandLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, Ui.dp(this, 22));
+        brandCol.addView(brandLogo, brandLp);
 
         topBar.addView(brandCol);
 
@@ -160,7 +225,7 @@ public final class MainActivity extends Activity implements Bus.Listener {
         // Right Actions: Live PPS Pin + Hotspot Button + Connect Button (Uniform 32dp height)
         LinearLayout rightActions = Ui.row(this);
 
-        liveBadge = Ui.text(this, "OFFLINE", 10, Ui.DIM);
+        liveBadge = Ui.text(this, conn != null && conn.ready() ? "LIVE" : "OFFLINE", 10, conn != null && conn.ready() ? Ui.POSITIVE : Ui.DIM);
         liveBadge.setTypeface(Typeface.DEFAULT_BOLD);
         liveBadge.setLetterSpacing(0.06f);
         liveBadge.setIncludeFontPadding(false);
@@ -172,10 +237,10 @@ public final class MainActivity extends Activity implements Bus.Listener {
 
         btnHotspot = new ImageView(this);
         btnHotspot.setImageResource(R.drawable.ic_wifi_tethering);
-        btnHotspot.setColorFilter(Ui.PRIMARY);
+        btnHotspot.setColorFilter(Ui.TEXT);
         btnHotspot.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         btnHotspot.setPadding(Ui.dp(this, 8), Ui.dp(this, 7), Ui.dp(this, 8), Ui.dp(this, 7));
-        btnHotspot.setBackground(Ui.round(this, Ui.alpha(Ui.PRIMARY, 0x22), 12, 0));
+        btnHotspot.setBackground(Ui.round(this, Ui.SURFACE_HIGH, 11, 0));
         btnHotspot.setOnClickListener(v -> startHotspotDiscovery());
         LinearLayout.LayoutParams hpLp = new LinearLayout.LayoutParams(Ui.dp(this, 38), Ui.dp(this, 34));
         hpLp.leftMargin = Ui.dp(this, 8);
@@ -186,7 +251,7 @@ public final class MainActivity extends Activity implements Bus.Listener {
         btnConnect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
         btnConnect.setTypeface(Typeface.DEFAULT_BOLD);
         btnConnect.setLetterSpacing(0.06f);
-        btnConnect.setTextColor(Color.BLACK);
+        btnConnect.setTextColor(Ui.ACCENT_TEXT);
         btnConnect.setPadding(Ui.dp(this, 12), 0, Ui.dp(this, 12), 0);
         btnConnect.setMinHeight(Ui.dp(this, 34));
         btnConnect.setMinimumHeight(Ui.dp(this, 34));
@@ -276,10 +341,10 @@ public final class MainActivity extends Activity implements Bus.Listener {
         // Update Material 3 Navigation Items & Active Indicator Pins
         for (int i = 0; i < TAB_TITLES.length; i++) {
             if (i == index) {
-                // Active: Pill pin background in primary container, primary icon tint, text on-surface
-                navPillContainers[i].setBackground(Ui.round(this, Ui.PRIMARY_CONTAINER, 16, 0));
-                navIcons[i].setColorFilter(Ui.PRIMARY);
-                navLabels[i].setTextColor(Ui.TEXT);
+                // Active: Electric Cyan pill with dark navy/teal icon (Image 2) & Electric Cyan label
+                navPillContainers[i].setBackground(Ui.round(this, Ui.PRIMARY, 16, 0));
+                navIcons[i].setColorFilter(Ui.ACCENT_TEXT);
+                navLabels[i].setTextColor(Ui.PRIMARY);
             } else {
                 // Inactive: Transparent container, muted icon & label
                 navPillContainers[i].setBackground(null);
