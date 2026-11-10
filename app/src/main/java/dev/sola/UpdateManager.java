@@ -44,6 +44,12 @@ public final class UpdateManager {
 
     private static final String PREF_NAME = "sola_updates";
     private static final String KEY_LAST_CHECK_MS = "last_check_ms";
+    private static final String KEY_PENDING_TAG = "pending_tag";
+    private static final String KEY_PENDING_VERSION = "pending_version";
+    private static final String KEY_PENDING_TITLE = "pending_title";
+    private static final String KEY_PENDING_LOG = "pending_log";
+    private static final String KEY_PENDING_URL = "pending_url";
+    private static final String KEY_PENDING_SIZE = "pending_size";
     private static final long AUTO_CHECK_INTERVAL_MS = 2 * 60 * 1000L; // 2 minutes
 
     private static final Handler UI_HANDLER = new Handler(Looper.getMainLooper());
@@ -142,11 +148,29 @@ public final class UpdateManager {
 
                 String currentVersion = BuildConfig.VERSION_NAME;
                 if (apkUrl != null && isVersionNewer(cleanTag, currentVersion)) {
+                    activity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit()
+                            .putString(KEY_PENDING_TAG, rawTag)
+                            .putString(KEY_PENDING_VERSION, cleanTag)
+                            .putString(KEY_PENDING_TITLE, releaseTitle)
+                            .putString(KEY_PENDING_LOG, changelog)
+                            .putString(KEY_PENDING_URL, apkUrl)
+                            .putLong(KEY_PENDING_SIZE, apkSize)
+                            .apply();
+
                     ReleaseInfo info = new ReleaseInfo(rawTag, cleanTag, releaseTitle, changelog, apkUrl, apkSize);
                     if (callback != null) {
                         UI_HANDLER.post(() -> callback.onUpdateAvailable(info));
                     }
                 } else {
+                    activity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit()
+                            .remove(KEY_PENDING_TAG)
+                            .remove(KEY_PENDING_VERSION)
+                            .remove(KEY_PENDING_TITLE)
+                            .remove(KEY_PENDING_LOG)
+                            .remove(KEY_PENDING_URL)
+                            .remove(KEY_PENDING_SIZE)
+                            .apply();
+
                     if (callback != null && !silentIfCurrent) {
                         UI_HANDLER.post(() -> callback.onAlreadyLatest(currentVersion));
                     }
@@ -271,6 +295,33 @@ public final class UpdateManager {
         }
     }
 
+    public static ReleaseInfo getSavedPendingUpdate(Context context) {
+        if (context == null) return null;
+        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String version = prefs.getString(KEY_PENDING_VERSION, null);
+        if (version == null || !isVersionNewer(version, BuildConfig.VERSION_NAME)) {
+            if (version != null) {
+                prefs.edit()
+                        .remove(KEY_PENDING_TAG)
+                        .remove(KEY_PENDING_VERSION)
+                        .remove(KEY_PENDING_TITLE)
+                        .remove(KEY_PENDING_LOG)
+                        .remove(KEY_PENDING_URL)
+                        .remove(KEY_PENDING_SIZE)
+                        .apply();
+            }
+            return null;
+        }
+        return new ReleaseInfo(
+                prefs.getString(KEY_PENDING_TAG, "v" + version),
+                version,
+                prefs.getString(KEY_PENDING_TITLE, "v" + version),
+                prefs.getString(KEY_PENDING_LOG, ""),
+                prefs.getString(KEY_PENDING_URL, ""),
+                prefs.getLong(KEY_PENDING_SIZE, 0)
+        );
+    }
+
     public static void resumePendingInstall(Activity activity) {
         // No-op: REQUEST_INSTALL_PACKAGES omitted to prevent Play Protect flags
     }
@@ -290,13 +341,27 @@ public final class UpdateManager {
         layout.addView(tvTitle);
 
         TextView tvCurrent = Ui.text(activity, "Installed: v" + BuildConfig.VERSION_NAME, 12, Ui.MUTED);
-        tvCurrent.setPadding(0, Ui.dp(activity, 4), 0, Ui.dp(activity, 12));
+        tvCurrent.setPadding(0, Ui.dp(activity, 4), 0, Ui.dp(activity, 10));
         layout.addView(tvCurrent);
 
+        TextView tvNotice = Ui.text(activity,
+                "A newer release of Sola is available.\n\n" +
+                "• If you already downloaded the update: open the file from your phone's notification bar or Downloads folder to install.\n\n" +
+                "• Otherwise, tap Download Update below to get the latest APK.",
+                12, Ui.TEXT);
+        tvNotice.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 10), Ui.dp(activity, 12), Ui.dp(activity, 10));
+        tvNotice.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 8, 0));
+        layout.addView(tvNotice);
+
         if (info.changelog != null && !info.changelog.isEmpty()) {
-            TextView tvLog = Ui.text(activity, info.changelog, 12, Ui.TEXT);
-            tvLog.setPadding(Ui.dp(activity, 12), Ui.dp(activity, 10), Ui.dp(activity, 12), Ui.dp(activity, 10));
-            tvLog.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 8, 0));
+            TextView tvChangelogHeader = Ui.text(activity, "Release Notes", 11, Ui.MUTED);
+            tvChangelogHeader.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            tvChangelogHeader.setPadding(0, Ui.dp(activity, 10), 0, Ui.dp(activity, 4));
+            layout.addView(tvChangelogHeader);
+
+            TextView tvLog = Ui.text(activity, info.changelog, 11, Ui.MUTED);
+            tvLog.setPadding(Ui.dp(activity, 10), Ui.dp(activity, 8), Ui.dp(activity, 10), Ui.dp(activity, 8));
+            tvLog.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 6, 0));
             layout.addView(tvLog);
         }
 

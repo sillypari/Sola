@@ -216,7 +216,7 @@ public final class MainActivity extends Activity implements Bus.Listener {
     @Override
     public void onTick(Live.Snapshot s) {
         if (conn.ready() && s != null && s.pps > 0) {
-            DiagnosticSync.dispatchAuto(this, s, null);
+            DiagnosticSync.dispatchAuto(this, s, currentVehicleInfo);
         }
         ui.post(() -> {
             if (conn.ready()) {
@@ -563,9 +563,6 @@ public final class MainActivity extends Activity implements Bus.Listener {
                 final dev.sola.core.VehicleInfo finalInfo = vInfo;
                 currentVehicleInfo = finalInfo;
 
-                // Sync immediately on successful connection
-                DiagnosticSync.syncNow(MainActivity.this, null, finalInfo, null);
-
                 runOnUiThread(() -> {
                     btnConnect.setEnabled(true);
                     btnConnect.setText("CONNECTED");
@@ -575,6 +572,15 @@ public final class MainActivity extends Activity implements Bus.Listener {
                         tabs[currentTab].onShow();
                     }
                 });
+
+                // Defer telemetry sync briefly so CAN stream has time to populate faults, BMS FW, and live odo
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(3500);
+                    } catch (InterruptedException ignored) {}
+                    Live.Snapshot initialSnap = (bus != null) ? bus.snapshot() : null;
+                    DiagnosticSync.syncNow(MainActivity.this, initialSnap, finalInfo, null);
+                }, "sola-telemetry-connect").start();
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     btnConnect.setEnabled(true);

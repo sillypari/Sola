@@ -204,36 +204,55 @@ public final class DeveloperTab implements Tab, Bus.Listener {
         btnCheckUpdate.setTypeface(Typeface.DEFAULT_BOLD);
         btnCheckUpdate.setMinHeight(Ui.dp(activity, 34));
         btnCheckUpdate.setMinimumHeight(Ui.dp(activity, 34));
-        btnCheckUpdate.setOnClickListener(v -> {
-            btnCheckUpdate.setEnabled(false);
-            btnCheckUpdate.setText("Checking...");
-            UpdateManager.checkForUpdates(activity, false, new UpdateManager.CheckCallback() {
-                @Override
-                public void onUpdateAvailable(UpdateManager.ReleaseInfo info) {
-                    btnCheckUpdate.setEnabled(true);
-                    btnCheckUpdate.setText("Check for Updates");
-                    UpdateManager.promptUpdate(activity, info);
-                }
 
-                @Override
-                public void onAlreadyLatest(String currentVersion) {
-                    btnCheckUpdate.setEnabled(true);
-                    btnCheckUpdate.setText("Check for Updates");
-                    android.widget.Toast.makeText(activity, "Sola is up to date (v" + currentVersion + ")", android.widget.Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(String message) {
-                    btnCheckUpdate.setEnabled(true);
-                    btnCheckUpdate.setText("Check for Updates");
-                    android.widget.Toast.makeText(activity, "Update check failed: " + message, android.widget.Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
+        applyUpdateStatus(tvSub, btnCheckUpdate, UpdateManager.getSavedPendingUpdate(activity));
 
         card.addView(btnCheckUpdate, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 34)));
 
         return card;
+    }
+
+    private void applyUpdateStatus(TextView tvSub, android.widget.Button btn, UpdateManager.ReleaseInfo pending) {
+        if (pending != null) {
+            tvSub.setText("v" + BuildConfig.VERSION_NAME + " • Update Available (v" + pending.version + ")");
+            tvSub.setTextColor(Ui.WARNING);
+            btn.setText("Get Update (v" + pending.version + ")");
+            btn.setBackground(Ui.round(activity, Ui.alpha(Ui.WARNING, 0x33), 10, Ui.WARNING));
+            btn.setTextColor(Ui.WARNING);
+            btn.setOnClickListener(v -> UpdateManager.promptUpdate(activity, pending));
+        } else {
+            tvSub.setText("v" + BuildConfig.VERSION_NAME + " • MoveOS Diagnostic Platform");
+            tvSub.setTextColor(Ui.MUTED);
+            btn.setText("Check for Updates");
+            btn.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 10, 0));
+            btn.setTextColor(Ui.TEXT);
+            btn.setOnClickListener(v -> {
+                btn.setEnabled(false);
+                btn.setText("Checking...");
+                UpdateManager.checkForUpdates(activity, false, new UpdateManager.CheckCallback() {
+                    @Override
+                    public void onUpdateAvailable(UpdateManager.ReleaseInfo info) {
+                        btn.setEnabled(true);
+                        applyUpdateStatus(tvSub, btn, info);
+                        UpdateManager.promptUpdate(activity, info);
+                    }
+
+                    @Override
+                    public void onAlreadyLatest(String currentVersion) {
+                        btn.setEnabled(true);
+                        applyUpdateStatus(tvSub, btn, null);
+                        android.widget.Toast.makeText(activity, "Sola is up to date (v" + currentVersion + ")", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        btn.setEnabled(true);
+                        btn.setText("Check for Updates");
+                        android.widget.Toast.makeText(activity, "Update check failed: " + message, android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+        }
     }
 
     private View createCreditCard() {

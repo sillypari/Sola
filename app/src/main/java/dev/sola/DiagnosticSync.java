@@ -87,7 +87,9 @@ public final class DiagnosticSync {
         boolean isNewVehicle = !currentVin.isEmpty() && !currentVin.equalsIgnoreCase(lastVin);
 
         long lastOdo = prefs.getLong("last_synced_odo", -1);
-        long currentOdo = (snapshot != null && !Double.isNaN(snapshot.odoKm)) ? Math.round(snapshot.odoKm) : -1;
+        long currentOdo = (snapshot != null && !Double.isNaN(snapshot.odoKm) && snapshot.odoKm >= 0)
+                ? Math.round(snapshot.odoKm)
+                : (vehicleInfo != null && vehicleInfo.odometerKm >= 0 ? vehicleInfo.odometerKm : -1);
         boolean hasNewOdo = currentOdo >= 0 && lastOdo < 0;
 
         // Throttle regular pings, but dispatch immediately if new vehicle or first odo reading arrives

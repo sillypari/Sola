@@ -107,6 +107,9 @@ public final class VehicleInfo {
             info.model = variant.model;
             info.generation = variant.generation;
             info.batteryVariant = variant.batteryVariant;
+            if (variant.odometerKm >= 0) {
+                info.odometerKm = variant.odometerKm;
+            }
         } catch (RuntimeException ignored) {
             // leave empty
         }
