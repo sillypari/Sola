@@ -5,15 +5,18 @@
 ### Next-Generation Ola S1 Telemetry, Diagnostics & MoveOS CAN Suite
 
 [![Android](https://img.shields.io/badge/Platform-Android_8.0+-3DDC84.svg?style=flat-square&logo=android&logoColor=white)](https://android.com)
-[![MoveOS](https://img.shields.io/badge/Compatibility-MoveOS_2_|_3_|_4_|_5-00BCD4.svg?style=flat-square)](https://olaelectric.com)
+[![MoveOS](https://img.shields.io/badge/Compatibility-MoveOS_5.0+-00BCD4.svg?style=flat-square)](https://olaelectric.com)
 [![CAN Bus](https://img.shields.io/badge/CAN_Bus-vcan0_@_500_kbps-0284C7.svg?style=flat-square)](https://en.wikipedia.org/wiki/CAN_bus)
 [![Throughput](https://img.shields.io/badge/Throughput-1%2C500+_PPS-22C55E.svg?style=flat-square)](#high-performance-zero-allocation-engine)
 [![Architecture](https://img.shields.io/badge/Design-Material_3_Obsidian-1E293B.svg?style=flat-square)](#clean-material-3-interface)
 
 <p align="center">
-  <b>Sola</b> is a high-performance Android diagnostics and live telemetry suite designed for Ola Electric scooters (S1, S1 Pro, S1 Air, S1X).
+  <b>Sola</b> is a high-performance Android diagnostics and live telemetry suite designed for Ola Electric scooters (S1, S1 Pro, S1 Air, S1X) running <b>MoveOS 5.0+</b>.
   Connecting directly to the vehicle daemon via Wi-Fi hotspot or local network, Sola decodes real-time vehicle CAN bus traffic at over <b>1,500 packets per second</b> with zero latency, zero frame drops, and professional-grade precision.
 </p>
+
+> [!IMPORTANT]
+> **MoveOS Version Compatibility**: Sola requires **MoveOS 5.0 or newer**. Earlier versions (**MoveOS 2, MoveOS 3, and MoveOS 4**) do not have the internal diagnostic gRPC service (port `50005`) open or exposed over local network interfaces, making direct connection unavailable on legacy firmware.
 
 ---
 
@@ -145,6 +148,9 @@ Unlike generic OBD tools that drop frames under load, Sola's engine is built for
 ---
 
 ## Connection Setup
+
+> [!NOTE]
+> Make sure your scooter is running **MoveOS 5.0+** so diagnostic port `50005` is active and reachable over your network.
 
 1. **Connect Scooter to Wi-Fi / Hotspot:**
    * Enable Mobile Hotspot on your Android phone or connect both the phone and scooter to the same Wi-Fi network.
