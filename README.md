@@ -194,6 +194,13 @@ adb install -r app/build/outputs/apk/standard/debug/app-standard-debug.apk
 
 ## Author & Credits
 
-* Developed by **[@sillypari](https://github.com/sillypari)**
-* Project Repository: [https://github.com/sillypari/Sola](https://github.com/sillypari/Sola)
+* **Developer**: **[@sillypari](https://github.com/sillypari)**
+* **Project Repository**: [https://github.com/sillypari/Sola](https://github.com/sillypari/Sola)
+
+### Acknowledgements & Upstream Projects
+
+Special thanks and credits to the open-source projects and researchers that laid the groundwork for MoveOS diagnostics:
+
+* **[Axiom Diagnostics](https://codeberg.org/pitzel/axiom)** by **pitzel** — Pioneering real-time MoveOS telemetry architecture, CAN bus signal decoding, and diagnostic interface concepts.
+* **[Ola REA Project (ola-s1-rea)](https://github.com/itsmobsys/ola-s1-rea)** by **itsmobsys** — Foundational MoveOS head unit reverse engineering, gRPC diagnostic protocol discovery, and CAN frame mappings.
 
