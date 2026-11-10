@@ -260,35 +260,19 @@ public final class UpdateManager {
         if (apkFile == null || !apkFile.exists() || activity == null || activity.isFinishing()) {
             return;
         }
-
-        pendingInstallApk = apkFile;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!activity.getPackageManager().canRequestPackageInstalls()) {
-                Toast.makeText(activity, "Enable 'Allow from this source' for Sola, then press Back to complete update", Toast.LENGTH_LONG).show();
-                Intent reqIntent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                        .setData(Uri.parse("package:" + activity.getPackageName()));
-                activity.startActivity(reqIntent);
-                return;
-            }
-        }
-
-        pendingInstallApk = null;
         Uri contentUri = GenericFileProvider.getUriForApk(apkFile);
         Intent install = new Intent(Intent.ACTION_VIEW);
         install.setDataAndType(contentUri, "application/vnd.android.package-archive");
-        install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        activity.startActivity(install);
+        install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            activity.startActivity(install);
+        } catch (Exception e) {
+            Toast.makeText(activity, "Unable to launch installer: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static void resumePendingInstall(Activity activity) {
-        if (pendingInstallApk != null && pendingInstallApk.exists() && activity != null && !activity.isFinishing()) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || activity.getPackageManager().canRequestPackageInstalls()) {
-                File toInstall = pendingInstallApk;
-                pendingInstallApk = null;
-                installApk(activity, toInstall);
-            }
-        }
+        // No-op: REQUEST_INSTALL_PACKAGES omitted to prevent Play Protect flags
     }
 
     public static void promptUpdate(Activity activity, ReleaseInfo info) {
@@ -316,56 +300,22 @@ public final class UpdateManager {
             layout.addView(tvLog);
         }
 
-        ProgressBar pb = new ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal);
-        pb.setMax(100);
-        pb.setVisibility(View.GONE);
-        LinearLayout.LayoutParams pblp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 12));
-        pblp.topMargin = Ui.dp(activity, 14);
-        layout.addView(pb, pblp);
-
-        TextView tvStatus = Ui.text(activity, "", 11, Ui.MUTED);
-        tvStatus.setGravity(Gravity.CENTER);
-        tvStatus.setVisibility(View.GONE);
-        layout.addView(tvStatus);
-
         builder.setView(layout);
         builder.setNegativeButton("Later", null);
-        builder.setPositiveButton("Update Now", null);
+        builder.setPositiveButton("Download Update", (d, which) -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadUrl));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                activity.startActivity(intent);
+                Toast.makeText(activity, "Opening download in browser...", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(activity, "Unable to open browser: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         AlertDialog dialog = builder.create();
         dialog.setOnDismissListener(d -> isDialogShowing = false);
         dialog.show();
-
-        Button btnInstall = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        btnInstall.setOnClickListener(v -> {
-            btnInstall.setEnabled(false);
-            pb.setVisibility(View.VISIBLE);
-            tvStatus.setVisibility(View.VISIBLE);
-            tvStatus.setText("Connecting...");
-
-            downloadApk(activity, info.downloadUrl, new DownloadCallback() {
-                @Override
-                public void onProgress(int progressPercent, long downloadedBytes, long totalBytes) {
-                    pb.setProgress(progressPercent);
-                    String mb = String.format(java.util.Locale.US, "Downloading: %d%% (%.1f / %.1f MB)",
-                            progressPercent, downloadedBytes / 1048576.0, totalBytes / 1048576.0);
-                    tvStatus.setText(mb);
-                }
-
-                @Override
-                public void onCompleted(File apkFile) {
-                    tvStatus.setText("Opening installer...");
-                    dialog.dismiss();
-                    installApk(activity, apkFile);
-                }
-
-                @Override
-                public void onError(String error) {
-                    tvStatus.setText("Failed: " + error);
-                    btnInstall.setEnabled(true);
-                }
-            });
-        });
     }
 
     private static String readStream(InputStream is) throws Exception {
