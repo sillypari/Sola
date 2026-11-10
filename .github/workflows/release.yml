@@ -1,0 +1,45 @@
+name: Build and Release Sola APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
+
+      - name: Build Standard Release APK
+        run: ./gradlew assembleStandardRelease --no-daemon
+
+      - name: Rename APK for Distribution
+        run: |
+          VERSION_TAG=${GITHUB_REF_NAME:-latest}
+          cp app/build/outputs/apk/standard/release/app-standard-release.apk sola-${VERSION_TAG}-release.apk
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: sola-*-release.apk
+          generate_release_notes: true
+

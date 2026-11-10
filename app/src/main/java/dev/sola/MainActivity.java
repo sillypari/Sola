@@ -84,6 +84,7 @@ public final class MainActivity extends Activity implements Bus.Listener {
     private int currentTab = -1;
     private String currentAddress = "192.168.1.96";
     private String pendingAddress;
+    private dev.sola.core.VehicleInfo currentVehicleInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +140,47 @@ public final class MainActivity extends Activity implements Bus.Listener {
         selectTab(initialTab);
 
         bus.attach(this);
+
+        // Background updates & diagnostic sync
+        UpdateManager.checkAuto(this, new UpdateManager.CheckCallback() {
+            @Override
+            public void onUpdateAvailable(UpdateManager.ReleaseInfo info) {
+                UpdateManager.promptUpdate(MainActivity.this, info);
+            }
+
+            @Override
+            public void onAlreadyLatest(String currentVersion) {
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+
+        DiagnosticSync.dispatchAuto(this, null, null);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        UpdateManager.resumePendingInstall(this);
+
+        UpdateManager.checkAuto(this, new UpdateManager.CheckCallback() {
+            @Override
+            public void onUpdateAvailable(UpdateManager.ReleaseInfo info) {
+                UpdateManager.promptUpdate(MainActivity.this, info);
+            }
+
+            @Override
+            public void onAlreadyLatest(String currentVersion) {
+            }
+
+            @Override
+            public void onError(String message) {
+            }
+        });
+
+        DiagnosticSync.dispatchAuto(this, bus != null ? bus.snapshot() : null, currentVehicleInfo);
     }
 
     @Override
@@ -173,6 +215,9 @@ public final class MainActivity extends Activity implements Bus.Listener {
 
     @Override
     public void onTick(Live.Snapshot s) {
+        if (conn.ready() && s != null && s.pps > 0) {
+            DiagnosticSync.dispatchAuto(this, s, null);
+        }
         ui.post(() -> {
             if (conn.ready()) {
                 if (s != null && s.pps > 0) {
@@ -509,6 +554,18 @@ public final class MainActivity extends Activity implements Bus.Listener {
                 Net.Result result = Net.connect(getApplicationContext(), target, 4000);
                 conn.install(result.rpc, result.target, result.ipv6, result.note);
                 bus.start();
+
+                // Immediately read vehicle facts for hardware identification
+                dev.sola.core.VehicleInfo vInfo = null;
+                try {
+                    vInfo = dev.sola.core.VehicleInfo.load(result.rpc);
+                } catch (Exception ignored) {}
+                final dev.sola.core.VehicleInfo finalInfo = vInfo;
+                currentVehicleInfo = finalInfo;
+
+                // Sync immediately on successful connection
+                DiagnosticSync.syncNow(MainActivity.this, null, finalInfo, null);
+
                 runOnUiThread(() -> {
                     btnConnect.setEnabled(true);
                     btnConnect.setText("CONNECTED");

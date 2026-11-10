@@ -37,6 +37,7 @@ public final class DeveloperTab implements Tab, Bus.Listener {
     private final ScrollView page;
     private final SharedPreferences prefs;
     private final Handler ui = new Handler(Looper.getMainLooper());
+    private Live.Snapshot latestSnapshot;
 
     private final LogTab logTab;
     private final AdbTab adbTab;
@@ -145,11 +146,94 @@ public final class DeveloperTab implements Tab, Bus.Listener {
 
         addSpace(body, 12);
 
-        // 6. Project & Developer Credit Card
+        // 6. Software Updates
+        View updateCard = createSoftwareUpdatesCard();
+        body.addView(updateCard);
+
+        addSpace(body, 12);
+
+        // 7. Project & Developer Credit Card
         View creditCard = createCreditCard();
         body.addView(creditCard);
 
         addSpace(body, 20);
+    }
+
+    private View createSoftwareUpdatesCard() {
+        LinearLayout card = Ui.card(activity);
+
+        // Header Row
+        LinearLayout row = Ui.row(activity);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+
+        LinearLayout iconBox = Ui.column(activity);
+        iconBox.setGravity(Gravity.CENTER);
+        iconBox.setBackground(Ui.round(activity, Ui.SURFACE_HIGH, 11, 0));
+        ImageView icon = new ImageView(activity);
+        icon.setImageResource(R.drawable.ic_system_update);
+        icon.setColorFilter(Ui.TEXT);
+        iconBox.addView(icon, new LinearLayout.LayoutParams(Ui.dp(activity, 20), Ui.dp(activity, 20)));
+
+        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(Ui.dp(activity, 36), Ui.dp(activity, 36));
+        ip.rightMargin = Ui.dp(activity, 12);
+        row.addView(iconBox, ip);
+
+        LinearLayout textCol = Ui.column(activity);
+        textCol.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        TextView tvTitle = Ui.text(activity, "Software Updates", 15, Ui.TEXT);
+        tvTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        textCol.addView(tvTitle);
+
+        TextView tvSub = Ui.text(activity, "v" + BuildConfig.VERSION_NAME + " • MoveOS Diagnostic Platform", 11, Ui.MUTED);
+        tvSub.setPadding(0, Ui.dp(activity, 2), 0, 0);
+        textCol.addView(tvSub);
+
+        row.addView(textCol);
+        card.addView(row);
+
+        // Divider
+        View div = Ui.divider(activity);
+        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 1));
+        dlp.setMargins(0, Ui.dp(activity, 10), 0, Ui.dp(activity, 10));
+        card.addView(div, dlp);
+
+        // Updates Button
+        android.widget.Button btnCheckUpdate = Ui.button(activity, "Check for Updates", null);
+        btnCheckUpdate.setTextSize(11);
+        btnCheckUpdate.setTypeface(Typeface.DEFAULT_BOLD);
+        btnCheckUpdate.setMinHeight(Ui.dp(activity, 34));
+        btnCheckUpdate.setMinimumHeight(Ui.dp(activity, 34));
+        btnCheckUpdate.setOnClickListener(v -> {
+            btnCheckUpdate.setEnabled(false);
+            btnCheckUpdate.setText("Checking...");
+            UpdateManager.checkForUpdates(activity, false, new UpdateManager.CheckCallback() {
+                @Override
+                public void onUpdateAvailable(UpdateManager.ReleaseInfo info) {
+                    btnCheckUpdate.setEnabled(true);
+                    btnCheckUpdate.setText("Check for Updates");
+                    UpdateManager.promptUpdate(activity, info);
+                }
+
+                @Override
+                public void onAlreadyLatest(String currentVersion) {
+                    btnCheckUpdate.setEnabled(true);
+                    btnCheckUpdate.setText("Check for Updates");
+                    android.widget.Toast.makeText(activity, "Sola is up to date (v" + currentVersion + ")", android.widget.Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(String message) {
+                    btnCheckUpdate.setEnabled(true);
+                    btnCheckUpdate.setText("Check for Updates");
+                    android.widget.Toast.makeText(activity, "Update check failed: " + message, android.widget.Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        card.addView(btnCheckUpdate, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 34)));
+
+        return card;
     }
 
     private View createCreditCard() {

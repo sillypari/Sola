@@ -770,7 +770,14 @@ public final class Live {
         s.rangeNormalKm = value("Vehicle_Range_Normal");
         s.rangeSportKm = value("Vehicle_Range_Sport");
         s.rangeHyperKm = value("Vehicle_Range_Hyper");
-        s.odoKm = value("Odometer");
+        double odoVal = value("Odometer");
+        if (Double.isNaN(odoVal)) {
+            double odoMtrs = value("Odometer_Value_in_mtrs");
+            if (!Double.isNaN(odoMtrs)) {
+                odoVal = odoMtrs / 1000.0;
+            }
+        }
+        s.odoKm = odoVal;
         s.packV = value("Bus_Voltage_00");
         if (Double.isNaN(s.packV)) {
             s.packV = value("Bus_Voltage_After_Contactor");

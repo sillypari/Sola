@@ -24,12 +24,31 @@ public final class GenericFileProvider extends ContentProvider {
         return true;
     }
 
-    @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+    private File getDirForUri(Uri uri) {
+        String path = uri.getPath();
+        if (path != null && path.contains("/updates/")) {
+            File dir = getContext().getExternalFilesDir("updates");
+            if (dir == null) {
+                dir = new File(getContext().getFilesDir(), "updates");
+            }
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            return dir;
+        }
         File dir = getContext().getExternalFilesDir("can_recordings");
         if (dir == null) {
             dir = new File(getContext().getFilesDir(), "can_recordings");
         }
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    @Override
+    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+        File dir = getDirForUri(uri);
         String fileName = uri.getLastPathSegment();
         if (fileName == null) {
             throw new FileNotFoundException("No file name specified");
@@ -47,10 +66,7 @@ public final class GenericFileProvider extends ContentProvider {
         if (fileName == null) {
             return null;
         }
-        File dir = getContext().getExternalFilesDir("can_recordings");
-        if (dir == null) {
-            dir = new File(getContext().getFilesDir(), "can_recordings");
-        }
+        File dir = getDirForUri(uri);
         File target = new File(dir, fileName);
         MatrixCursor cursor = new MatrixCursor(new String[]{
                 OpenableColumns.DISPLAY_NAME,
@@ -66,8 +82,13 @@ public final class GenericFileProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         String path = uri.getPath();
-        if (path != null && path.endsWith(".csv")) {
-            return "text/csv";
+        if (path != null) {
+            if (path.endsWith(".apk")) {
+                return "application/vnd.android.package-archive";
+            }
+            if (path.endsWith(".csv")) {
+                return "text/csv";
+            }
         }
         return "text/plain";
     }
@@ -89,5 +110,9 @@ public final class GenericFileProvider extends ContentProvider {
 
     public static Uri getUriForFile(File file) {
         return Uri.parse("content://" + AUTHORITY + "/can_recordings/" + file.getName());
+    }
+
+    public static Uri getUriForApk(File file) {
+        return Uri.parse("content://" + AUTHORITY + "/updates/" + file.getName());
     }
 }

@@ -67,6 +67,7 @@ public final class VehicleInfo {
     public String uptime = "";
     public String registration = "";
     public String purchaseDate = "";
+    public long odometerKm = -1;
     public boolean loaded;
 
     public VehicleInfo() {
@@ -289,6 +290,14 @@ public final class VehicleInfo {
                 info.batteryVariant = lookup(text, "batteryVariant");
                 if (info.batteryVariant.isEmpty() && "S1 Pro".equals(info.model)) {
                     info.batteryVariant = "4 kWh";
+                }
+            }
+
+            Matcher odo = Pattern.compile("<(int|long)\\s+name=\"[^\"]*ODOMETER_READING\"\\s+value=\"(\\d+)\"").matcher(text);
+            if (odo.find()) {
+                try {
+                    info.odometerKm = Long.parseLong(odo.group(2));
+                } catch (NumberFormatException ignored) {
                 }
             }
         } catch (RuntimeException ignored) {
