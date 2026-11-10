@@ -27,7 +27,6 @@
 * **Extended UDS Diagnostics (ISO 14229 / ISO 15765-2)** — Native ISO-TP multi-frame reassembly for reading ECU Identifiers (DIDs), initiating Motor Field-Oriented Control (FOC) auto-tune routines, testing Pre-Charge FETs, and resetting Analog Front End (AFE) silicon.
 * **Factory DTC Fault Engine** — Real-time CAN fault decoder and offline searchable library of 201 MoveOS diagnostic trouble codes.
 * **MoveOS Developer Suite** — 1-click scooter operation mode switcher (`CUSTOMER` vs `SERVICE`), root ADB terminal with instant presets, and high-speed candump session logger.
-* **In-App GitHub OTA Updates** — Automatic background version checking and 1-tap download/install via GitHub Releases. ([Release Guide](docs/ota-release-guide.md))
 
 ---
 
