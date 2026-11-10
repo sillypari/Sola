@@ -117,7 +117,7 @@ public final class UpdateManager {
                 JSONObject json = new JSONObject(body);
 
                 String rawTag = json.optString("tag_name", "").trim();
-                String cleanTag = rawTag.startsWith("v") ? rawTag.substring(1).trim() : rawTag;
+                String cleanTag = rawTag.replaceAll("^[vV]+", "").trim();
                 String releaseTitle = json.optString("name", "v" + cleanTag);
                 String changelog = json.optString("body", "").trim();
 
@@ -161,17 +161,36 @@ public final class UpdateManager {
 
     public static boolean isVersionNewer(String remoteVer, String currentVer) {
         if (remoteVer == null || currentVer == null) return false;
-        String[] rParts = remoteVer.split("[^0-9]+");
-        String[] cParts = currentVer.split("[^0-9]+");
+        int[] rParts = parseVersionParts(remoteVer);
+        int[] cParts = parseVersionParts(currentVer);
 
         int len = Math.max(rParts.length, cParts.length);
         for (int i = 0; i < len; i++) {
-            int r = i < rParts.length && !rParts[i].isEmpty() ? Integer.parseInt(rParts[i]) : 0;
-            int c = i < cParts.length && !cParts[i].isEmpty() ? Integer.parseInt(cParts[i]) : 0;
+            int r = i < rParts.length ? rParts[i] : 0;
+            int c = i < cParts.length ? cParts[i] : 0;
             if (r > c) return true;
             if (r < c) return false;
         }
         return false;
+    }
+
+    private static int[] parseVersionParts(String version) {
+        if (version == null) return new int[0];
+        String clean = version.replaceAll("^[^0-9]+", "");
+        String[] tokens = clean.split("[^0-9]+");
+        java.util.List<Integer> list = new java.util.ArrayList<>();
+        for (String t : tokens) {
+            if (!t.isEmpty()) {
+                try {
+                    list.add(Integer.parseInt(t));
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            res[i] = list.get(i);
+        }
+        return res;
     }
 
     public static void downloadApk(Context context, String downloadUrl, DownloadCallback callback) {
