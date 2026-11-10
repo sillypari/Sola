@@ -44,8 +44,14 @@ public final class Proto {
     public static final class Writer {
         private final ByteArrayOutputStream out = new ByteArrayOutputStream(64);
 
+        private static void write(ByteArrayOutputStream stream, byte[] data) {
+            if (data != null && data.length > 0) {
+                stream.write(data, 0, data.length);
+            }
+        }
+
         private Writer tag(int field, int wire) {
-            out.writeBytes(varint(((long) field << 3) | wire));
+            write(out, varint(((long) field << 3) | wire));
             return this;
         }
 
@@ -54,7 +60,7 @@ public final class Proto {
                 return this;
             }
             tag(field, WIRE_VARINT);
-            out.writeBytes(varint(value));
+            write(out, varint(value));
             return this;
         }
 
@@ -63,8 +69,8 @@ public final class Proto {
                 return this;
             }
             tag(field, WIRE_LENGTH);
-            out.writeBytes(varint(value.length));
-            out.writeBytes(value);
+            write(out, varint(value.length));
+            write(out, value);
             return this;
         }
 
@@ -82,7 +88,7 @@ public final class Proto {
             }
             ByteArrayOutputStream packed = new ByteArrayOutputStream(values.length * 2);
             for (int v : values) {
-                packed.writeBytes(varint(v));
+                write(packed, varint(v));
             }
             return bytes(field, packed.toByteArray());
         }
